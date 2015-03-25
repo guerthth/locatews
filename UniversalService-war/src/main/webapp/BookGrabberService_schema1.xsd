@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://service.books.ws.gue.amtc/" xmlns:tns="http://service.books.ws.gue.amtc/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="addBooks" type="tns:addBooks"/>
+
+  <xs:element name="addBooksResponse" type="tns:addBooksResponse"/>
+
+  <xs:element name="getBooksByTag" type="tns:getBooksByTag"/>
+
+  <xs:element name="getBooksByTagResponse" type="tns:getBooksByTagResponse"/>
+
+  <xs:complexType name="getBooksByTag">
+    <xs:sequence>
+      <xs:element name="searchTags" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getBooksByTagResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:books" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="books">
+    <xs:sequence>
+      <xs:element name="book" type="tns:book" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="book">
+    <xs:complexContent>
+      <xs:extension base="tns:item">
+        <xs:sequence>
+          <xs:element name="title" type="xs:string"/>
+          <xs:element name="author" type="xs:string"/>
+          <xs:element name="price" type="xs:string"/>
+          <xs:element name="ISBN" type="xs:string" nillable="true" minOccurs="0"/>
+          <xs:element name="tags" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="item">
+    <xs:sequence>
+      <xs:element name="description" type="xs:string" nillable="true" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addBooks">
+    <xs:sequence>
+      <xs:element name="inputItems" type="tns:books" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addBooksResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

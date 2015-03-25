@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+    <servlet>
+        <servlet-name>HelloWorldServlet</servlet-name>
+        <servlet-class>amtc.gue.ws.HelloWorldServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>BookCalcServlet</servlet-name>
+        <servlet-class>amtc.gue.ws.books.servlet.BookCalcServlet</servlet-class>
+    </servlet>
+    
+    <!-- Mapping for the actual BookCalcWSDL -->
+    <servlet-mapping>
+        <servlet-name>BookCalcServlet</servlet-name>
+        <url-pattern>/BookServiceService</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Mapping for the actual TestWebServiceWSDL -->
+    <servlet-mapping>
+        <servlet-name>HelloWorldServlet</servlet-name>
+        <url-pattern>/HelloWorldService</url-pattern>
+    </servlet-mapping>
+
+</web-app>
