@@ -7,5 +7,9 @@ package amtc.gue.ws.books.delegate;
  */
 public interface IDelegator {
 	
+	/**
+	 * Delegate method persisting object to the underlying DB
+	 */
 	public void delegate();
+	
 }

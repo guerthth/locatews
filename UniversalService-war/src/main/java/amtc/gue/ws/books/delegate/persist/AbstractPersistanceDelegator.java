@@ -1,9 +1,9 @@
 package amtc.gue.ws.books.delegate.persist;
 
-import javax.persistence.EntityManagerFactory;
+import java.util.logging.Logger;
 
 import amtc.gue.ws.books.delegate.IDelegator;
-import amtc.gue.ws.books.persistence.EMF;
+import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 
 /**
  * Abstract Persistance Delegator class
@@ -12,19 +12,21 @@ import amtc.gue.ws.books.persistence.EMF;
  */
 public abstract class AbstractPersistanceDelegator implements IDelegator{
 
-	// EntityManagerFactoy
-	protected EntityManagerFactory emf;
+	// Logger
+	protected static final Logger log = 
+			Logger.getLogger(AbstractPersistanceDelegator.class.getName());
 	
-	// Object to persist
-	protected Object obj; 
+	/** PersistenceDelegatorInput */
+	protected PersistenceDelegatorInput persistenceInput;
 	
 	/**
 	 * initialize EntitiyManagerFactory Instance
 	 */
-	public void initialize(Object obj){
+	public void initialize(PersistenceDelegatorInput input){
 		
-		this.emf = EMF.getEntityManagerFactory();
-		this.obj = obj; 
+		// set persistenceDelegatorInput
+		this.persistenceInput = input;
+			
 	}
 	
 	/**
