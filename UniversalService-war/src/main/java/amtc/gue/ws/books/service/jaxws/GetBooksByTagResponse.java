@@ -13,14 +13,14 @@ import javax.xml.bind.annotation.XmlType;
 public class GetBooksByTagResponse {
 
     @XmlElement(name = "return", namespace = "")
-    private amtc.gue.ws.books.inout.Books _return;
+    private amtc.gue.ws.books.service.inout.Books _return;
 
     /**
      * 
      * @return
      *     returns Books
      */
-    public amtc.gue.ws.books.inout.Books getReturn() {
+    public amtc.gue.ws.books.service.inout.Books getReturn() {
         return this._return;
     }
 
@@ -29,7 +29,7 @@ public class GetBooksByTagResponse {
      * @param _return
      *     the value for the _return property
      */
-    public void setReturn(amtc.gue.ws.books.inout.Books _return) {
+    public void setReturn(amtc.gue.ws.books.service.inout.Books _return) {
         this._return = _return;
     }
 

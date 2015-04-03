@@ -3,9 +3,9 @@ package amtc.gue.ws.books.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import amtc.gue.ws.books.inout.Book;
-import amtc.gue.ws.books.inout.Books;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.service.inout.Book;
+import amtc.gue.ws.books.service.inout.Books;
 
 /**
  * Class mapping objects to JPA entities

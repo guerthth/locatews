@@ -1,4 +1,4 @@
-package amtc.gue.ws.books.inout;
+package amtc.gue.ws.books.service.inout;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

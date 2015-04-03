@@ -1,12 +1,15 @@
-package amtc.gue.ws.books.delegate.persist.dao.impl;
+package amtc.gue.ws.books.dao.impl;
 
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import amtc.gue.ws.books.delegate.persist.dao.IBookEntityDAO;
+import amtc.gue.ws.books.dao.IBookEntityDAO;
+import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
+import amtc.gue.ws.books.persistence.EMF;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 
 /**
@@ -43,9 +46,9 @@ public class BookEntityDAOImpl implements IBookEntityDAO {
 	 * @param emf EntityManagerFactory
 	 * @param input input from the DelegatorInput
 	 */
-	public BookEntityDAOImpl(EntityManagerFactory emf) {
+	public BookEntityDAOImpl(EMF emfInstance) {
 
-		this.emf = emf;
+		this.emf = emfInstance.getEntityManagerFactory();
 		
 	}
 	
@@ -96,24 +99,31 @@ public class BookEntityDAOImpl implements IBookEntityDAO {
 	}
 
 	@Override
-	public BookEntity addBookEntity(BookEntity book) {
-
-		// set entitymanager
-		em = emf.createEntityManager();
+	public BookEntity addBookEntity(BookEntity book) throws EntityPersistenceException {
 		
-		// begin transaction
-		em.getTransaction().begin();
+		try{
+			// set entitymanager
+			em = emf.createEntityManager();
+			
+			// begin transaction
+			em.getTransaction().begin();
+			
+			// perists in DB
+			em.persist(book);
+			
+			// commit transaction
+			em.getTransaction().commit();
+			
+			// close entitymanager
+			em.close();
+			
+			return book;
+			
+		} catch(PersistenceException e) {
+			throw new EntityPersistenceException("Persisting BookEntity for ISBN " + book.getISBN() +
+					" failed.", e);
+		}
 		
-		// perists in DB
-		em.persist(book);
-		
-		// commit transaction
-		em.getTransaction().commit();
-		
-		// close entitymanager
-		em.close();
-		
-		return book;
 	}
 
 

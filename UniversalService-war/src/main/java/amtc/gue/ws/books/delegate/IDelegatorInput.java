@@ -1,4 +1,4 @@
-package amtc.gue.ws.books.delegate.persist.input;
+package amtc.gue.ws.books.delegate;
 
 /**
  * Delegator Input Object interface

@@ -13,14 +13,14 @@ import javax.xml.bind.annotation.XmlType;
 public class AddBooks {
 
     @XmlElement(name = "inputItems", namespace = "")
-    private amtc.gue.ws.books.inout.Books inputItems;
+    private amtc.gue.ws.books.service.inout.Books inputItems;
 
     /**
      * 
      * @return
      *     returns Books
      */
-    public amtc.gue.ws.books.inout.Books getInputItems() {
+    public amtc.gue.ws.books.service.inout.Books getInputItems() {
         return this.inputItems;
     }
 
@@ -29,7 +29,7 @@ public class AddBooks {
      * @param inputItems
      *     the value for the inputItems property
      */
-    public void setInputItems(amtc.gue.ws.books.inout.Books inputItems) {
+    public void setInputItems(amtc.gue.ws.books.service.inout.Books inputItems) {
         this.inputItems = inputItems;
     }
 

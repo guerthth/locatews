@@ -8,18 +8,24 @@ import javax.persistence.Persistence;
  * @author Thomas
  *
  */
-public final class EMF {
+public class EMF {
 	
 	private static final EntityManagerFactory emfInstance = 
 			Persistence.createEntityManagerFactory("gae-jpa");
 	
-	private EMF(){}
+	/**
+	 * Constructor
+	 */
+	public EMF(){
+		
+	}
 	
 	/**
 	 * Method returning the instance of the EntityManagerFactory
 	 * @return emfInstance
 	 */
-	public static EntityManagerFactory getEntityManagerFactory(){
+	public EntityManagerFactory getEntityManagerFactory(){
 		return emfInstance;
 	}
+	
 }

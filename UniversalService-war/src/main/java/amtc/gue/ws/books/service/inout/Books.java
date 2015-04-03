@@ -1,4 +1,4 @@
-package amtc.gue.ws.books.inout;
+package amtc.gue.ws.books.service.inout;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,11 +3,14 @@ package amtc.gue.ws.books.delegate.persist;
 import java.util.List;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.books.delegate.persist.dao.impl.BookEntityDAOImpl;
-import amtc.gue.ws.books.inout.Books;
+import amtc.gue.ws.books.dao.impl.BookEntityDAOImpl;
+import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
+import amtc.gue.ws.books.delegate.persist.output.IDelegatorOutput;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.utils.EntityMapper;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
+import amtc.gue.ws.books.utils.SpringContext;
 
 public class BookPersistenceDelegator extends AbstractPersistanceDelegator{
 
@@ -23,11 +26,10 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator{
 	/**
 	 * delegate method persisting books to the underlying DB
 	 */
-	public void delegate() {
+	public IDelegatorOutput delegate() throws EntityPersistenceException {
 		
 		// create DAO instance
-		bookEntityDAO = new BookEntityDAOImpl(persistenceInput.getEmf());
-		//bookEntityDAO = (BookEntityDAOImpl) SpringContext.context.getBean("");
+		bookEntityDAO = (BookEntityDAOImpl) SpringContext.context.getBean("bookEntityDAOImpl");
 		
 		// determine type of persistence action
 		if(persistenceInput.getType().equals(PersistenceTypeEnum.ADD)){
@@ -43,6 +45,10 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator{
 				log.info("Book added to DB with id: " + persistedBook.getId());
 			}
 		}
+		
+		// TODO: build output object and return
+		
+		return null;
 	}
 	
 	/**

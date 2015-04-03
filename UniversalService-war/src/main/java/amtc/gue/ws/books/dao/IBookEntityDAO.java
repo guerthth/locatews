@@ -1,7 +1,8 @@
-package amtc.gue.ws.books.delegate.persist.dao;
+package amtc.gue.ws.books.dao;
 
 import java.util.List;
 
+import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 
 /**
@@ -16,8 +17,9 @@ public interface IBookEntityDAO {
 	 * 
 	 * @param book the book to be added in the DB
 	 * @return the added book
+	 * @throws EntityPersistenceException 
 	 */
-	public BookEntity addBookEntity(BookEntity book); 
+	public BookEntity addBookEntity(BookEntity book) throws EntityPersistenceException; 
 	
 	/**
 	 * Retrieving all existing bookentities from the DB

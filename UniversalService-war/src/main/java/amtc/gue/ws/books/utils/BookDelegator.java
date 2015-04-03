@@ -2,8 +2,8 @@ package amtc.gue.ws.books.utils;
 
 import java.util.List;
 
-import amtc.gue.ws.books.inout.Book;
-import amtc.gue.ws.books.inout.Books;
+import amtc.gue.ws.books.service.inout.Book;
+import amtc.gue.ws.books.service.inout.Books;
 
 public class BookDelegator {
 	
