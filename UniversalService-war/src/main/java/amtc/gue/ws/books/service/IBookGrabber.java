@@ -28,11 +28,11 @@ public interface IBookGrabber {
 	public String addBooks(@WebParam(name = "inputItems") Books items);
 	
 	/**
-	 * Method retrieving items by criterie
+	 * Method retrieving items by criteria
 	 * @param items
 	 * @return list of items
 	 */
 	@WebMethod(operationName = "getBooksByTag")
-	public Books getBooksByTag(@WebParam(name = "searchTags") String[] tags);
+	public Books getBooksByTag(@WebParam(name = "searchTags") String[] tag);
 	
 }

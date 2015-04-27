@@ -10,9 +10,9 @@
 	</bean>
 	
 	<!-- Test EMF Instance -->
-<!-- 	<bean id="testEmf" -->
-<!-- 	    class="persistence.TestEMF"> -->
-<!-- 	</bean> -->
+	<bean id="testEmf"
+	    class="amtc.gue.ws.books.persistence.TestEMF">
+	</bean>
     
     <!-- BookPersistenceDelegator -->
 	<bean id="bookPersistenceDelegator" 
@@ -22,11 +22,6 @@
 	<!-- PersistenceDelegatorInput -->
 	<bean id="persistenceDelegatorInput" 
 	    class="amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput">
-	</bean>
-	
-	<!-- PersistenceDelegatorOutput -->
-	<bean id="persistenceDelegatorOutput" 
-	    class="amtc.gue.ws.books.delegate.persist.output.PersistenceDelegatorOutput">
 	</bean>
 	
 	<!-- BookEntityDAOImpl -->
@@ -40,13 +35,13 @@
 	</bean>
 	
 	<!-- BookEntityDAOTestImpl for Testing -->
-<!-- 	<bean id="bookEntityTestDAOImpl" -->
-<!-- 	    class="amtc.gue.ws.books.dao.impl.BookEntityDAOImpl"> -->
+	<bean id="bookEntityTestDAOImpl"
+	    class="amtc.gue.ws.books.dao.impl.BookEntityDAOImpl">
 	    
-<!-- 	    emf instance used as constructor input -->
-<!-- 	    <constructor-arg> -->
-<!-- 	        <ref bean="testEmf" /> -->
-<!-- 	    </constructor-arg> -->
-<!-- 	</bean> -->
+	    <!-- emf instance used as constructor input -->
+	    <constructor-arg>
+	        <ref bean="testEmf" />
+	    </constructor-arg>
+	</bean>
  
 </beans>

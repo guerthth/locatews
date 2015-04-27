@@ -1,5 +1,6 @@
 package amtc.gue.ws.books.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -9,7 +10,8 @@ import javax.persistence.Query;
 
 import amtc.gue.ws.books.dao.IBookEntityDAO;
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
-import amtc.gue.ws.books.persistence.EMF;
+import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
+import amtc.gue.ws.books.persistence.ProductiveEMF;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 
 /**
@@ -40,13 +42,17 @@ public class BookEntityDAOImpl implements IBookEntityDAO {
 	private static final String BOOKENTITY_SELECTION_QUERY = 
 			"select be from BookEntity be";
 	
+	/** BookEntity Selection Query for tag selection */
+	private static final String BOOKENTITY_TAG_SELECTION_QUERY = 
+			"select DISTINCT be from BookEntity be WHERE be.tags LIKE '%?1%'";
+	
 	/**
 	 * Constructor 
 	 * 
 	 * @param emf EntityManagerFactory
 	 * @param input input from the DelegatorInput
 	 */
-	public BookEntityDAOImpl(EMF emfInstance) {
+	public BookEntityDAOImpl(ProductiveEMF emfInstance) {
 
 		this.emf = emfInstance.getEntityManagerFactory();
 		
@@ -74,6 +80,34 @@ public class BookEntityDAOImpl implements IBookEntityDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<BookEntity> getBookEntityByTag(String tag) throws EntityRetrievalException {
+
+		List<BookEntity> books = new ArrayList<BookEntity>();
+		
+		try{
+			books = new ArrayList<BookEntity>();
+			
+			// set entitymanager
+			em = emf.createEntityManager();
+			
+			// read bookentites from DB that possess specific tags
+			Query q = em.createQuery(BOOKENTITY_TAG_SELECTION_QUERY, BookEntity.class).setParameter(1, tag);
+			books = q.getResultList();
+			
+		} catch (Exception e){
+			
+			throw new EntityRetrievalException("Retrieval of entity for tag: " + tag + " failed.", e);
+			
+		} finally {
+			em.close();
+		}
+		
+		return books;
+	}
+
 
 	@Override
 	public BookEntity updateBookEntity(BookEntity book) {
@@ -114,17 +148,21 @@ public class BookEntityDAOImpl implements IBookEntityDAO {
 			// commit transaction
 			em.getTransaction().commit();
 			
-			// close entitymanager
-			em.close();
-			
 			return book;
 			
 		} catch(PersistenceException e) {
+			
+			// rollback
+			em.getTransaction().rollback();
 			throw new EntityPersistenceException("Persisting BookEntity for ISBN " + book.getISBN() +
 					" failed.", e);
+			
+		} finally {
+			
+			// close entitymanager
+			em.close();
 		}
 		
 	}
-
 
 }

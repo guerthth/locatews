@@ -3,9 +3,10 @@ package amtc.gue.ws.books.delegate.persist;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.books.delegate.IDelegator;
+import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
+import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.books.delegate.persist.output.IDelegatorOutput;
 
 /**
  * Abstract Persistance Delegator class
@@ -35,7 +36,8 @@ public abstract class AbstractPersistanceDelegator implements IDelegator{
 	 * Delegate method persisting object to the underlying DB
 	 * @return 
 	 * @throws EntityPersistenceException 
+	 * @throws EntityRetrievalException 
 	 */
-	public abstract IDelegatorOutput delegate() throws EntityPersistenceException;
+	public abstract IDelegatorOutput delegate();
 
 }

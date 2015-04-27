@@ -3,6 +3,7 @@ package amtc.gue.ws.books.dao;
 import java.util.List;
 
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
+import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 
 /**
@@ -35,6 +36,15 @@ public interface IBookEntityDAO {
 	 * @return bookentity with the respective ISBN
 	 */
 	public BookEntity getBookEntity(String ISBN);
+	
+	/**
+	 * Retrieving all bookentities that posess a specific tag
+	 * 
+	 * @param tags the tags of the bookentities
+	 * @return bookentity that includes one of the tags
+	 * @throws EntityRetrievalException 
+	 */
+	public List<BookEntity> getBookEntityByTag(String tag) throws EntityRetrievalException;
 	
 	/**
 	 * Update a specific BookEntity

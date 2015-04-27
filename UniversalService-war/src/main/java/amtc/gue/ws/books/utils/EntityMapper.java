@@ -36,11 +36,10 @@ public class EntityMapper {
 	 * Method to map a Books object to a list of BookEntity objects
 	 * 
 	 * @param books object containing list of Book object
+	 * @param bookEntityList the list of BookEntities
 	 * @return list of BookEntity objects
 	 */
-	public static List<BookEntity> mapBooksToBookList(Books books){
-		
-		List<BookEntity> bookEntityList = new ArrayList<BookEntity>();
+	public static List<BookEntity> mapBooksToBookList(Books books, List<BookEntity> bookEntityList){
 		
 		for(Book book : books.getBooks()){
 			bookEntityList.add(mapBookToEntity(book));

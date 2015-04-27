@@ -1,31 +1,20 @@
 package amtc.gue.ws.books.persistence;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
- * Ckass that holds the EntityManagerFactory instance
+ * Persistence Interface
+ * 
  * @author Thomas
  *
  */
-public class EMF {
-	
-	private static final EntityManagerFactory emfInstance = 
-			Persistence.createEntityManagerFactory("gae-jpa");
+public interface EMF {
 	
 	/**
-	 * Constructor
+	 * Method returning the instance of the EntitiyManagerFactory
+	 * 
+	 * @return the EntityManagerFactory Instance
 	 */
-	public EMF(){
-		
-	}
-	
-	/**
-	 * Method returning the instance of the EntityManagerFactory
-	 * @return emfInstance
-	 */
-	public EntityManagerFactory getEntityManagerFactory(){
-		return emfInstance;
-	}
-	
+	public EntityManagerFactory getEntityManagerFactory();
+
 }

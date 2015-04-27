@@ -4,20 +4,9 @@ import java.util.logging.Logger;
 
 import javax.jws.WebService;
 
-
-
-
-
-
-
-
-
-
-
-
+import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.AbstractPersistanceDelegator;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
-import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
@@ -31,7 +20,8 @@ public class BookGrabber implements IBookGrabber{
 			Logger.getLogger(BookGrabber.class.getName());
 	
 	// delegator instance
-	private AbstractPersistanceDelegator bpd = (BookPersistenceDelegator) SpringContext.context.getBean("bookPersistenceDelegator");
+	private final AbstractPersistanceDelegator bpd = 
+			(BookPersistenceDelegator) SpringContext.context.getBean("bookPersistenceDelegator");
 			
 	
 	/**
@@ -50,29 +40,33 @@ public class BookGrabber implements IBookGrabber{
 		// intialize BookPersistenceDelegator
 		bpd.initialize(input);
 		
-		try {
-			
-			// call BookPersistenceDelegators delegate method to handle persist
-			bpd.delegate();
-			
-		} catch (EntityPersistenceException e) {
-			
-			log.severe(e.getMessage());
-			log.severe(e.getStackTrace().toString());
-			e.printStackTrace();
-		}
+		// define output String
+		String output = "";
 		
-		return "OK";
+		// call BookPersistenceDelegators delegate method to handle persist
+		IDelegatorOutput bpdOutput = bpd.delegate();
+		output = bpdOutput.getStatusMessage();
+		
+		return "OIOI";
 	}
 
+	/**
+	 * Method retrieving books from the book store
+	 * searchcriteria: 1 to n tags
+	 */
 	@Override
-	public Books getBooksByTag(String[] tags) {
+	public Books getBooksByTag(String[] tag) {
 		
-		/**
-		 * Method retrieving book from the book store
-		 * searchcriteria: 1 to n tags
-		 */
-		// TODO: improve
+		// setup input object
+		PersistenceDelegatorInput input = 
+				(PersistenceDelegatorInput) SpringContext.context.getBean("persistenceDelegatorInput");
+		
+		input.setType(PersistenceTypeEnum.READ);
+		input.setInputObject(tag[0]);
+		
+		// initialize BookPersistenceDelegator
+		bpd.initialize(input);
+		
 		return null;
 	}	
 	
