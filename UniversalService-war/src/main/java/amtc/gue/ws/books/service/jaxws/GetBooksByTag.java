@@ -12,15 +12,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "getBooksByTag", namespace = "http://service.books.ws.gue.amtc/")
 public class GetBooksByTag {
 
-    @XmlElement(name = "searchTags", namespace = "", nillable = true)
-    private String[] searchTags;
+    @XmlElement(name = "searchTags", namespace = "")
+    private amtc.gue.ws.books.service.inout.Tags searchTags;
 
     /**
      * 
      * @return
-     *     returns String[]
+     *     returns Tags
      */
-    public String[] getSearchTags() {
+    public amtc.gue.ws.books.service.inout.Tags getSearchTags() {
         return this.searchTags;
     }
 
@@ -29,7 +29,7 @@ public class GetBooksByTag {
      * @param searchTags
      *     the value for the searchTags property
      */
-    public void setSearchTags(String[] searchTags) {
+    public void setSearchTags(amtc.gue.ws.books.service.inout.Tags searchTags) {
         this.searchTags = searchTags;
     }
 

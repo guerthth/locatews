@@ -8,11 +8,6 @@
 	<bean id="emf"
 	    class="amtc.gue.ws.books.persistence.ProductiveEMF">
 	</bean>
-	
-	<!-- Test EMF Instance -->
-<!-- 	<bean id="testEmf" -->
-<!-- 	    class="persistence.TestEMF"> -->
-<!-- 	</bean> -->
     
     <!-- BookPersistenceDelegator -->
 	<bean id="bookPersistenceDelegator" 

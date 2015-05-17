@@ -9,6 +9,7 @@ import amtc.gue.ws.books.delegate.persist.AbstractPersistanceDelegator;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.service.inout.Books;
+import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 
@@ -40,12 +41,11 @@ public class BookGrabber implements IBookGrabber{
 		// intialize BookPersistenceDelegator
 		bpd.initialize(input);
 		
-		// define output String
-		String output = "";
-		
 		// call BookPersistenceDelegators delegate method to handle persist
 		IDelegatorOutput bpdOutput = bpd.delegate();
-		output = bpdOutput.getStatusMessage();
+		String output = bpdOutput.getStatusMessage();
+		
+		log.info("Returning " + output);
 		
 		return "OIOI";
 	}
@@ -55,14 +55,14 @@ public class BookGrabber implements IBookGrabber{
 	 * searchcriteria: 1 to n tags
 	 */
 	@Override
-	public Books getBooksByTag(String[] tag) {
+	public Books getBooksByTag(Tags tags) {
 		
 		// setup input object
 		PersistenceDelegatorInput input = 
 				(PersistenceDelegatorInput) SpringContext.context.getBean("persistenceDelegatorInput");
 		
 		input.setType(PersistenceTypeEnum.READ);
-		input.setInputObject(tag[0]);
+		input.setInputObject(tags);
 		
 		// initialize BookPersistenceDelegator
 		bpd.initialize(input);

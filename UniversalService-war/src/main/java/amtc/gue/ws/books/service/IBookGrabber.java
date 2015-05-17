@@ -8,6 +8,7 @@ import javax.jws.soap.SOAPBinding.Style;
 import javax.jws.soap.SOAPBinding.Use;
 
 import amtc.gue.ws.books.service.inout.Books;
+import amtc.gue.ws.books.service.inout.Tags;
 
 /**
  * Webservice interface that can be implemented by several 
@@ -33,6 +34,6 @@ public interface IBookGrabber {
 	 * @return list of items
 	 */
 	@WebMethod(operationName = "getBooksByTag")
-	public Books getBooksByTag(@WebParam(name = "searchTags") String[] tag);
+	public Books getBooksByTag(@WebParam(name = "searchTags") Tags tags);
 	
 }

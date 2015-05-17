@@ -30,6 +30,11 @@ import amtc.gue.ws.jaxws.SayHelloResponse;
 
 public class HelloWorldServlet extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// logger
 	private static final Logger log = Logger.getLogger(HelloWorldServlet.class.getName());
 	
@@ -68,6 +73,7 @@ public class HelloWorldServlet extends HttpServlet {
 
 	public MimeHeaders getHeaders(HttpServletRequest request) {
 		MimeHeaders retval = new MimeHeaders();
+		@SuppressWarnings("unchecked")
 		Enumeration<String> headerNames = request.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			String name = headerNames.nextElement();
@@ -82,6 +88,7 @@ public class HelloWorldServlet extends HttpServlet {
 
 	protected SOAPMessage handleSOAPRequest(SOAPMessage request)
 			throws SOAPException, JAXBException {
+		@SuppressWarnings("rawtypes")
 		Iterator iter = request.getSOAPBody().getChildElements();
 		Object respPojo = null;
 		while (iter.hasNext()) {
