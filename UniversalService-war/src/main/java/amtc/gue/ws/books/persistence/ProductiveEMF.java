@@ -9,7 +9,7 @@ import javax.persistence.Persistence;
  * @author Thomas
  *
  */
-public class ProductiveEMF{
+public class ProductiveEMF implements EMF {
 	
 	/**	EntityManagerFactory for gae-jpa persistence unit */
 	private static final EntityManagerFactory emfInstance = 
@@ -22,6 +22,12 @@ public class ProductiveEMF{
 		
 	}
 	
+	/**
+	 * Method returning the instance of the productive EntitiyManagerFactory
+	 * 
+	 * @return the EntityManagerFactory Instance
+	 */
+	@Override
 	public EntityManagerFactory getEntityManagerFactory(){
 		return emfInstance;
 	}

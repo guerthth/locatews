@@ -20,6 +20,7 @@
 		<!-- <appengine.target.version>1.8.3</appengine.target.version> -->
 		<appengine.target.version>1.9.19</appengine.target.version>
 		<spring.version>4.1.6.RELEASE</spring.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
 	<build>
@@ -52,8 +53,35 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>UniversalService-war</module>
-		<module>UniversalService-ear</module>
-	</modules>
+
+	<!-- using profiles for site creation -->
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>UniversalService-war</module>
+				<module>UniversalService-ear</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>writeDoc</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<configuration>
+							<locales>en,de</locales>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

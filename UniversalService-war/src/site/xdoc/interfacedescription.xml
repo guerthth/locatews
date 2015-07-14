@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+		<title>Interfacedescription</title>
+		<author>Thomas</author>
+	</properties>
+	<body>
+	    <section name = "Description of the service interface">
+	        <p>
+	            
+	            Since the UniversalService is a SOAP webservice, the interface is described in form of 
+	            a WSDL File. In general, the service provides methods that can be called by its clients. 
+	            Each method has input paramters of a specific type and expected outcome parameters. 
+	            Including that type of information in the interface description ensures that each client
+	            using the service exactly knows what can be expected from the webmethod calls. 
+	            <br/>
+	            <br/>
+	            As of now, two webmethods are supported: 
+	        </p>
+	        <ol>
+	            <li><b>addBooks: </b> Method enabling clients to transmit books to the service. Those books
+	                are then persisted in the datastore.</li>
+	            <li><b>getBooksByTag: </b>Method that gives users the possibility to search for books in the
+	                datastore based on specified tags. If books, that possess those tags, are found by the service, 
+	                these items are returned to the client.</li>
+	        </ol>
+	    </section>
+	</body>
+</document>

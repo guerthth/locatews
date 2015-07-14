@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.6.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.6.0 http://maven.apache.org/xsd/decoration-1.6.0.xsd">
+  <bannerLeft>
+    <name>Maven</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://maven.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://maven.apache.org/images/maven-small.gif</src>
+  </bannerRight>
+  
+  <!-- Specify skin of site documentation -->
+  <skin>
+      <groupId>org.apache.maven.skins</groupId>
+      <!-- Default -->
+      <artifactId>maven-default-skin</artifactId>  
+      <version>1.1</version>
+  </skin>
+  
+  <!-- Publish date -->
+  <publishDate position="right"/>
+  
+  <!-- Version -->
+  <version position="right"/>
+
+  <body>
+    <links>
+      <item name="Apache" href="http://www.apache.org/" />
+      <item name="Maven 1.0" href="http://maven.apache.org/"/>
+      <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
+    </links>
+
+    <menu name="UniversalService Project">
+      <item name="Background Description" href="projectdescription.html"/>
+      <item name="Interface Description" href="interfacedescription.html"/>
+      <item name="FAQ" href="faq.html"/>
+    </menu>
+    
+    <!-- will be replaced with links to all configured reports -->
+    <menu ref="reports"></menu>
+    
+    <!-- Custom footer -->
+    
+  </body>
+</project>

@@ -2,9 +2,12 @@ package amtc.gue.ws.books.utils;
 
 import java.util.List;
 
+import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
+import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
+import amtc.gue.ws.books.service.inout.output.Status;
 
 /**
  * Class mapping objects to JPA entities
@@ -25,7 +28,7 @@ public class EntityMapper {
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		bookEntity.setTags(book.getTags());
+		bookEntity.setTags("tags|" + book.getTags());
 		bookEntity.setTitle(book.getTitle());
 		
 		return bookEntity;
@@ -47,4 +50,29 @@ public class EntityMapper {
 		return bookEntityList;
 	}
 	
+	/**
+	 * Method mapping a business delegator output to a service response
+	 * 
+	 * @param bdOutput business output of a business delegator
+	 * @return mapped service response object
+	 */
+	public static BookServiceResponse mapBdOutputToServiceResponse(IDelegatorOutput bdOutput){
+		
+		// create the status object
+		Status status = new Status();
+		status.setStatusMessage(bdOutput.getStatusMessage());
+		status.setStatusCode(bdOutput.getStatusCode());
+		
+		// create Service Response
+		BookServiceResponse serviceResponse = new BookServiceResponse();
+		serviceResponse.setStatus(status);
+		
+		if(bdOutput.getOutputObject() instanceof Books){
+			serviceResponse.setBook((Books)bdOutput.getOutputObject());
+		} else {
+			serviceResponse.setBook(null);
+		}
+		
+		return serviceResponse;
+	}
 }

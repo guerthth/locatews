@@ -4,9 +4,14 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
  
-    <!-- EMF -->
+    <!-- ProductiveEMF -->
 	<bean id="emf"
 	    class="amtc.gue.ws.books.persistence.ProductiveEMF">
+	</bean>
+	
+	<!-- TestEMF -->
+	<bean id="testEmf"
+	    class="amtc.gue.ws.books.persistence.TestEMF">
 	</bean>
     
     <!-- BookPersistenceDelegator -->
@@ -26,7 +31,7 @@
 	
 	<!-- BookEntityDAOImpl -->
 	<bean id="bookEntityDAOImpl"
-	    class="amtc.gue.ws.books.dao.impl.BookEntityDAOImpl">
+	    class="amtc.gue.ws.books.persistence.dao.impl.BookEntityDAOImpl">
 	    
 	    <!-- emf instance used as constructor input -->
 	    <constructor-arg>
@@ -35,13 +40,13 @@
 	</bean>
 	
 	<!-- BookEntityDAOTestImpl for Testing -->
-<!-- 	<bean id="bookEntityTestDAOImpl" -->
-<!-- 	    class="amtc.gue.ws.books.dao.impl.BookEntityDAOImpl"> -->
+	<bean id="bookEntityTestDAOImpl"
+	    class="amtc.gue.ws.books.persistence.dao.impl.BookEntityDAOImpl">
 	    
-<!-- 	    emf instance used as constructor input -->
-<!-- 	    <constructor-arg> -->
-<!-- 	        <ref bean="testEmf" /> -->
-<!-- 	    </constructor-arg> -->
-<!-- 	</bean> -->
+	    <!-- emf instance used as constructor input -->
+	    <constructor-arg>
+	        <ref bean="testEmf" />
+	    </constructor-arg>
+	</bean>
  
 </beans>

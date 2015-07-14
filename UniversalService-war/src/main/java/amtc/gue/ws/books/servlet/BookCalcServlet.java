@@ -26,6 +26,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.dom.DOMSource;
 
 import amtc.gue.ws.books.service.BookGrabber;
+import amtc.gue.ws.books.service.IBookGrabber;
 import amtc.gue.ws.books.service.jaxws.AddBooks;
 import amtc.gue.ws.books.service.jaxws.AddBooksResponse;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTag;
@@ -47,7 +48,7 @@ public class BookCalcServlet extends HttpServlet{
 	public static final QName QNAME_ADD_BOOKS = new QName(NS, "addBooks");
 	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS, "getBooksByTag");
 
-	private final BookGrabber serviceImpl = new BookGrabber();
+	private final IBookGrabber serviceImpl = new BookGrabber();
 
 	private static final MessageFactory messageFactory;
 

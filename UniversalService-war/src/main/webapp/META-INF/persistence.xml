@@ -5,15 +5,34 @@
         http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
 	version="1.0">
 
+    <!-- persistence unit for productive usage -->
 	<persistence-unit name="gae-jpa">
 		<provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
+		<class>amtc.gue.ws.books.persistence.model.BookEntity</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="datanucleus.NontransactionalRead" value="true" />
 			<property name="datanucleus.NontransactionalWrite" value="true" />
 			<property name="datanucleus.ConnectionURL" value="appengine" />
 			<property name="datanucleus.singletonEMFForName" value="true" />
 		</properties>
-
+	</persistence-unit>
+	
+	<!-- persistence unit for testing -->
+	<persistence-unit name="gae-jpa-test">
+	    <provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
+	    <class>amtc.gue.ws.books.persistence.model.BookEntity</class>
+	    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="datanucleus.NontransactionalRead" value="true" />
+			<property name="datanucleus.NontransactionalWrite" value="true" />
+			<property name="datanucleus.ConnectionURL" value="appengine" />
+			<property name="datanucleus.singletonEMFForName" value="true" />
+		
+			<property name="datanucleus.appengine.datastoreReadConsistency" value="EVENTUAL"/>
+			<property name="javax.persistence.query.timeout" value="5000"/>
+			<property name="datanucleus.datastoreWriteTimeout" value="10000"/>
+		</properties>
 	</persistence-unit>
 
 </persistence>

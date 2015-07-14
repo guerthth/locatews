@@ -10,6 +10,8 @@ import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
+import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
+import amtc.gue.ws.books.utils.EntityMapper;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 
@@ -29,7 +31,7 @@ public class BookGrabber implements IBookGrabber{
 	 * Method adding books to the bookstore
 	 */
 	@Override
-	public String addBooks(Books items) {
+	public BookServiceResponse addBooks(Books items) {
 		
 		// setup input object
 		PersistenceDelegatorInput input = 
@@ -43,11 +45,11 @@ public class BookGrabber implements IBookGrabber{
 		
 		// call BookPersistenceDelegators delegate method to handle persist
 		IDelegatorOutput bpdOutput = bpd.delegate();
-		String output = bpdOutput.getStatusMessage();
 		
-		log.info("Returning " + output);
+		// map delegator output to ServiceResponse
+		BookServiceResponse serviceResponse = EntityMapper.mapBdOutputToServiceResponse(bpdOutput);
 		
-		return "OIOI";
+		return serviceResponse;
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class BookGrabber implements IBookGrabber{
 	 * searchcriteria: 1 to n tags
 	 */
 	@Override
-	public Books getBooksByTag(Tags tags) {
+	public BookServiceResponse getBooksByTag(Tags tags) {
 		
 		// setup input object
 		PersistenceDelegatorInput input = 
@@ -67,7 +69,13 @@ public class BookGrabber implements IBookGrabber{
 		// initialize BookPersistenceDelegator
 		bpd.initialize(input);
 		
-		return null;
+		// call BookPersistencedelegators delegate method to handle retrieval of existing books
+		IDelegatorOutput bpdOutput = bpd.delegate();
+		
+		// map delegator output to ServiceResponse
+		BookServiceResponse serviceResponse = EntityMapper.mapBdOutputToServiceResponse(bpdOutput);
+		
+		return serviceResponse;
 	}	
 	
 }
