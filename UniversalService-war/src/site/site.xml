@@ -35,6 +35,7 @@
     <menu name="UniversalService Project">
       <item name="Background Description" href="projectdescription.html"/>
       <item name="Interface Description" href="interfacedescription.html"/>
+	  <item name="Known Issues" href="knownIssues.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
     

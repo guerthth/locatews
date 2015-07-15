@@ -88,9 +88,6 @@
 			<artifactId>datanucleus-appengine</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-		<!-- Include this if jdo is used some time -->
-		<!-- dependency> <groupId>org.datanucleus</groupId> <artifactId>datanucleus-api-jdo</artifactId> 
-			<version>${datanucleus.jpa.version}</version> </dependency -->
 
 		<!-- Test Dependencies -->
 		<dependency>
@@ -107,30 +104,12 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-labs</artifactId>
-			<version>${appengine.target.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-tools-sdk</artifactId>
-			<version>${appengine.target.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.appengine</groupId>
-			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>${appengine.target.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>junit</groupId> -->
+		<!-- <artifactId>junit</artifactId> -->
+		<!-- <version>4.12</version> -->
+		<!-- <scope>test</scope> -->
+		<!-- </dependency> -->
 
 		<!-- Spring dependencies -->
 		<dependency>
@@ -160,7 +139,6 @@
 					</webResources>
 				</configuration>
 			</plugin>
-
 			<!-- Datanucleus -->
 			<plugin>
 				<groupId>org.datanucleus</groupId>
@@ -182,7 +160,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
 			<!-- mvn site -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -193,7 +171,7 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<reporting>
 		<plugins>
 			<!-- <plugin> -->

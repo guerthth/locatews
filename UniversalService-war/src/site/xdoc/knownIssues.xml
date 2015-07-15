@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+	<properties>
+		<title>Known Issues / Experienced Problems</title>
+		<author>Thomas</author>
+	</properties>
+
+	<body>
+		<section name="Known issues">
+		
+			<subsection name="Application only works locally">
+				<ol>
+					<li>
+						Everytime new feature should be tested in the local environment. In order to do so, the devserver 
+						comes with the appengine maven plugin is used. Starting the server in the commandline with the command 
+						<b>mvn appengine:devserver</b> starts the server which can then be accessed in the web browser of choice 
+						by invoking <i>http://localhost:8080</i>. Since we are testing a webservice, 
+						<i>http://localhost:8080/BookServiceService</i> has to be called using SoapUI 
+						(<a href="http://soapui.org/">SoapUI homepage</a>).
+					</li>
+					<li>
+						Even if the service works on the devserver, it is not guaranteed that it also works after uploading 
+						it to google app engine using <b>mvn appengine:update</b>. Therefore, it is important to test the functionality 
+						immediately after uploading a new version of the service. If the requests to 
+						<i>https://theuniversalwebservice.appspot.com/BookServiceService</i> are not working anymore, the following 
+						steps can be undertaken: 
+						<ul>
+							<li>Remove all installed maven jars in the .m2 folder. This can solve the issue of interfering 
+							dependencies. After removing the content on the folder, rerun <i>mvn clean install</i> which 
+							triggers the new installation of only needed dependencies.</li>
+							<li>If no further steps help, check the versions of the service on 
+							<a href="https://appengine.google.com/">https://appengine.google.com/</a>. Set another version as default 
+							and delete the old version. After that rerun <i>mvn clean install</i>.</li>
+						</ul>
+					</li>
+				</ol>
+			</subsection>
+			<!--  
+			<p>
+				<img alt="BookGrabber_Classdiagramm" src="images/bookgrabber_cd.png"
+					width="100%" />
+			</p>
+			-->
+		</section>
+	</body>
+</document>
+
