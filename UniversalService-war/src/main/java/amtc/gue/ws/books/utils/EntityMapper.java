@@ -1,5 +1,6 @@
 package amtc.gue.ws.books.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
@@ -28,7 +29,7 @@ public class EntityMapper {
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		bookEntity.setTags("tags|" + book.getTags());
+		bookEntity.setTags(book.getTags());
 		bookEntity.setTitle(book.getTitle());
 		
 		return bookEntity;
@@ -41,7 +42,9 @@ public class EntityMapper {
 	 * @param bookEntityList the list of BookEntities
 	 * @return list of BookEntity objects
 	 */
-	public static List<BookEntity> mapBooksToBookList(Books books, List<BookEntity> bookEntityList){
+	public static List<BookEntity> transformBooksToBookEntities(Books books){
+		
+		List<BookEntity> bookEntityList = new ArrayList<BookEntity>();
 		
 		for(Book book : books.getBooks()){
 			bookEntityList.add(mapBookToEntity(book));

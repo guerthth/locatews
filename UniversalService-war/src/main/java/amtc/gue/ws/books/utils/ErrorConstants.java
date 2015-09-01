@@ -8,10 +8,6 @@ package amtc.gue.ws.books.utils;
  */
 public class ErrorConstants {
 	
-	/** unrecognnized persistence object */
-	public static final String UNRECOGNIZED_PERSISTENCE_OBJECT = 
-			"Persistence object type not recognized";
-	
 	/** OK statuscode for adding books */
 	public static final int ADD_BOOK_SUCCESS_CODE = 10;
 	
@@ -21,6 +17,9 @@ public class ErrorConstants {
 	/** message for adding books */
 	public static final String ADD_BOOK_SUCCESS_MSG = "Added books";
 	
+	/** message for failed adding of books */
+	public static final String ADD_BOOK_FAILURE_MSG = "Adding books failed";
+	
 	/** OK statuscode for retrieving books */
 	public static final int RETRIEVE_BOOK_SUCCESS_CODE = 12;
 	
@@ -29,5 +28,15 @@ public class ErrorConstants {
 	
 	/** message for retrieving books */
 	public static final String RETRIEVE_BOOK_SUCCESS_MSG = "Retrieved books";
+	
+	/** fail message for retrieving books */
+	public static final String RETRIEVE_BOOK_FAILURE_MSG = "Retrieving books failed";
+	
+	/** unrecognnized persistence object */
+	public static final String UNRECOGNIZED_PERSISTENCE_OBJECT_MSG = 
+			"Persistence object type not recognized";
+	
+	/** statuscode for unrecognnized persistence object */
+	public static final int UNRECOGNIZED_PERSISTENCE_OBJECT_CODE = 14;
 	
 }

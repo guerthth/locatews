@@ -20,7 +20,9 @@
 		<!-- <appengine.target.version>1.9.19</appengine.target.version> -->
 		<appengine.target.version>1.9.22</appengine.target.version>
 		<spring.version>4.1.6.RELEASE</spring.version>
-		<!--<junit.version>4.12</junit.version>-->
+		<junit.version>4.12</junit.version>
+		<easymock.version>3.3.1</easymock.version>
+		<cobertura.version>2.7</cobertura.version>
 	</properties>
 
 	<build>
@@ -32,6 +34,11 @@
 					<version>${appengine.target.version}</version>
 					<configuration>
 						<enableJarClasses>false</enableJarClasses>
+						<jvmFlags>
+							<jvmFlag>-Xdebug</jvmFlag>
+							<jvmFlag>-Xrunjdwp:transport=dt_socket,address=8080,server=y,suspend=y</jvmFlag>
+						</jvmFlags>
+						<disableUpdateCheck>true</disableUpdateCheck>
 					</configuration>
 				</plugin>
 				<plugin>

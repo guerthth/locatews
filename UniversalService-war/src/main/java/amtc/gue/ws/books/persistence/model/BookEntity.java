@@ -12,7 +12,7 @@ import javax.persistence.Id;
  *
  */
 @Entity
-public class BookEntity {
+public class BookEntity extends PersistenceEntity{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -69,7 +69,8 @@
 			<artifactId>datanucleus-core</artifactId>
 			<scope>runtime</scope>
 			<!-- version>3.2.7</version -->
-			<version>3.1.5</version>
+			<!-- <version>3.1.5</version> -->
+			<version>3.1.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.datanucleus</groupId>
@@ -81,7 +82,8 @@
 		<dependency>
 			<groupId>org.datanucleus</groupId>
 			<artifactId>datanucleus-api-jpa</artifactId>
-			<version>3.1.1</version>
+			<!-- <version>3.1.1</version> -->
+			<version>3.1.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.appengine.orm</groupId>
@@ -104,12 +106,25 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>junit</groupId> -->
-		<!-- <artifactId>junit</artifactId> -->
-		<!-- <version>4.12</version> -->
-		<!-- <scope>test</scope> -->
-		<!-- </dependency> -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>${easymock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.infinitest</groupId>
+			<artifactId>continuous-testing-toolkit</artifactId>
+			<version>1.0</version>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- Spring dependencies -->
 		<dependency>
@@ -160,7 +175,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!-- mvn site -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -169,9 +184,70 @@
 					<locales>en,de</locales>
 				</configuration>
 			</plugin>
+
+			<!-- JaCoCo -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.5.201505241946</version>
+				<configuration>
+					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Cobertura code coverage -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
+			<!-- <version>${cobertura.version}</version> -->
+			<!-- <configuration> -->
+			<!-- <instrumentation> -->
+			<!-- <ignores> -->
+			<!-- <ignore>amtc.gue.ws.books.persistence.model.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.delegate.persist.exception.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.service.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.service.inout.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.service.inout.output.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.service.jaxws.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.servlet.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.books.utils.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.*</ignore> -->
+			<!-- <ignore>amtc.gue.ws.jaxws.*</ignore> -->
+			<!-- </ignores> -->
+			<!-- <excludes> -->
+			<!-- <exclude>amtc/gue/ws/books/persistence/model/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/delegate/persist/exception/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/service/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/service/inout/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/service/inout/output/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/service/jaxws/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/servlet/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/books/utils/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/*.class</exclude> -->
+			<!-- <exclude>amtc/gue/ws/jaxws/*.class</exclude> -->
+			<!-- </excludes> -->
+			<!-- </instrumentation> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 		</plugins>
 	</build>
-	
+
 	<reporting>
 		<plugins>
 			<!-- <plugin> -->
@@ -183,12 +259,33 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>2.18.1</version>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<argLine>${surefireArgLine}</argLine>
+					<!-- Skips unit tests if the value of skip.unit.tests property is true -->
+					<skipTests>false</skipTests>
+					<!-- Excludes integration tests when unit tests are run. -->
+					<excludes>
+						<exclude>**/IT*.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.1</version>
 			</plugin>
+			<!-- <plugin> -->
+			<!-- <groupId>org.codehaus.mojo</groupId> -->
+			<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
+			<!-- <version>${cobertura.version}</version> -->
+			<!-- <configuration> -->
+			<!-- <formats> -->
+			<!-- <format>html</format> -->
+			<!-- <format>xml</format> -->
+			<!-- </formats> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
 		</plugins>
 	</reporting>
 

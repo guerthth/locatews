@@ -7,6 +7,7 @@ import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
+import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 
 /**
  * Abstract Persistance Delegator class
@@ -22,13 +23,20 @@ public abstract class AbstractPersistanceDelegator implements IDelegator{
 	/** PersistenceDelegatorInput */
 	protected PersistenceDelegatorInput persistenceInput;
 	
+	/** DAOImplementation used by the deletator */
+	protected BookDAO daoImpl;
+	
 	/**
 	 * initialize EntitiyManagerFactory Instance
+	 * 
+	 * @param input the input object
+	 * @param daoImpl the used DAO Implementation
 	 */
-	public void initialize(PersistenceDelegatorInput input){
+	public void initialize(PersistenceDelegatorInput input, BookDAO daoImpl){
 		
-		// set persistenceDelegatorInput
+		// set persistenceDelegatorInput and DAO Implementation
 		this.persistenceInput = input;
+		this.daoImpl = daoImpl;
 			
 	}
 	

@@ -25,8 +25,8 @@
 	</bean>
 	
 	<!-- BookEntityDAOImpl -->
-	<bean id="bookEntityDAOImpl"
-	    class="amtc.gue.ws.books.persistence.dao.impl.BookEntityDAOImpl">
+	<bean id="bookDAOImpl"
+	    class="amtc.gue.ws.books.persistence.dao.book.impl.BookDAOImpl">
 	    
 	    <!-- emf instance used as constructor input -->
 	    <constructor-arg>
