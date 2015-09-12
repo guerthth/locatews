@@ -18,6 +18,7 @@ import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 
 @WebService(endpointInterface = "amtc.gue.ws.books.service.IBookGrabber")
+//@HandlerChain(file="handler-chain.xml")
 public class BookGrabber implements IBookGrabber{
 
 	// Logger

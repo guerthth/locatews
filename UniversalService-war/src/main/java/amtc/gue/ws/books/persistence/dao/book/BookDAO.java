@@ -5,6 +5,7 @@ import java.util.List;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.dao.DAO;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.service.inout.Tags;
 
 /**
  * Specific interface for BookEntities
@@ -21,5 +22,5 @@ public interface BookDAO extends DAO<BookEntity,Long> {
 	 * @return list of bookentities posessing the tag
 	 * @throws EntityRetrievalException 
 	 */
-	List<BookEntity> getBookEntityByTag(String tag) throws EntityRetrievalException;
+	List<BookEntity> getBookEntityByTag(Tags tags) throws EntityRetrievalException;
 }

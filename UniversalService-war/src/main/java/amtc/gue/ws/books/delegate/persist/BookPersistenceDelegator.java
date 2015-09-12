@@ -18,8 +18,8 @@ import amtc.gue.ws.books.utils.SpringContext;
 
 public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 
-	// logger
-	private static final Logger log = Logger.getLogger(BookPersistenceDelegator.class.getName());
+	private static final Logger log = Logger
+			.getLogger(BookPersistenceDelegator.class.getName());
 
 	// PersistenceDelegatorOutput instance
 	private IDelegatorOutput delegatorOutput;
@@ -29,21 +29,19 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 	 * delegate method persisting books to the underlying DB
 	 */
 	public IDelegatorOutput delegate() {
-
 		// create the output object
-		delegatorOutput = (PersistenceDelegatorOutput) SpringContext.context.getBean("persistenceDelegatorOutput");
-
+		delegatorOutput = (PersistenceDelegatorOutput) SpringContext.context
+				.getBean("persistenceDelegatorOutput");
 		// determine type of persistence action
 		if (persistenceInput.getType().equals(PersistenceTypeEnum.ADD)) {
 
-			persistBook(); 
+			persistBook();
 		} else if (persistenceInput.getType().equals(PersistenceTypeEnum.READ)) {
 
 			retrieveBooksByTag();
 		} else {
 			setUnrecognizedInputDelegatorOutput();
 		}
-
 		return delegatorOutput;
 	}
 
@@ -51,14 +49,15 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 	 * Persist the bookentity
 	 */
 	private void persistBook() {
-		
+
 		log.info("ADD action triggered");
 
 		// initialize delegatoroutput status
 		delegatorOutput.setStatusCode(ErrorConstants.ADD_BOOK_SUCCESS_CODE);
-		
+
 		// transfor inputobejct to bookentities bookentities
-		List<BookEntity> bookList = transformBooksToBookEntities(persistenceInput.getInputObject());
+		List<BookEntity> bookList = transformBooksToBookEntities(persistenceInput
+				.getInputObject());
 
 		// list of bookIds
 		List<String> bookIds = new ArrayList<String>();
@@ -67,25 +66,28 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 		for (BookEntity bookEntity : bookList) {
 			BookEntity persistedBook;
 			try {
-
 				persistedBook = daoImpl.persistEntity(bookEntity);
 				bookIds.add("" + persistedBook.getId() + "");
 				log.info("Book added to DB with id: " + persistedBook.getId());
-
 			} catch (EntityPersistenceException e) {
-				log.severe("Error while trying to persist: '" + bookEntity.getTitle() + "'");
-				delegatorOutput.setStatusCode(ErrorConstants.ADD_BOOK_FAILURE_CODE);
-				delegatorOutput.setStatusMessage(ErrorConstants.ADD_BOOK_FAILURE_MSG);
+				log.severe("Error while trying to persist: '"
+						+ bookEntity.getTitle() + "'");
+				delegatorOutput
+						.setStatusCode(ErrorConstants.ADD_BOOK_FAILURE_CODE);
+				delegatorOutput
+						.setStatusMessage(ErrorConstants.ADD_BOOK_FAILURE_MSG);
 			}
 		}
 
 		// set delegatorOutput
-		if(delegatorOutput.getStatusCode() == ErrorConstants.ADD_BOOK_SUCCESS_CODE){
-			delegatorOutput.setStatusMessage(ErrorConstants.ADD_BOOK_SUCCESS_MSG + ": " + bookIds.toString());
+		if (delegatorOutput.getStatusCode() == ErrorConstants.ADD_BOOK_SUCCESS_CODE) {
+			delegatorOutput
+					.setStatusMessage(ErrorConstants.ADD_BOOK_SUCCESS_MSG
+							+ ": " + bookIds.toString());
 			delegatorOutput.setOutputObject(persistenceInput.getInputObject());
 		}
 	}
-	
+
 	/**
 	 * Retrieve BookEntities by tag
 	 */
@@ -98,24 +100,27 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 			Tags searchTags = (Tags) persistenceInput.getInputObject();
 
 			// initialize delegatoroutput status
-			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
+			delegatorOutput
+					.setStatusCode(ErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
 
 			List<BookEntity> books = new ArrayList<BookEntity>();
 			try {
-				for (String tagName : searchTags.getTags()) {
-					books.addAll(daoImpl.getBookEntityByTag(tagName));
-				}
+				books = daoImpl.getBookEntityByTag(searchTags);
 
-				String outputMessage = "Books retrieved for tag '" + persistenceInput.getInputObject() + "': " + books.toString();
+				String outputMessage = "Books retrieved for tag '"
+						+ persistenceInput.getInputObject() + "': "
+						+ books.toString() + ". " + books.size()
+						+ " Entities were found.";
 				log.info(outputMessage);
 
 				// set delegator output
 				delegatorOutput.setStatusMessage(outputMessage);
-				delegatorOutput.setOutputObject(books);
+				delegatorOutput.setOutputObject(EntityMapper.transformBookEntitiesToBooks(books));
 			} catch (EntityRetrievalException e) {
-				log.severe("Error while trying to retrieve book with tag: '" + persistenceInput.getInputObject()
-						+ "'");
-				delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_BOOK_FAILURE_CODE);
+				log.severe("Error while trying to retrieve book with tag: '"
+						+ persistenceInput.getInputObject() + "'");
+				delegatorOutput
+						.setStatusCode(ErrorConstants.RETRIEVE_BOOK_FAILURE_CODE);
 			}
 		} else {
 			setUnrecognizedInputDelegatorOutput();
@@ -139,7 +144,6 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 		// check if the input object of the delegatorInput are a list of
 		// BookEntities
 		if (inputObject instanceof Books) {
-
 			books = (Books) inputObject;
 			bookEntityList = EntityMapper.transformBooksToBookEntities(books);
 		} else {
@@ -147,15 +151,15 @@ public class BookPersistenceDelegator extends AbstractPersistanceDelegator {
 		}
 		return bookEntityList;
 	}
-	
+
 	/**
-	 * Method setting the delegator output due to unrecognized
-	 * input type
+	 * Method setting the delegator output due to unrecognized input type
 	 */
 	private void setUnrecognizedInputDelegatorOutput() {
 		log.severe(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_MSG);
-		delegatorOutput.setStatusCode(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_CODE);
-		delegatorOutput.setStatusMessage(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_MSG);
+		delegatorOutput
+				.setStatusCode(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_CODE);
+		delegatorOutput
+				.setStatusMessage(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_MSG);
 	}
-
 }

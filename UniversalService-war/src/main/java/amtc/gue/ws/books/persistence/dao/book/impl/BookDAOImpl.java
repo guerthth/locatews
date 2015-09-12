@@ -11,10 +11,11 @@ import amtc.gue.ws.books.persistence.EMF;
 import amtc.gue.ws.books.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.service.inout.Tags;
+import amtc.gue.ws.books.utils.BookDAOImplUtils;
 
 /**
- * Book DAO Implementation
- * Includes methods specifically for bookentities
+ * Book DAO Implementation Includes methods specifically for bookentities
  * 
  * @author Thomas
  *
@@ -22,17 +23,18 @@ import amtc.gue.ws.books.persistence.model.BookEntity;
 public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
 	/** BookEntity Selection Query for tag selection */
-	private final String BOOKENTITY_TAG_SELECTION_QUERY = "select DISTINCT be from BookEntity be WHERE be.tags = :tag";
-	
-	public BookDAOImpl(EMF emfInstance){
-		if(emfInstance != null){
+	private final String BOOKENTITY_SELECTION_QUERY = "select be from BookEntity be";
+
+	public BookDAOImpl(EMF emfInstance) {
+		if (emfInstance != null) {
 			this.entityManagerFactory = emfInstance.getEntityManagerFactory();
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<BookEntity> getBookEntityByTag(String tag) throws EntityRetrievalException {
+	public List<BookEntity> getBookEntityByTag(Tags tags)
+			throws EntityRetrievalException {
 
 		List<BookEntity> books = new ArrayList<BookEntity>();
 
@@ -43,18 +45,19 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 			entityManager = entityManagerFactory.createEntityManager();
 
 			// read bookentites from DB that possess specific tags
-			Query q = entityManager.createQuery(BOOKENTITY_TAG_SELECTION_QUERY,
-					BookEntity.class).setParameter("tag", tag);
+			Query q = entityManager.createQuery(BOOKENTITY_SELECTION_QUERY,
+					BookEntity.class);
 			books = q.getResultList();
 
 		} catch (Exception e) {
-			throw new EntityRetrievalException("Retrieval of BookEntity for tag: "
-					+ tag + " failed.", e);
+			throw new EntityRetrievalException(
+					"Retrieval of BookEntity for tags: "
+							+ tags.getTags().toString() + " failed.", e);
 		} finally {
 			closeEntityManager();
 		}
 
-		return books;
+		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(books, tags);
 	}
 
 	@Override
@@ -93,5 +96,4 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 		// return the updated BookEntity
 		return updatedBookEntity;
 	}
-
 }

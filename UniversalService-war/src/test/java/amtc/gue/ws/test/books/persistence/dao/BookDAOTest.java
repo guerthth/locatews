@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -26,6 +27,7 @@ import amtc.gue.ws.books.persistence.ProductiveEMF;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.dao.book.impl.BookDAOImpl;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.service.inout.Tags;
 
 /**
  * Testclass for the Book DAO
@@ -39,10 +41,12 @@ public class BookDAOTest {
 	private static BookDAO bookEntityDAO;
 	private static BookDAO failureBookEntityDAO;
 	
+	private static List<String> searchTags;
+	private static final String searchTag1 = "testtag";
+	private static Tags tags;
+	
 	private BookEntity be1;
 	private BookEntity be2;
-
-	private final String searchTag1 = "testtag";
 
 	// top-level point configuration for all local services that might
 	// be accessed
@@ -56,6 +60,10 @@ public class BookDAOTest {
 		EMF emf = new ProductiveEMF();
 		bookEntityDAO = new BookDAOImpl(emf);
 		failureBookEntityDAO = new BookDAOImpl(null);
+		searchTags = new ArrayList<String>();
+		searchTags.add(searchTag1);
+		tags = new Tags();
+		tags.setTags(searchTags);
 	}
 	
 	@Before
@@ -244,7 +252,7 @@ public class BookDAOTest {
 			// add be1 and be2 and search for searchTag1
 			bookEntityDAO.persistEntity(be1);
 			bookEntityDAO.persistEntity(be2);
-			List<BookEntity> foundBooks = bookEntityDAO.getBookEntityByTag(searchTag1);
+			List<BookEntity> foundBooks = bookEntityDAO.getBookEntityByTag(tags);
 			assertEquals(2,foundBooks.size());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -256,14 +264,14 @@ public class BookDAOTest {
 	@Test
 	public void testGetEntityByTag2() throws EntityRetrievalException{
 		// search for searchTag1 without adding anything to the store
-		List<BookEntity> foundBooks = bookEntityDAO.getBookEntityByTag(searchTag1);
+		List<BookEntity> foundBooks = bookEntityDAO.getBookEntityByTag(tags);
 		assertEquals(0, foundBooks.size());
 	}
 	
 	@Test(expected = EntityRetrievalException.class)
 	public void testGetEntityByTag3() throws EntityRetrievalException {
 		// search for tag in bookentity DAO where entitymanager is null
-		failureBookEntityDAO.getBookEntityByTag(searchTag1);
+		failureBookEntityDAO.getBookEntityByTag(tags);
 	}
 
 }

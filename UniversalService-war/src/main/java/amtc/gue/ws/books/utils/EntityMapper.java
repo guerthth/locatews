@@ -1,81 +1,175 @@
 package amtc.gue.ws.books.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
+import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
 import amtc.gue.ws.books.service.inout.output.Status;
 
 /**
  * Class mapping objects to JPA entities
+ * 
  * @author Thomas
  *
  */
 public class EntityMapper {
-	
+
 	/**
 	 * Method for the mapping of Books
-	 * @param book element
+	 * 
+	 * @param book
+	 *            element
 	 * @return mapped BookEntity
 	 */
-	public static BookEntity mapBookToEntity(Book book){
-		
+	public static BookEntity mapBookToEntity(Book book) {
+
 		BookEntity bookEntity = new BookEntity();
 		bookEntity.setAuthor(book.getAuthor());
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		bookEntity.setTags(book.getTags());
+		bookEntity.setTags(mapTagsToString(book.getTags()));
 		bookEntity.setTitle(book.getTitle());
-		
+
 		return bookEntity;
 	}
-	
+
 	/**
 	 * Method to map a Books object to a list of BookEntity objects
 	 * 
-	 * @param books object containing list of Book object
-	 * @param bookEntityList the list of BookEntities
+	 * @param books
+	 *            object containing list of Book object
+	 * @param bookEntityList
+	 *            the list of BookEntities
 	 * @return list of BookEntity objects
 	 */
-	public static List<BookEntity> transformBooksToBookEntities(Books books){
-		
+	public static List<BookEntity> transformBooksToBookEntities(Books books) {
+
 		List<BookEntity> bookEntityList = new ArrayList<BookEntity>();
-		
-		for(Book book : books.getBooks()){
+
+		for (Book book : books.getBooks()) {
 			bookEntityList.add(mapBookToEntity(book));
 		}
-		
+
 		return bookEntityList;
 	}
-	
+
+	/**
+	 * Method that maps a BookEntity object to a Book object
+	 * 
+	 * @param bookEntity
+	 *            the BookEntity that should be mapped
+	 * @return the Book object
+	 */
+	public static Book mapBookEntityToBook(BookEntity bookEntity) {
+		Book book = new Book();
+		book.setAuthor(bookEntity.getAuthor());
+		book.setDescription(bookEntity.getDescription());
+		book.setISBN(bookEntity.getISBN());
+		book.setPrice(bookEntity.getPrice());
+		book.setTags(mapTagStringToTags(bookEntity.getTags()));
+		book.setTitle(bookEntity.getTitle());
+		return book;
+	}
+
+	/**
+	 * Method that maps a list of BookEntities to a Books object
+	 * 
+	 * @param books
+	 *            the list of BookEntities
+	 * @return a Books object
+	 */
+	public static Books transformBookEntitiesToBooks(List<BookEntity> bookEntityList) {
+		Books books = new Books();
+		List<Book> bookList = new ArrayList<Book>();
+		for(BookEntity bookEntity : bookEntityList){
+			bookList.add(mapBookEntityToBook(bookEntity));
+		}
+		books.setBooks(bookList);
+		return books;
+	}
+
 	/**
 	 * Method mapping a business delegator output to a service response
 	 * 
-	 * @param bdOutput business output of a business delegator
+	 * @param bdOutput
+	 *            business output of a business delegator
 	 * @return mapped service response object
 	 */
-	public static BookServiceResponse mapBdOutputToServiceResponse(IDelegatorOutput bdOutput){
-		
+	public static BookServiceResponse mapBdOutputToServiceResponse(
+			IDelegatorOutput bdOutput) {
+
 		// create the status object
 		Status status = new Status();
 		status.setStatusMessage(bdOutput.getStatusMessage());
 		status.setStatusCode(bdOutput.getStatusCode());
-		
+
 		// create Service Response
 		BookServiceResponse serviceResponse = new BookServiceResponse();
 		serviceResponse.setStatus(status);
-		
-		if(bdOutput.getOutputObject() instanceof Books){
-			serviceResponse.setBook((Books)bdOutput.getOutputObject());
+
+		if (bdOutput.getOutputObject() instanceof Books) {
+			serviceResponse.setBook((Books) bdOutput.getOutputObject());
 		} else {
 			serviceResponse.setBook(null);
 		}
-		
+
 		return serviceResponse;
+	}
+
+	/**
+	 * Method taking a Tags object and returning the tags as one String
+	 * seperated by |
+	 * 
+	 * @param tags
+	 *            the Tags object that should be transformed to a String
+	 * @return the transformed tagstring
+	 */
+	public static String mapTagsToString(Tags tags) {
+		StringBuilder sb = new StringBuilder();
+		if (tags != null && tags.getTags() != null) {
+			for (String tag : tags.getTags()) {
+				sb.append(removeSpecialCharacters(tag)).append(",");
+			}
+			String tagString = sb.toString();
+			return tagString.substring(0, tagString.length() - 1);
+		} else
+			return null;
+	}
+
+	/**
+	 * Method removing special characters from a string
+	 * 
+	 * @param tag
+	 *            the tag which should be cleaned of special characters
+	 * @return the string without special characters
+	 */
+	public static String removeSpecialCharacters(String tag) {
+		return tag.replace(",", "");
+	}
+
+	/**
+	 * Method taking a String of tags and transforms it into a Tags object
+	 * 
+	 * @param tags
+	 *            the String containing all the tags
+	 * @return the Tags object
+	 */
+	public static Tags mapTagStringToTags(String tagString) {
+		Tags tags = new Tags();
+		List<String> tagList;
+		if(tagString != null){
+			tagList = Arrays.asList(tagString.split(","));
+		}else {
+			tagList = new ArrayList<String>();
+		}
+		tags.setTags(tagList);
+		return tags;
 	}
 }

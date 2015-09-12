@@ -8,40 +8,129 @@
 
 	<body>
 		<section name="Known issues">
-		
+
 			<subsection name="Application only works locally">
 				<ol>
 					<li>
-						Everytime new feature should be tested in the local environment. In order to do so, the devserver 
-						comes with the appengine maven plugin is used. Starting the server in the commandline with the command 
-						<b>mvn appengine:devserver</b> starts the server which can then be accessed in the web browser of choice 
-						by invoking <i>http://localhost:8080</i>. Since we are testing a webservice, 
-						<i>http://localhost:8080/BookServiceService</i> has to be called using SoapUI 
-						(<a href="http://soapui.org/">SoapUI homepage</a>).
+						Everytime new feature should be tested in the local environment.
+						In order to do so, the devserver
+						comes with the appengine maven
+						plugin is used. Starting the server in
+						the commandline with the
+						command
+						<b>mvn appengine:devserver</b>
+						starts the server which can then be accessed in the web browser of
+						choice
+						by invoking
+						<i>http://localhost:8080</i>
+						. Since we are testing a webservice,
+						<i>http://localhost:8080/BookServiceService</i>
+						has to be called using SoapUI
+						(
+						<a href="http://soapui.org/">SoapUI homepage</a>
+						). A more detailled description on how the webservice can
+						be
+						debugged on the devserver can the found in the
+						<a href="#serviceDebugging"></a>
+						.
 					</li>
 					<li>
-						Even if the service works on the devserver, it is not guaranteed that it also works after uploading 
-						it to google app engine using <b>mvn appengine:update</b>. Therefore, it is important to test the functionality 
-						immediately after uploading a new version of the service. If the requests to 
-						<i>https://theuniversalwebservice.appspot.com/BookServiceService</i> are not working anymore, the following 
-						steps can be undertaken: 
+						Even if the service works on the devserver, it is not guaranteed
+						that it also works after uploading
+						it to google app engine using
+						<b>mvn appengine:update</b>
+						. Therefore, it is important to test the functionality
+						immediately
+						after uploading a new version of the service. If the requests to
+						<i>https://theuniversalwebservice.appspot.com/BookServiceService
+						</i>
+						are not working anymore, the following
+						steps can be undertaken:
 						<ul>
-							<li>Remove all installed maven jars in the .m2 folder. This can solve the issue of interfering 
-							dependencies. After removing the content on the folder, rerun <i>mvn clean install</i> which 
-							triggers the new installation of only needed dependencies.</li>
-							<li>If no further steps help, check the versions of the service on 
-							<a href="https://appengine.google.com/">https://appengine.google.com/</a>. Set another version as default 
-							and delete the old version. After that rerun <i>mvn clean install</i>.</li>
+							<li>
+								Remove all installed maven jars in the .m2 folder. This can
+								solve the issue of interfering
+								dependencies. After removing the
+								content on the folder, rerun
+								<i>mvn clean install</i>
+								which
+								triggers the new installation of only needed dependencies.
+							</li>
+							<li>
+								If no further steps help, check the versions of the service on
+								<a href="https://appengine.google.com/">https://appengine.google.com/</a>
+								. Set another version as default
+								and delete the old version.
+								After that rerun
+								<i>mvn clean install</i>
+								.
+							</li>
 						</ul>
 					</li>
 				</ol>
 			</subsection>
-			<!--  
-			<p>
-				<img alt="BookGrabber_Classdiagramm" src="images/bookgrabber_cd.png"
-					width="100%" />
-			</p>
-			-->
+			<subsection name="Debugging the webservice on devserver"
+				id="serviceDebugging">
+				<p>
+					As mentioned in the prvious sections, the functionality of the
+					webservice can be tested locally by using
+					the devserver which is
+					started with the mvn command
+					<i>mvn appengine:devserver</i>
+					. Besides invoking that
+					command from the commandline, one can also
+					import the project in an IDE
+					(e.g. eclise) and start the server
+					from
+					the UI.
+				</p>
+				<p>
+					If a maven project is imported to eclipse, it is also possible to
+					debug the GAE SOAP webservice quite easily.
+					However, there are some
+					configurations that have to be done in eclipse
+					before being able to
+					do so. Details
+					on that can be found
+					<a href="https://cloud.google.com/appengine/docs/java/tools/maven">here</a>
+					and
+					<a
+						href="http://stackoverflow.com/questions/13924990/how-do-i-make-eclipse-and-mvn-appenginedevserver-talk-to-each-other">here</a>
+					.
+					The neccessary steps are summarized in the following.
+				</p>
+				<ol>
+					<li>
+						Setup / import the maven GAE project.
+					</li>
+					<li>
+						Setup one debug configuration in eclipse that runs the
+						<i>appengine:devserver</i>
+						maven target.
+					</li>
+					<li>
+						Setup a second debug configuration that will connect the debug
+						client to the devserver jvm. This
+						debug configuration is a
+						<i>Remote Java Application</i>
+						configuration.
+					</li>
+					<li>
+						In order to make debugging work, some jvm args have to be
+						passed to
+						the maven goal. This can be achieved by adding the
+						follwing in the
+						pom File. <!-- POM section for GAE webservice debugging -->
+						<img alt="Debugging_GAE_Webservice" src="images/debugging_pomsection.png"
+							width="80%" />
+					</li>
+				</ol>
+				<p>After those steps have been taken, run the maven debug
+					configuration, then run the debug client configuration, and then
+					exercise the application. This can be done by using e.g. SOAP-UI
+					and sending requests to the locally runnung webservice. The used
+					port has to be the same as defined in the pom file.</p>
+			</subsection>
 		</section>
 	</body>
 </document>

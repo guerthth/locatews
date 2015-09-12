@@ -1,5 +1,6 @@
 package amtc.gue.ws.books.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +33,7 @@ import amtc.gue.ws.books.service.jaxws.AddBooksResponse;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTag;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTagResponse;
 
-public class BookCalcServlet extends HttpServlet{
+public class BookCalcServlet extends HttpServlet {
 	/**
 	 * 
 	 */
@@ -46,7 +47,11 @@ public class BookCalcServlet extends HttpServlet{
 	public static final String NS = "http://service.books.ws.gue.amtc/";
 	/** qualified name for sayHello operation request element */
 	public static final QName QNAME_ADD_BOOKS = new QName(NS, "addBooks");
-	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS, "getBooksByTag");
+	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS,
+			"getBooksByTag");
+
+	private static final String INCOMING_SOAP_REQUEST = "Incoming SOAP Request: ";
+	private static final String OUTGOING_SOAP_RESPONSE = "Outgoing SOAP Response: ";
 
 	private final IBookGrabber serviceImpl = new BookGrabber();
 
@@ -56,13 +61,13 @@ public class BookCalcServlet extends HttpServlet{
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		log.info("Request in BookCalcServlet received.");
-
 		try {
 			MimeHeaders headers = getHeaders(request);
 			InputStream in = request.getInputStream();
 			SOAPMessage soapReq = messageFactory.createMessage(headers, in);
+			logMessage(soapReq, true);
 			SOAPMessage soapResp = handleSOAPRequest(soapReq);
+			logMessage(soapResp, false);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("text/xml;charset=\"UTF-8\"");
 			OutputStream out = response.getOutputStream();
@@ -97,12 +102,12 @@ public class BookCalcServlet extends HttpServlet{
 		Object respPojo = null;
 		while (iter.hasNext()) {
 
-			log.info("Iterating through child elements.");
+//			log.info("Iterating through child elements.");
 
 			// find first Element child
 			Object child = iter.next();
 			if (child instanceof SOAPElement) {
-				log.info("SOAP element found!: " + child);
+//				log.info("SOAP element found!: " + child);
 				respPojo = handleSOAPRequestElement((SOAPElement) child);
 				break;
 			}
@@ -124,13 +129,13 @@ public class BookCalcServlet extends HttpServlet{
 		QName reqName = reqElem.getElementQName();
 		if (QNAME_ADD_BOOKS.equals(reqName)) {
 
-			log.info("Adding books webservice method called.");
+//			log.info("Adding books webservice method called.");
 
 			return handleAddBooks(JAXB.unmarshal(new DOMSource(reqElem),
 					AddBooks.class));
 		} else if (QNAME_GET_BOOKS_BY_TAG.equals(reqName)) {
 
-			log.info("getting books by tags webservice method called.");
+//			log.info("getting books by tags webservice method called.");
 
 			return handleGetBooksByTags(JAXB.unmarshal(new DOMSource(reqElem),
 					GetBooksByTag.class));
@@ -140,20 +145,49 @@ public class BookCalcServlet extends HttpServlet{
 
 	protected AddBooksResponse handleAddBooks(AddBooks request) {
 
-		log.info("Building addBooksResponse. With: " + request);
+//		log.info("Building addBooksResponse. With: " + request);
 
 		AddBooksResponse response = new AddBooksResponse();
 		response.setReturn(serviceImpl.addBooks(request.getInputItems()));
 		return response;
 	}
-	
-	protected GetBooksByTagResponse handleGetBooksByTags(GetBooksByTag request){
-		
-		log.info("Building getBooksByTagsResonse. With: " + request);
-		
+
+	protected GetBooksByTagResponse handleGetBooksByTags(GetBooksByTag request) {
+
+//		log.info("Building getBooksByTagsResonse. With: " + request);
+
 		GetBooksByTagResponse response = new GetBooksByTagResponse();
 		response.setReturn(serviceImpl.getBooksByTag(request.getSearchTags()));
 		return response;
+	}
+
+	/**
+	 * Method logging a soap message
+	 * 
+	 * @param soapMessage
+	 *            the soapMessage (request or response that should be logged)
+	 * @param isRequest
+	 *            boolean flag specifying if the soapmessage is a request or
+	 *            response
+	 */
+	private void logMessage(SOAPMessage soapMessage, boolean isRequest) {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		StringBuilder soapMessageStringBuilder = new StringBuilder();
+		try {
+			soapMessage.writeTo(bout);
+			if (isRequest) {
+				soapMessageStringBuilder.append(INCOMING_SOAP_REQUEST);
+			} else {
+				soapMessageStringBuilder.append(OUTGOING_SOAP_RESPONSE);
+			}
+			soapMessageStringBuilder.append(bout.toString("UTF-8"));
+		} catch (SOAPException | IOException e) {
+			e.printStackTrace();
+			soapMessageStringBuilder = new StringBuilder();
+			soapMessageStringBuilder
+					.append("Error while processing SOAPMessage");
+		}
+//		log.info(soapMessageStringBuilder.toString());
 	}
 
 	static {

@@ -18,6 +18,7 @@ import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
  *
  */
 @WebService
+//@HandlerChain(file="handler-chain.xml")
 @SOAPBinding(style = Style.DOCUMENT, use = Use.LITERAL)
 public interface IBookGrabber {
 	

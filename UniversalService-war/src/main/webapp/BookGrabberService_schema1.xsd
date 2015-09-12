@@ -57,7 +57,7 @@
           <xs:element name="author" type="xs:string"/>
           <xs:element name="price" type="xs:string"/>
           <xs:element name="ISBN" type="xs:string" nillable="true" minOccurs="0"/>
-          <xs:element name="tags" type="xs:string"/>
+          <xs:element name="tags" type="tns:tags"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

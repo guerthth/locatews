@@ -38,7 +38,7 @@ public class Book extends Item {
 	
 	// tags categorizing the book
 	@XmlElement(name = "tags", required = true, nillable = false)
-	private String tags;
+	private Tags tags;
 
 	// Getter and Setters
 	public String getTitle() {
@@ -73,11 +73,11 @@ public class Book extends Item {
 		ISBN = iSBN;
 	}
 
-	public String getTags() {
+	public Tags getTags() {
 		return tags;
 	}
 
-	public void setTags(String tags) {
+	public void setTags(Tags tags) {
 		this.tags = tags;
 	}
 	
