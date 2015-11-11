@@ -25,9 +25,13 @@ public class BookDAOImplUtils {
 				.hasNext();) {
 			BookEntity book = bookIterator.next();
 			for (String tag : searchTags.getTags()) {
-				if (book != null && book.getTags() != null
-						&& !book.getTags().contains(tag)) {
-					bookIterator.remove();
+				if (book != null) {
+					if ((book.getTags() == null)
+							|| (book.getTags() != null && !book.getTags()
+									.contains(tag))) {
+						bookIterator.remove();
+						break;
+					}
 				}
 			}
 		}

@@ -32,6 +32,7 @@ public class BookDAOImplUtilsTest {
 	private static final String BOOK_ENTITY5_TITLE = "bookEntity5";
 	private static List<BookEntity> bookList;
 	private static List<BookEntity> emptyBookList;
+	private static List<BookEntity> nullTagBookList;
 	private static Tags tags;
 	private static List<String> searchTags;
 	private static final String searchTag1 = "tag1";
@@ -68,6 +69,16 @@ public class BookDAOImplUtilsTest {
 	}
 
 	@Test
+	public void testRetrieveBookEntitiesWithNullTags() {
+		// BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(nullTagBookList,
+		// tags);
+		int resultListSize = BookDAOImplUtils
+				.retrieveBookEntitiesWithSpecificTags(nullTagBookList, tags)
+				.size();
+		assertEquals(0, resultListSize);
+	}
+
+	@Test
 	public void testRetrieveBookEntitiesWithEmptyBookList() {
 		int resultListSize = BookDAOImplUtils
 				.retrieveBookEntitiesWithSpecificTags(emptyBookList, tags)
@@ -79,8 +90,8 @@ public class BookDAOImplUtilsTest {
 	public void testCopyBookList() {
 		List<BookEntity> resultList = BookDAOImplUtils
 				.retrieveBookEntitiesWithSpecificTags(bookList, tags);
-		assertEquals(5,bookList.size());
-		assertEquals(3,resultList.size());
+		assertEquals(5, bookList.size());
+		assertEquals(3, resultList.size());
 	}
 
 	/**
@@ -89,6 +100,7 @@ public class BookDAOImplUtilsTest {
 	private static void setupBookLists() {
 		emptyBookList = new ArrayList<BookEntity>();
 		bookList = new ArrayList<BookEntity>();
+		nullTagBookList = new ArrayList<BookEntity>();
 
 		BookEntity firstBookEntity = setupBookEntityWithTags(
 				BOOK_ENTITY1_TITLE, BOOK_ENTITIY1_TAGS);
@@ -105,6 +117,10 @@ public class BookDAOImplUtilsTest {
 		BookEntity fifthBookEntity = setupBookEntityWithTags(
 				BOOK_ENTITY5_TITLE, BOOK_ENTITIY5_TAGS);
 		bookList.add(fifthBookEntity);
+
+		BookEntity bookEntityWithNullTag = setupBookEntityWithTags(
+				BOOK_ENTITY1_TITLE, null);
+		nullTagBookList.add(bookEntityWithNullTag);
 	}
 
 	/**

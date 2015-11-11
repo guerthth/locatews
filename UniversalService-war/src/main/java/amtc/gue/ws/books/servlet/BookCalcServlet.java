@@ -70,6 +70,7 @@ public class BookCalcServlet extends HttpServlet {
 			logMessage(soapResp, false);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("text/xml;charset=\"UTF-8\"");
+			addCORSHeaders(response);
 			OutputStream out = response.getOutputStream();
 			soapResp.writeTo(out);
 			out.flush();
@@ -188,6 +189,31 @@ public class BookCalcServlet extends HttpServlet {
 					.append("Error while processing SOAPMessage");
 		}
 //		log.info(soapMessageStringBuilder.toString());
+	}
+	
+	@Override
+	public void doOptions(HttpServletRequest req, HttpServletResponse resp){
+		//The following are CORS headers. Max age informs the 
+	    //browser to keep the results of this call for 1 day.
+	    resp.setHeader("Access-Control-Allow-Origin", "*");
+	    resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
+	    resp.setHeader("Access-Control-Allow-Headers", "Content-Type,soapaction");
+	    resp.setHeader("Access-Control-Max-Age", "86400");
+	    //Tell the browser what requests we allow.
+	    resp.setHeader("Allow", "GET, HEAD, POST, TRACE, OPTIONS");
+	}
+	
+	/**
+	 * MEthod adding headers to enable cross origin resource sharing
+	 * @param response the intitial response
+	 * @return the response with CORS headers
+	 */
+	protected HttpServletResponse addCORSHeaders(HttpServletResponse response) {
+		response.addHeader("Access-Control-Allow-Origin", "*");
+//		response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, soapaction");
+		response.addHeader("Access-Control-Allow-Headers", "Content-Type, soapaction");
+		response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+		return response;
 	}
 
 	static {
