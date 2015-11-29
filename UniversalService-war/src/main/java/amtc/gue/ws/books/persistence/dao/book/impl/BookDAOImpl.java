@@ -22,8 +22,11 @@ import amtc.gue.ws.books.utils.BookDAOImplUtils;
  */
 public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
-	/** BookEntity Selection Query for tag selection */
-	private final String BOOKENTITY_SELECTION_QUERY = "select be from BookEntity be";
+	/** Select specific book query */
+	private final String BOOK_SPECIFIC_QUERY = "select be from "
+			+ this.entityClass.getSimpleName()
+			+ " be where be.title = :title and be.author = :author and be.price = :price"
+			+ " and be.ISBN = :ISBN and be.tags = :tags and be.description = :description";
 
 	public BookDAOImpl(EMF emfInstance) {
 		if (emfInstance != null) {
@@ -33,21 +36,46 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public List<BookEntity> findSpecificEntity(BookEntity book)
+			throws EntityRetrievalException {
+		List<BookEntity> foundBooks = new ArrayList<BookEntity>();
+		try {
+			entityManager = entityManagerFactory.createEntityManager();
+			Query q = entityManager.createQuery(BOOK_SPECIFIC_QUERY);
+			q.setParameter("title", book.getTitle());
+			q.setParameter("author", book.getAuthor());
+			q.setParameter("price", book.getPrice());
+			q.setParameter("ISBN", book.getISBN());
+			q.setParameter("tags", book.getTags());
+			q.setParameter("description", book.getDescription());
+			foundBooks = q.getResultList();
+		} catch (Exception e) {
+			throw new EntityRetrievalException(
+					"Retrieval of specific BookEntity failed.", e);
+		} finally {
+			closeEntityManager();
+		}
+
+		return foundBooks;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	public List<BookEntity> getBookEntityByTag(Tags tags)
 			throws EntityRetrievalException {
 
-		List<BookEntity> books = new ArrayList<BookEntity>();
+		List<BookEntity> foundBooks = new ArrayList<BookEntity>();
 
 		try {
-			books = new ArrayList<BookEntity>();
+			foundBooks = new ArrayList<BookEntity>();
 
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
 
 			// read bookentites from DB that possess specific tags
-			Query q = entityManager.createQuery(BOOKENTITY_SELECTION_QUERY,
+			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
 					BookEntity.class);
-			books = q.getResultList();
+			foundBooks = q.getResultList();
 
 		} catch (Exception e) {
 			throw new EntityRetrievalException(
@@ -57,7 +85,8 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 			closeEntityManager();
 		}
 
-		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(books, tags);
+		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(
+				foundBooks, tags);
 	}
 
 	@Override

@@ -32,11 +32,23 @@ public class ErrorConstants {
 	/** fail message for retrieving books */
 	public static final String RETRIEVE_BOOK_FAILURE_MSG = "Retrieving books failed";
 	
+	/** OK statuscode for deleting books */
+	public static final int DELETE_BOOK_SUCCESS_CODE = 14;
+	
+	/** NOK statuscode for deleting books */
+	public static final int DELETE_BOOK_FAILURE_CODE = 15;
+	
+	/** message for deleting books */
+	public static final String DELETE_BOOK_SUCCESS_MSG = "Deleted book(s): ";
+	
+	/** fail message for deleting books */
+	public static final String DELETE_BOOK_FAILURE_MSG = "Deleting book(s) failed";
+	
 	/** unrecognnized persistence object */
-	public static final String UNRECOGNIZED_PERSISTENCE_OBJECT_MSG = 
-			"Persistence object type not recognized";
+	public static final String UNRECOGNIZED_INPUT_OBJECT_MSG = 
+			"Input object type not recognized";
 	
 	/** statuscode for unrecognnized persistence object */
-	public static final int UNRECOGNIZED_PERSISTENCE_OBJECT_CODE = 14;
+	public static final int UNRECOGNIZED_INPUT_OBJECT_CODE = 14;
 	
 }

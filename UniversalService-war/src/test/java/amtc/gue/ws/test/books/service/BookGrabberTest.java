@@ -64,6 +64,7 @@ public class BookGrabberTest {
 
 	@Test
 	public void testAddBooks() {
+		// TODO: Adding unit tests for the grabber service itself
 		assertTrue(true);
 	}
 

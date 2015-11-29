@@ -85,10 +85,11 @@ public class EntityMapper {
 	 *            the list of BookEntities
 	 * @return a Books object
 	 */
-	public static Books transformBookEntitiesToBooks(List<BookEntity> bookEntityList) {
+	public static Books transformBookEntitiesToBooks(
+			List<BookEntity> bookEntityList) {
 		Books books = new Books();
 		List<Book> bookList = new ArrayList<Book>();
-		for(BookEntity bookEntity : bookEntityList){
+		for (BookEntity bookEntity : bookEntityList) {
 			bookList.add(mapBookEntityToBook(bookEntity));
 		}
 		books.setBooks(bookList);
@@ -164,12 +165,76 @@ public class EntityMapper {
 	public static Tags mapTagStringToTags(String tagString) {
 		Tags tags = new Tags();
 		List<String> tagList;
-		if(tagString != null){
+		if (tagString != null) {
 			tagList = Arrays.asList(tagString.split(","));
-		}else {
+		} else {
 			tagList = new ArrayList<String>();
 		}
 		tags.setTags(tagList);
 		return tags;
+	}
+
+	/**
+	 * Method mapping a BookEntity to a JSON String
+	 * 
+	 * @param bookEntity
+	 *            the BookEntity object that should be mapped
+	 * @return the JSON String
+	 */
+	public static String mapBookEntityToJSONString(BookEntity bookEntity) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		if (bookEntity != null) {
+			sb.append("id: ");
+			String id = bookEntity.getId() != null ? bookEntity.getId() + ", "
+					: ", ";
+			sb.append(id);
+			sb.append("title: ");
+			String title = bookEntity.getTitle() != null ? bookEntity
+					.getTitle() + ", " : ",";
+			sb.append(title);
+			sb.append("author: ");
+			String author = bookEntity.getAuthor() != null ? bookEntity
+					.getAuthor() + "," : ",";
+			sb.append(author);
+			sb.append("description: ");
+			String description = bookEntity.getDescription() != null ? bookEntity
+					.getDescription() + ", "
+					: ", ";
+			sb.append(description);
+			sb.append("ISBN: ");
+			String ISBN = bookEntity.getISBN() != null ? bookEntity.getISBN()
+					+ ", " : ", ";
+			sb.append(ISBN);
+			sb.append("price: ");
+			String price = bookEntity.getPrice() != null ? bookEntity.getPrice() + ", " : ", ";
+			sb.append(price);
+			// TODO: Changes needed once the datamodel is changed
+			sb.append("tags: ");
+			String tags = bookEntity.getTags() != null ? bookEntity.getTags() + "" : "";
+			sb.append(tags);
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+	
+	/**
+	 * Method mapping a List of JSONStrings to one consolidated String
+	 * 
+	 * @param JSONStrings the list of JSONStrings that should be mapped
+	 * @return the consolidated String
+	 */
+	public static String mapJSONStringsToConsolidatedString(List<String> JSONStrings){
+		StringBuilder sb = new StringBuilder();
+		if(JSONStrings != null && JSONStrings.size() > 0){
+			int listSize = JSONStrings.size();
+			for(int i = 0;i<listSize;i++){
+				sb.append(JSONStrings.get(i));
+				if(i != listSize - 1){
+					sb.append(System.getProperty("line.separator"));
+				}
+			}
+		}
+		return sb.toString();
 	}
 }

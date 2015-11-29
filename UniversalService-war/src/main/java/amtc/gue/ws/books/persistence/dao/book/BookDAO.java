@@ -16,11 +16,12 @@ import amtc.gue.ws.books.service.inout.Tags;
 public interface BookDAO extends DAO<BookEntity,Long> {
 	
 	/**
-	 * Finding BookEntities that posess a specific tag
+	 * Finding BookEntities that possess a specific tag
 	 * 
-	 * @param tag the tag that is searhed for
-	 * @return list of bookentities posessing the tag
+	 * @param tags the tags that are searched for
+	 * @return list of bookentities posessing the tags
 	 * @throws EntityRetrievalException 
 	 */
 	List<BookEntity> getBookEntityByTag(Tags tags) throws EntityRetrievalException;
+	
 }

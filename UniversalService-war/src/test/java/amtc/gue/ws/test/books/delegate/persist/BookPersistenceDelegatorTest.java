@@ -210,7 +210,7 @@ public class BookPersistenceDelegatorTest {
 		bookPersistenceDelegator.initialize(invalidAddDelegatorInput, bookDAOImpl);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator
 				.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_CODE,delegatorOutput.getStatusCode());
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,delegatorOutput.getStatusCode());
 	}
 
 //	@Test
@@ -234,12 +234,11 @@ public class BookPersistenceDelegatorTest {
 		bookPersistenceDelegator.initialize(invalidReadDelegatorInput, bookDAOImpl);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator
 				.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_PERSISTENCE_OBJECT_CODE, delegatorOutput.getStatusCode());
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
 	}
 	
 	@AfterClass
 	public static void tearDown(){
-//		EasyMock.verify(bookDAOImpl);
 		EasyMock.verify(bookDAOImplFail);
 	}
 }

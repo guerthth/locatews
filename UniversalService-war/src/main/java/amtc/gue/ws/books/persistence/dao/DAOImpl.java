@@ -30,7 +30,7 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 	protected EntityManagerFactory entityManagerFactory;
 	protected EntityManager entityManager;
 	
-	private final String BOOKENTITY_SELECTION_QUERY;
+	protected final String ENTITY_SELECTION_QUERY;
 
 	@SuppressWarnings("rawtypes")
 	public DAOImpl() {
@@ -39,7 +39,7 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 				.getGenericSuperclass();
 		this.entityClass = (Class) genericSuperclass
 				.getActualTypeArguments()[0];
-		this.BOOKENTITY_SELECTION_QUERY = "select e from "
+		this.ENTITY_SELECTION_QUERY = "select e from "
 				+ entityClass.getSimpleName() + " e";
 	}
 
@@ -70,7 +70,7 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 		
 		// set entitymanager
 		entityManager = entityManagerFactory.createEntityManager();
-		Query q = entityManager.createQuery(BOOKENTITY_SELECTION_QUERY,
+		Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
 				entityClass);
 		List<E> entities = q.getResultList();
 		closeEntityManager();

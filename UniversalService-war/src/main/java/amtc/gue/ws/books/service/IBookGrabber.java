@@ -39,4 +39,7 @@ public interface IBookGrabber {
 	@WebMethod(operationName = "getBooksByTag")
 	public BookServiceResponse getBooksByTag(@WebParam(name = "searchTags") Tags tags);
 	
+	@WebMethod(operationName = "removeBook")
+	public BookServiceResponse removeBook(@WebParam(name = "bookToRemove") Books booksToRemove);
+	
 }

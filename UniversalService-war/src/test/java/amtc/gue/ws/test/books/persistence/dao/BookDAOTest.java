@@ -47,6 +47,7 @@ public class BookDAOTest {
 	
 	private BookEntity be1;
 	private BookEntity be2;
+	private BookEntity be3;
 
 	// top-level point configuration for all local services that might
 	// be accessed
@@ -86,6 +87,15 @@ public class BookDAOTest {
 		be2.setPrice("100");
 		be2.setTags(searchTag1);
 		be2.setTitle("Testtitle2");
+		
+		// be3 has same values as be2
+		be3 = new BookEntity();
+		be3.setAuthor("Testauthor2");
+		be3.setDescription("Testdescription2");
+		be3.setISBN("TestISBN");
+		be3.setPrice("100");
+		be3.setTags(searchTag1);
+		be3.setTitle("Testtitle2");
 	}
 
 	@After
@@ -184,7 +194,7 @@ public class BookDAOTest {
 			bookEntityDAO.persistEntity(be1);
 			assertEquals(1, bookEntityDAO.findAllEntities().size());
 			// delete be1
-			bookEntityDAO.removeEntity(be1);;
+			bookEntityDAO.removeEntity(be1);
 			assertEquals(0, bookEntityDAO.findAllEntities().size());
 		} catch (Exception e) {
 			// let testcase fail if exception is thrown
@@ -244,6 +254,52 @@ public class BookDAOTest {
 	public void testUpdatedBookEntity2() throws EntityPersistenceException{
 		// try updating be1 without initially adding
 		bookEntityDAO.updateEntity(be1);
+	}
+	
+	@Test
+	public void testFindSpecificBookEntity1(){
+		try{
+			// add be1 and assure that it is found
+			bookEntityDAO.persistEntity(be1);
+			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be1);
+			assertEquals(1,foundBooks.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testFindSpecificBookEntity2(){
+		try{
+			// add 3 bookentities. search for values that occur in 2 of them
+			bookEntityDAO.persistEntity(be1);
+			bookEntityDAO.persistEntity(be2);
+			bookEntityDAO.persistEntity(be3);
+			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be2);
+			assertEquals(2,foundBooks.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testFindSpecificBookEntity3(){
+		try{
+			// search for specific bookEntity that was not persisted
+			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be1);
+			assertEquals(0,foundBooks.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test(expected = EntityRetrievalException.class)
+	public void testFindSpecificBookEntity4() throws EntityRetrievalException{
+		// search for specific bookEntity with null entitymanager
+		failureBookEntityDAO.findSpecificEntity(be1);
 	}
 	
 	@Test

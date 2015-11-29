@@ -33,6 +33,14 @@ public interface DAO<E,K> {
 	List<E> findAllEntities();
 	
 	/**
+	 * Finding specific Entities in the DB
+	 * 
+	 * @param entity the entity that is searched for
+	 * @return all entities matching the search entity criteria
+	 */
+	List<E> findSpecificEntity(E entity) throws EntityRetrievalException;
+	
+	/**
 	 * Finding specific entity by id
 	 * 
 	 * @param id the id that is searched for

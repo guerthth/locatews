@@ -50,11 +50,15 @@ public class EntityMapperTest {
 	private static final String TEST_DESCRIPTION = "testDescription";
 	private static final String TEST_AUTHOR = "testAuthor";
 
+	private static List<String> JSONStrings1 = new ArrayList<String>();
+	private static List<String> JSONStrings2 = new ArrayList<String>();
+
 	@BeforeClass
 	public static void oneTimeSetUp() {
 		initializeBooks();
-		intitlaizeBookEntities();
+		intitializeBookEntities();
 		intitializeDelegatorOutput();
+		initializeBookEntityJSONStrings();
 	}
 
 	/**
@@ -83,7 +87,7 @@ public class EntityMapperTest {
 	/**
 	 * Method initializing the BookEntity objects
 	 */
-	private static void intitlaizeBookEntities() {
+	private static void intitializeBookEntities() {
 		bookEntity = new BookEntity();
 		listOfBookEntities = new ArrayList<BookEntity>();
 		bookEntity.setAuthor(TEST_AUTHOR);
@@ -111,6 +115,17 @@ public class EntityMapperTest {
 				.setStatusCode(ErrorConstants.ADD_BOOK_SUCCESS_CODE);
 		unrecognizedDelegatorOutput
 				.setStatusMessage(ErrorConstants.ADD_BOOK_SUCCESS_MSG);
+	}
+
+	/**
+	 * Method building up JSONStrings based on the definedf BookEntity objects
+	 */
+	private static void initializeBookEntityJSONStrings() {
+		String bookEntityJSON = EntityMapper
+				.mapBookEntityToJSONString(bookEntity);
+		JSONStrings1.add(bookEntityJSON);
+		JSONStrings2.add(bookEntityJSON);
+		JSONStrings2.add(bookEntityJSON);
 	}
 
 	@Test
@@ -195,5 +210,45 @@ public class EntityMapperTest {
 		BookServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToServiceResponse(unrecognizedDelegatorOutput);
 		assertEquals(null, serviceResponse.getBook());
+	}
+
+	@Test
+	public void testMapBookEntityToJSONString1() {
+		String JSON = EntityMapper.mapBookEntityToJSONString(bookEntity);
+		assertTrue(JSON.length() > 2);
+	}
+
+	@Test
+	public void testMapBookEntityToJSONString2() {
+		String JSON = EntityMapper.mapBookEntityToJSONString(null);
+		assertEquals("{}", JSON);
+	}
+
+	@Test
+	public void testMapJSONStringsToConsolidatedString1() {
+		String consolidatedString = EntityMapper
+				.mapJSONStringsToConsolidatedString(null);
+		assertEquals("", consolidatedString);
+	}
+
+	@Test
+	public void testMapJSONStringsToConsolidatedString2() {
+		String consolidatedString = EntityMapper
+				.mapJSONStringsToConsolidatedString(JSONStrings1);
+		assertEquals(
+				"{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}",
+				consolidatedString);
+	}
+
+	@Test
+	public void testMapJSONStringsToConsolidatedString3() {
+		String consolidatedString = EntityMapper
+				.mapJSONStringsToConsolidatedString(JSONStrings2);
+		System.out.println(consolidatedString);
+		StringBuilder sb = new StringBuilder()
+				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}")
+				.append(System.getProperty("line.separator"))
+				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}");
+		assertEquals(sb.toString(), consolidatedString);
 	}
 }
