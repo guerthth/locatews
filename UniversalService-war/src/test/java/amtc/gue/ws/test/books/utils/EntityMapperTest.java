@@ -244,7 +244,6 @@ public class EntityMapperTest {
 	public void testMapJSONStringsToConsolidatedString3() {
 		String consolidatedString = EntityMapper
 				.mapJSONStringsToConsolidatedString(JSONStrings2);
-		System.out.println(consolidatedString);
 		StringBuilder sb = new StringBuilder()
 				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}")
 				.append(System.getProperty("line.separator"))

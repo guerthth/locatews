@@ -98,15 +98,15 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 		return foundEntity;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void removeEntity(E entity) throws EntityRemovalException {
-		
+	public E removeEntity(E entity) throws EntityRemovalException {
+		E entityToRemove;
 		try {
 			// set entitymanager and delete
 			entityManager = entityManagerFactory.createEntityManager();
 			entityManager.getTransaction().begin();
-			@SuppressWarnings("unchecked")
-			E entityToRemove = (E) entityManager.find(entityClass,entity.getId());
+			entityToRemove = (E) entityManager.find(entityClass,entity.getId());
 			entityManager.remove(entityToRemove);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
@@ -117,6 +117,8 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 		} finally {
 			closeEntityManager();
 		}
+		
+		return entityToRemove;
 	}
 
 	@Override

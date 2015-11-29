@@ -18,5 +18,8 @@ public enum PersistenceTypeEnum {
 	DELETE,
 	
 	/** read */
-	READ
+	READ,
+	
+	/** unrecognized */
+	UNRECOGNIZED
 }

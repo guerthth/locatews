@@ -55,7 +55,7 @@ public interface DAO<E,K> {
 	 * @param entity the entity that should be removed
 	 * @throws EntityRemovalException 
 	 */
-	void removeEntity(E entity) throws EntityRemovalException;
+	E removeEntity(E entity) throws EntityRemovalException;
 	
 	/**
 	 * Updating an entity in the DB
