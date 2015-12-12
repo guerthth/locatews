@@ -29,7 +29,7 @@ public interface IBookGrabber {
 	 * 
 	 */
 	@WebMethod(operationName = "addBooks")
-	public BookServiceResponse addBooks(@WebParam(name = "inputItems") Books items);
+	public BookServiceResponse addBooks(@WebParam(name = "books") Books items);
 	
 	/**
 	 * Method retrieving items by criteria
@@ -39,7 +39,7 @@ public interface IBookGrabber {
 	@WebMethod(operationName = "getBooksByTag")
 	public BookServiceResponse getBooksByTag(@WebParam(name = "searchTags") Tags tags);
 	
-	@WebMethod(operationName = "removeBook")
-	public BookServiceResponse removeBook(@WebParam(name = "bookToRemove") Books booksToRemove);
+	@WebMethod(operationName = "removeBooks")
+	public BookServiceResponse removeBooks(@WebParam(name = "booksToRemove") Books booksToRemove);
 	
 }

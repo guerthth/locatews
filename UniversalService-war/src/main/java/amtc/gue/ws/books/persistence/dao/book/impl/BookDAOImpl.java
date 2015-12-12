@@ -23,10 +23,8 @@ import amtc.gue.ws.books.utils.BookDAOImplUtils;
 public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
 	/** Select specific book query */
-	private final String BOOK_SPECIFIC_QUERY = "select be from "
-			+ this.entityClass.getSimpleName()
-			+ " be where be.title = :title and be.author = :author and be.price = :price"
-			+ " and be.ISBN = :ISBN and be.tags = :tags and be.description = :description";
+	private final String BASIC_BOOK_SPECIFIC_QUERY = "select be from "
+			+ this.entityClass.getSimpleName() + " be";
 
 	public BookDAOImpl(EMF emfInstance) {
 		if (emfInstance != null) {
@@ -36,18 +34,21 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<BookEntity> findSpecificEntity(BookEntity book)
+	public List<BookEntity> findSpecificEntity(BookEntity bookEntity)
 			throws EntityRetrievalException {
 		List<BookEntity> foundBooks = new ArrayList<BookEntity>();
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager.createQuery(BOOK_SPECIFIC_QUERY);
-			q.setParameter("title", book.getTitle());
-			q.setParameter("author", book.getAuthor());
-			q.setParameter("price", book.getPrice());
-			q.setParameter("ISBN", book.getISBN());
-			q.setParameter("tags", book.getTags());
-			q.setParameter("description", book.getDescription());
+			Query q = entityManager.createQuery(BookDAOImplUtils
+					.buildSpecificBookQuery(BASIC_BOOK_SPECIFIC_QUERY,
+							bookEntity));
+			if (bookEntity.getId() != null) q.setParameter("id", bookEntity.getId());
+			if (bookEntity.getTitle() != null) q.setParameter("title", bookEntity.getTitle());
+			if (bookEntity.getAuthor() != null)	q.setParameter("author", bookEntity.getAuthor());
+			if (bookEntity.getPrice() != null) q.setParameter("price", bookEntity.getPrice());
+			if (bookEntity.getISBN() != null) q.setParameter("ISBN", bookEntity.getISBN());
+			if (bookEntity.getTags() != null) q.setParameter("tags", bookEntity.getTags());
+			if (bookEntity.getDescription() != null) q.setParameter("description", bookEntity.getDescription());
 			foundBooks = q.getResultList();
 		} catch (Exception e) {
 			throw new EntityRetrievalException(

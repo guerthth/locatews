@@ -8,12 +8,13 @@ import amtc.gue.ws.test.books.delegate.persist.BookPersistenceDelegatorTest;
 import amtc.gue.ws.test.books.persistence.dao.BookDAOTest;
 import amtc.gue.ws.test.books.service.BookGrabberTest;
 import amtc.gue.ws.test.books.utils.BookDAOImplUtilsTest;
+import amtc.gue.ws.test.books.utils.BookPersistenceDelegatorUtilsTest;
 import amtc.gue.ws.test.books.utils.EntityMapperTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ EntityMapperTest.class, BookDAOTest.class,
 		BookPersistenceDelegatorTest.class, BookGrabberTest.class,
-		BookDAOImplUtilsTest.class })
+		BookDAOImplUtilsTest.class, BookPersistenceDelegatorUtilsTest.class })
 public class CompleteTestSuit {
 
 }

@@ -6,31 +6,41 @@
       <xsd:import namespace="http://service.books.ws.gue.amtc/" schemaLocation="BookGrabberService_schema1.xsd"/>
     </xsd:schema>
   </types>
-  <message name="getBooksByTag">
-    <part name="parameters" element="tns:getBooksByTag"/>
-  </message>
-  <message name="getBooksByTagResponse">
-    <part name="parameters" element="tns:getBooksByTagResponse"/>
-  </message>
   <message name="addBooks">
     <part name="parameters" element="tns:addBooks"/>
   </message>
   <message name="addBooksResponse">
     <part name="parameters" element="tns:addBooksResponse"/>
   </message>
+  <message name="removeBooks">
+    <part name="parameters" element="tns:removeBooks"/>
+  </message>
+  <message name="removeBooksResponse">
+    <part name="parameters" element="tns:removeBooksResponse"/>
+  </message>
+  <message name="getBooksByTag">
+    <part name="parameters" element="tns:getBooksByTag"/>
+  </message>
+  <message name="getBooksByTagResponse">
+    <part name="parameters" element="tns:getBooksByTagResponse"/>
+  </message>
   <portType name="IBookGrabber">
-    <operation name="getBooksByTag">
-      <input wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/getBooksByTagRequest" message="tns:getBooksByTag"/>
-      <output wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/getBooksByTagResponse" message="tns:getBooksByTagResponse"/>
-    </operation>
     <operation name="addBooks">
       <input wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/addBooksRequest" message="tns:addBooks"/>
       <output wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/addBooksResponse" message="tns:addBooksResponse"/>
     </operation>
+    <operation name="removeBooks">
+      <input wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/removeBooksRequest" message="tns:removeBooks"/>
+      <output wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/removeBooksResponse" message="tns:removeBooksResponse"/>
+    </operation>
+    <operation name="getBooksByTag">
+      <input wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/getBooksByTagRequest" message="tns:getBooksByTag"/>
+      <output wsam:Action="http://service.books.ws.gue.amtc/IBookGrabber/getBooksByTagResponse" message="tns:getBooksByTagResponse"/>
+    </operation>
   </portType>
   <binding name="BookGrabberPortBinding" type="tns:IBookGrabber">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
-    <operation name="getBooksByTag">
+    <operation name="addBooks">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -39,7 +49,16 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="addBooks">
+    <operation name="removeBooks">
+      <soap:operation soapAction=""/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="getBooksByTag">
       <soap:operation soapAction=""/>
       <input>
         <soap:body use="literal"/>
@@ -55,3 +74,4 @@
     </port>
   </service>
 </definitions>
+

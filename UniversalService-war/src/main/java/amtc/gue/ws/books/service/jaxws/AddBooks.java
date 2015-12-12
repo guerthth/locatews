@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "addBooks", namespace = "http://service.books.ws.gue.amtc/")
 public class AddBooks {
 
-    @XmlElement(name = "inputItems", namespace = "")
-    private amtc.gue.ws.books.service.inout.Books inputItems;
+    @XmlElement(name = "books", namespace = "")
+    private amtc.gue.ws.books.service.inout.Books books;
 
     /**
      * 
      * @return
      *     returns Books
      */
-    public amtc.gue.ws.books.service.inout.Books getInputItems() {
-        return this.inputItems;
+    public amtc.gue.ws.books.service.inout.Books getBooks() {
+        return this.books;
     }
 
     /**
      * 
-     * @param inputItems
-     *     the value for the inputItems property
+     * @param books
+     *     the value for the books property
      */
-    public void setInputItems(amtc.gue.ws.books.service.inout.Books inputItems) {
-        this.inputItems = inputItems;
+    public void setBooks(amtc.gue.ws.books.service.inout.Books books) {
+        this.books = books;
     }
 
 }

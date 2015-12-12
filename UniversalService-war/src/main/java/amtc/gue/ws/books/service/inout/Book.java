@@ -7,39 +7,35 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * JAXB object for the Book complex type
+ * 
  * @author Thomas
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "book", propOrder = {
-		"title",
-		"author",
-		"price",
-		"ISBN",
-		"tags"
-		})
+@XmlType(name = "book", propOrder = {"title", "author", "price", "ISBN",
+		"tags" })
 public class Book extends Item {
 
 	// title of the book
 	@XmlElement(name = "title", required = true, nillable = false)
 	private String title;
-	
+
 	// book author
 	@XmlElement(name = "author", required = true, nillable = false)
-	private String author; 
-	
+	private String author;
+
 	// price of the book
 	@XmlElement(name = "price", required = true, nillable = false)
 	private String price;
-	
+
 	// books ISBN number
 	@XmlElement(name = "ISBN", required = false, nillable = true)
 	private String ISBN;
-	
+
 	// tags categorizing the book
 	@XmlElement(name = "tags", required = true, nillable = false)
 	private Tags tags;
-
+	
 	// Getter and Setters
 	public String getTitle() {
 		return title;
@@ -80,6 +76,5 @@ public class Book extends Item {
 	public void setTags(Tags tags) {
 		this.tags = tags;
 	}
-	
-	
+
 }

@@ -32,6 +32,8 @@ import amtc.gue.ws.books.service.jaxws.AddBooks;
 import amtc.gue.ws.books.service.jaxws.AddBooksResponse;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTag;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTagResponse;
+import amtc.gue.ws.books.service.jaxws.RemoveBooks;
+import amtc.gue.ws.books.service.jaxws.RemoveBooksResponse;
 
 public class BookCalcServlet extends HttpServlet {
 	/**
@@ -49,6 +51,7 @@ public class BookCalcServlet extends HttpServlet {
 	public static final QName QNAME_ADD_BOOKS = new QName(NS, "addBooks");
 	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS,
 			"getBooksByTag");
+	public static final QName QNAME_REMOVE_BOOKS = new QName(NS, "removeBooks");
 
 	private static final String INCOMING_SOAP_REQUEST = "Incoming SOAP Request: ";
 	private static final String OUTGOING_SOAP_RESPONSE = "Outgoing SOAP Response: ";
@@ -103,12 +106,12 @@ public class BookCalcServlet extends HttpServlet {
 		Object respPojo = null;
 		while (iter.hasNext()) {
 
-//			log.info("Iterating through child elements.");
+			// log.info("Iterating through child elements.");
 
 			// find first Element child
 			Object child = iter.next();
 			if (child instanceof SOAPElement) {
-//				log.info("SOAP element found!: " + child);
+				// log.info("SOAP element found!: " + child);
 				respPojo = handleSOAPRequestElement((SOAPElement) child);
 				break;
 			}
@@ -129,37 +132,62 @@ public class BookCalcServlet extends HttpServlet {
 
 		QName reqName = reqElem.getElementQName();
 		if (QNAME_ADD_BOOKS.equals(reqName)) {
-
-//			log.info("Adding books webservice method called.");
-
+			// log.info("Adding books webservice method called.");
 			return handleAddBooks(JAXB.unmarshal(new DOMSource(reqElem),
 					AddBooks.class));
 		} else if (QNAME_GET_BOOKS_BY_TAG.equals(reqName)) {
-
-//			log.info("getting books by tags webservice method called.");
-
+			// log.info("getting books by tags webservice method called.");
 			return handleGetBooksByTags(JAXB.unmarshal(new DOMSource(reqElem),
 					GetBooksByTag.class));
+		} else if (QNAME_REMOVE_BOOKS.equals(reqName)) {
+			return handleRemoveBooks(JAXB.unmarshal(new DOMSource(reqElem),
+					RemoveBooks.class));
 		}
 		return null;
 	}
 
-	protected AddBooksResponse handleAddBooks(AddBooks request) {
-
-//		log.info("Building addBooksResponse. With: " + request);
-
-		AddBooksResponse response = new AddBooksResponse();
-		response.setReturn(serviceImpl.addBooks(request.getInputItems()));
-		return response;
+	/**
+	 * Method handling a AddBooks request
+	 * 
+	 * @param addBooksRequest
+	 *            the AddBooks request that should be handled
+	 * @return the AddBooks response
+	 */
+	protected AddBooksResponse handleAddBooks(AddBooks addBooksRequest) {
+		AddBooksResponse addBooksReesponse = new AddBooksResponse();
+		addBooksReesponse.setReturn(serviceImpl.addBooks(addBooksRequest
+				.getBooks()));
+		return addBooksReesponse;
 	}
 
-	protected GetBooksByTagResponse handleGetBooksByTags(GetBooksByTag request) {
+	/**
+	 * Method handling a GetBooksByTag request
+	 * 
+	 * @param getBooksByTagRequest
+	 *            the GetBooksByTag request that should be handled
+	 * @return the GetBooksByTag response
+	 */
+	protected GetBooksByTagResponse handleGetBooksByTags(
+			GetBooksByTag getBooksByTagRequest) {
+		GetBooksByTagResponse getBooksByTagResponse = new GetBooksByTagResponse();
+		getBooksByTagResponse.setReturn(serviceImpl
+				.getBooksByTag(getBooksByTagRequest.getSearchTags()));
+		return getBooksByTagResponse;
+	}
 
-//		log.info("Building getBooksByTagsResonse. With: " + request);
-
-		GetBooksByTagResponse response = new GetBooksByTagResponse();
-		response.setReturn(serviceImpl.getBooksByTag(request.getSearchTags()));
-		return response;
+	/**
+	 * Method handling a RemoveBooks request
+	 * 
+	 * @param removeBooksRequest
+	 *            the RemoveBooks request that should be handled
+	 * @return the RemoveBooks response
+	 */
+	protected RemoveBooksResponse handleRemoveBooks(
+			RemoveBooks removeBooksRequest) {
+		RemoveBooksResponse removeBooksResponse = new RemoveBooksResponse();
+		removeBooksResponse.setReturn(serviceImpl
+				.removeBooks(removeBooksRequest.getBooksToRemove()));
+		return removeBooksResponse;
 	}
 
 	/**
@@ -188,30 +216,35 @@ public class BookCalcServlet extends HttpServlet {
 			soapMessageStringBuilder
 					.append("Error while processing SOAPMessage");
 		}
-//		log.info(soapMessageStringBuilder.toString());
+		// log.info(soapMessageStringBuilder.toString());
 	}
-	
+
 	@Override
-	public void doOptions(HttpServletRequest req, HttpServletResponse resp){
-		//The following are CORS headers. Max age informs the 
-	    //browser to keep the results of this call for 1 day.
-	    resp.setHeader("Access-Control-Allow-Origin", "*");
-	    resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
-	    resp.setHeader("Access-Control-Allow-Headers", "Content-Type,soapaction");
-	    resp.setHeader("Access-Control-Max-Age", "86400");
-	    //Tell the browser what requests we allow.
-	    resp.setHeader("Allow", "GET, HEAD, POST, TRACE, OPTIONS");
+	public void doOptions(HttpServletRequest req, HttpServletResponse resp) {
+		// The following are CORS headers. Max age informs the
+		// browser to keep the results of this call for 1 day.
+		resp.setHeader("Access-Control-Allow-Origin", "*");
+		resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
+		resp.setHeader("Access-Control-Allow-Headers",
+				"Content-Type,soapaction");
+		resp.setHeader("Access-Control-Max-Age", "86400");
+		// Tell the browser what requests we allow.
+		resp.setHeader("Allow", "GET, HEAD, POST, TRACE, OPTIONS");
 	}
-	
+
 	/**
 	 * MEthod adding headers to enable cross origin resource sharing
-	 * @param response the intitial response
+	 * 
+	 * @param response
+	 *            the intitial response
 	 * @return the response with CORS headers
 	 */
 	protected HttpServletResponse addCORSHeaders(HttpServletResponse response) {
 		response.addHeader("Access-Control-Allow-Origin", "*");
-//		response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, soapaction");
-		response.addHeader("Access-Control-Allow-Headers", "Content-Type, soapaction");
+		// response.addHeader("Access-Control-Allow-Headers",
+		// "Content-Type, Authorization, Accept, soapaction");
+		response.addHeader("Access-Control-Allow-Headers",
+				"Content-Type, soapaction");
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		return response;
 	}

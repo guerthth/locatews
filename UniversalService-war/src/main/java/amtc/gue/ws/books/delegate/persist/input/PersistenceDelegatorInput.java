@@ -10,8 +10,6 @@ import amtc.gue.ws.books.utils.PersistenceTypeEnum;
  *
  */
 public class PersistenceDelegatorInput implements IDelegatorInput{
-
-	// TODO: type of inputObject could already be Books here. Check
 	
 	/**
 	 * type of the delegatorinput

@@ -24,12 +24,16 @@ public class EntityMapper {
 	 * Method for the mapping of Books
 	 * 
 	 * @param book
-	 *            element
+	 *            the book element that should be transformed
+	 * @param type
+	 *            the database action
 	 * @return mapped BookEntity
 	 */
-	public static BookEntity mapBookToEntity(Book book) {
+	public static BookEntity mapBookToEntity(Book book, PersistenceTypeEnum type) {
 
 		BookEntity bookEntity = new BookEntity();
+		if (book.getId() != null && type != PersistenceTypeEnum.ADD)
+			bookEntity.setId(book.getId());
 		bookEntity.setAuthor(book.getAuthor());
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
@@ -41,20 +45,20 @@ public class EntityMapper {
 	}
 
 	/**
-	 * Method to map a Books object to a list of BookEntity objects
+	 * Method to map a Books object to a list of BookEntity objects this method
 	 * 
 	 * @param books
 	 *            object containing list of Book object
-	 * @param bookEntityList
-	 *            the list of BookEntities
-	 * @return list of BookEntity objects
+	 * @param type
+	 *            the database action
+	 * @return list of BookEntity objects that should be persisted
 	 */
-	public static List<BookEntity> transformBooksToBookEntities(Books books) {
+	public static List<BookEntity> transformBooksToBookEntities(Books books,
+			PersistenceTypeEnum type) {
 
 		List<BookEntity> bookEntityList = new ArrayList<BookEntity>();
-
 		for (Book book : books.getBooks()) {
-			bookEntityList.add(mapBookToEntity(book));
+			bookEntityList.add(mapBookToEntity(book, type));
 		}
 
 		return bookEntityList;
@@ -69,6 +73,7 @@ public class EntityMapper {
 	 */
 	public static Book mapBookEntityToBook(BookEntity bookEntity) {
 		Book book = new Book();
+		book.setId(bookEntity.getId());
 		book.setAuthor(bookEntity.getAuthor());
 		book.setDescription(bookEntity.getDescription());
 		book.setISBN(bookEntity.getISBN());
@@ -103,7 +108,7 @@ public class EntityMapper {
 	 *            business output of a business delegator
 	 * @return mapped service response object
 	 */
-	public static BookServiceResponse mapBdOutputToServiceResponse(
+	public static BookServiceResponse mapBdOutputToBookServiceResponse(
 			IDelegatorOutput bdOutput) {
 
 		// create the status object
@@ -112,16 +117,16 @@ public class EntityMapper {
 		status.setStatusCode(bdOutput.getStatusCode());
 
 		// create Service Response
-		BookServiceResponse serviceResponse = new BookServiceResponse();
-		serviceResponse.setStatus(status);
+		BookServiceResponse bookServiceResponse = new BookServiceResponse();
+		bookServiceResponse.setStatus(status);
 
 		if (bdOutput.getOutputObject() instanceof Books) {
-			serviceResponse.setBook((Books) bdOutput.getOutputObject());
+			bookServiceResponse.setBook((Books) bdOutput.getOutputObject());
 		} else {
-			serviceResponse.setBook(null);
+			bookServiceResponse.setBook(null);
 		}
 
-		return serviceResponse;
+		return bookServiceResponse;
 	}
 
 	/**
@@ -207,34 +212,41 @@ public class EntityMapper {
 					+ ", " : ", ";
 			sb.append(ISBN);
 			sb.append("price: ");
-			String price = bookEntity.getPrice() != null ? bookEntity.getPrice() + ", " : ", ";
+			String price = bookEntity.getPrice() != null ? bookEntity
+					.getPrice() + ", " : ", ";
 			sb.append(price);
 			// TODO: Changes needed once the datamodel is changed
 			sb.append("tags: ");
-			String tags = bookEntity.getTags() != null ? bookEntity.getTags() + "" : "";
+			String tags = bookEntity.getTags() != null ? bookEntity.getTags()
+					+ "" : "";
 			sb.append(tags);
 		}
 		sb.append("}");
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Method mapping a List of JSONStrings to one consolidated String
+	 * Method mapping a List of BookEntities to one consolidated JSON String
 	 * 
-	 * @param JSONStrings the list of JSONStrings that should be mapped
-	 * @return the consolidated String
+	 * @param bookEntities
+	 *            the list of BookEntities that should be mapped to a JSON
+	 *            String
+	 * @return the consolidated JSON String
 	 */
-	public static String mapJSONStringsToConsolidatedString(List<String> JSONStrings){
+	public static String mapBookEntityListToConsolidatedJSONString(
+			List<BookEntity> bookEntities) {
 		StringBuilder sb = new StringBuilder();
-		if(JSONStrings != null && JSONStrings.size() > 0){
-			int listSize = JSONStrings.size();
-			for(int i = 0;i<listSize;i++){
-				sb.append(JSONStrings.get(i));
-				if(i != listSize - 1){
-					sb.append(System.getProperty("line.separator"));
+		sb.append("[");
+		if (bookEntities != null && bookEntities.size() > 0) {
+			int listSize = bookEntities.size();
+			for (int i = 0; i < listSize; i++) {
+				sb.append(mapBookEntityToJSONString(bookEntities.get(i)));
+				if (i != listSize - 1) {
+					sb.append(",");
 				}
 			}
 		}
+		sb.append("]");
 		return sb.toString();
 	}
 }

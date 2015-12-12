@@ -9,37 +9,13 @@
 
   <xs:element name="getBooksByTagResponse" type="tns:getBooksByTagResponse"/>
 
-  <xs:complexType name="getBooksByTag">
-    <xs:sequence>
-      <xs:element name="searchTags" type="tns:tags" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+  <xs:element name="removeBooks" type="tns:removeBooks"/>
 
-  <xs:complexType name="tags">
-    <xs:sequence>
-      <xs:element name="tag" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+  <xs:element name="removeBooksResponse" type="tns:removeBooksResponse"/>
 
-  <xs:complexType name="getBooksByTagResponse">
+  <xs:complexType name="removeBooks">
     <xs:sequence>
-      <xs:element name="return" type="tns:bookServiceResponse" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="bookServiceResponse">
-    <xs:complexContent>
-      <xs:extension base="tns:serviceResponse">
-        <xs:sequence>
-          <xs:element name="books" type="tns:books" nillable="true" minOccurs="0"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="serviceResponse">
-    <xs:sequence>
-      <xs:element name="status" type="tns:status" nillable="true"/>
+      <xs:element name="booksToRemove" type="tns:books" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -65,7 +41,36 @@
 
   <xs:complexType name="item">
     <xs:sequence>
+      <xs:element name="id" type="xs:long" nillable="true" minOccurs="0"/>
       <xs:element name="description" type="xs:string" nillable="true" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tags">
+    <xs:sequence>
+      <xs:element name="tag" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="removeBooksResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:bookServiceResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="bookServiceResponse">
+    <xs:complexContent>
+      <xs:extension base="tns:serviceResponse">
+        <xs:sequence>
+          <xs:element name="books" type="tns:books" nillable="true" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="serviceResponse">
+    <xs:sequence>
+      <xs:element name="status" type="tns:status" nillable="true"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -76,9 +81,21 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="getBooksByTag">
+    <xs:sequence>
+      <xs:element name="searchTags" type="tns:tags" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getBooksByTagResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:bookServiceResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="addBooks">
     <xs:sequence>
-      <xs:element name="inputItems" type="tns:books" minOccurs="0"/>
+      <xs:element name="books" type="tns:books" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

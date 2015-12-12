@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import javax.jws.WebService;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
-import amtc.gue.ws.books.delegate.persist.AbstractPersistanceDelegator;
+import amtc.gue.ws.books.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
@@ -26,8 +26,11 @@ public class BookGrabber implements IBookGrabber {
 			.getName());
 
 	// delegator instance
-	private final AbstractPersistanceDelegator bpd = (BookPersistenceDelegator) SpringContext.context
+	private final AbstractPersistenceDelegator bpd = (BookPersistenceDelegator) SpringContext.context
 			.getBean("bookPersistenceDelegator");
+
+	private PersistenceDelegatorInput input;
+	private BookDAO bookEntityDAO;
 
 	/**
 	 * Method adding books to the bookstore
@@ -35,26 +38,14 @@ public class BookGrabber implements IBookGrabber {
 	@Override
 	public BookServiceResponse addBooks(Books items) {
 
-		// setup input object and DAO implementation
-		PersistenceDelegatorInput input = (PersistenceDelegatorInput) SpringContext.context
-				.getBean("persistenceDelegatorInput");
-		BookDAO bookEntityDAO = (BookDAOImpl) SpringContext.context
-				.getBean("bookDAOImpl");
-
-		input.setType(PersistenceTypeEnum.ADD);
-		input.setInputObject(items);
-
-		// intialize BookPersistenceDelegator
-		bpd.initialize(input, bookEntityDAO);
+		// set up the pesistence delegator
+		buildAndInitializePersistenceDelegator(PersistenceTypeEnum.ADD, items);
 
 		// call BookPersistenceDelegators delegate method to handle persist
 		IDelegatorOutput bpdOutput = bpd.delegate();
 
-		// map delegator output to ServiceResponse
-		BookServiceResponse serviceResponse = EntityMapper
-				.mapBdOutputToServiceResponse(bpdOutput);
-
-		return serviceResponse;
+		// return delegator output mapped to serviceresponse
+		return EntityMapper.mapBdOutputToBookServiceResponse(bpdOutput);
 	}
 
 	/**
@@ -63,57 +54,56 @@ public class BookGrabber implements IBookGrabber {
 	@Override
 	public BookServiceResponse getBooksByTag(Tags tags) {
 
-		// setup input object and DAO implementation
-		PersistenceDelegatorInput input = (PersistenceDelegatorInput) SpringContext.context
-				.getBean("persistenceDelegatorInput");
-		BookDAO bookEntityDAO = (BookDAOImpl) SpringContext.context
-				.getBean("bookDAOImpl");
+		// set up the pesistence delegator
+		buildAndInitializePersistenceDelegator(PersistenceTypeEnum.READ, tags);
 
-		input.setType(PersistenceTypeEnum.READ);
-		input.setInputObject(tags);
-
-		// initialize BookPersistenceDelegator
-		bpd.initialize(input, bookEntityDAO);
-
-		// call BookPersistencedelegators delegate method to handle retrieval of
+		// call BookPersistenceDelegators delegate method to handle retrieval of
 		// existing books
 		IDelegatorOutput bpdOutput = bpd.delegate();
 
-		// map delegator output to ServiceResponse
-		BookServiceResponse serviceResponse = EntityMapper
-				.mapBdOutputToServiceResponse(bpdOutput);
-
-		return serviceResponse;
+		// return delegator output mapped to serviceresponse
+		return EntityMapper.mapBdOutputToBookServiceResponse(bpdOutput);
 	}
 
 	/**
 	 * Method removing specified books from the book store
 	 */
 	@Override
-	public BookServiceResponse removeBook(Books booksToRemove) {
-		// setup input object and DAO implementation
-		// TODO: Possibly refactor since same object declaration in all methods
-		PersistenceDelegatorInput input = (PersistenceDelegatorInput) SpringContext.context
-				.getBean("persistenceDelegatorInput");
-		BookDAO bookEntityDAO = (BookDAOImpl) SpringContext.context
-				.getBean("bookDAOImpl");
+	public BookServiceResponse removeBooks(Books booksToRemove) {
 
-		input.setType(PersistenceTypeEnum.DELETE);
-		input.setInputObject(booksToRemove);
+		// set up the pesistence delegator
+		buildAndInitializePersistenceDelegator(PersistenceTypeEnum.DELETE,
+				booksToRemove);
 
-		// TODO: Possible refactoring place
-		// initialize BookPersistenceDelegator
-		bpd.initialize(input, bookEntityDAO);
-
-		// call BookPersistencedelegators delegate method to handle removal of
+		// call BookPersistenceDelegators delegate method to handle removal of
 		// existing books
 		IDelegatorOutput bpdOutput = bpd.delegate();
 
-		// map delegator output to ServiceResponse
-		BookServiceResponse serviceResponse = EntityMapper
-				.mapBdOutputToServiceResponse(bpdOutput);
+		// return delegator output mapped to serviceresponse
+		return EntityMapper.mapBdOutputToBookServiceResponse(bpdOutput);
+	}
 
-		return serviceResponse;
+	/**
+	 * Method setting up the respective delegator
+	 * 
+	 * @param type
+	 *            the input type
+	 * @param input
+	 *            the input object
+	 */
+	private void buildAndInitializePersistenceDelegator(
+			PersistenceTypeEnum type, Object inputObject) {
+		// setup input object and DAO implementation
+		input = (PersistenceDelegatorInput) SpringContext.context
+				.getBean("persistenceDelegatorInput");
+		bookEntityDAO = (BookDAOImpl) SpringContext.context
+				.getBean("bookDAOImpl");
+
+		input.setType(type);
+		input.setInputObject(inputObject);
+
+		// intialize BookPersistenceDelegator
+		bpd.initialize(input, bookEntityDAO);
 	}
 
 }

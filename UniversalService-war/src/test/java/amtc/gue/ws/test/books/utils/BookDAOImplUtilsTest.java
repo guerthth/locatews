@@ -40,6 +40,15 @@ public class BookDAOImplUtilsTest {
 	private static Tags nonExistingTags;
 	private static List<String> nonExistingSearchTags;
 	private static final String searchTag3 = "tagX";
+	private static final String BASIC_BOOK_SPECIFIC_QUERY = "select be from BookEntity be";
+	private static final String UPDATED_QUERY_1 = "select be from BookEntity be"
+			+ " where be.id = :id"
+			+ " and be.title = :title"
+			+ " and be.author = :author and be.price = :price and be.ISBN = :ISBN and be.tags = :tags"
+			+ " and be.description = :description";
+	private static final String UPDATED_QUERY_2 = "select be from BookEntity be"
+			+ " where be.author = :author and be.price = :price and be.ISBN = :ISBN"
+			+ " and be.description = :description";
 
 	@BeforeClass
 	public static void oneTimeIntitialSetup() {
@@ -92,6 +101,22 @@ public class BookDAOImplUtilsTest {
 				.retrieveBookEntitiesWithSpecificTags(bookList, tags);
 		assertEquals(5, bookList.size());
 		assertEquals(3, resultList.size());
+	}
+
+	@Test
+	public void testBuildSpecificBookQuery1() {
+		String updatedQuery = BookDAOImplUtils.buildSpecificBookQuery(
+				BASIC_BOOK_SPECIFIC_QUERY, bookList.get(0));
+		assertEquals(UPDATED_QUERY_1, updatedQuery);
+	}
+
+	@Test
+	public void testBuildSpecificBookQuery2() {
+		BookEntity testBookEntity = setupBookEntityWithTags(null, null);
+		testBookEntity.setId(null);
+		String updatedQuery = BookDAOImplUtils.buildSpecificBookQuery(
+				BASIC_BOOK_SPECIFIC_QUERY, testBookEntity);
+		assertEquals(UPDATED_QUERY_2, updatedQuery);
 	}
 
 	/**

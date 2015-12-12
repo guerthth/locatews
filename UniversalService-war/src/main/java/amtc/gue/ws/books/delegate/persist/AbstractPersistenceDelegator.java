@@ -8,23 +8,27 @@ import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
+import amtc.gue.ws.books.utils.ErrorConstants;
 
 /**
  * Abstract Persistance Delegator class
  * @author Thomas
  *
  */
-public abstract class AbstractPersistanceDelegator implements IDelegator{
+public abstract class AbstractPersistenceDelegator implements IDelegator{
 
 	// Logger
 	protected static final Logger log = 
-			Logger.getLogger(AbstractPersistanceDelegator.class.getName());
+			Logger.getLogger(AbstractPersistenceDelegator.class.getName());
 	
 	/** PersistenceDelegatorInput */
 	protected PersistenceDelegatorInput persistenceInput;
 	
 	/** DAOImplementation used by the deletator */
 	protected BookDAO daoImpl;
+	
+	/** DelegatorOutput */
+	protected IDelegatorOutput delegatorOutput;
 	
 	/**
 	 * initialize EntitiyManagerFactory Instance
@@ -47,5 +51,16 @@ public abstract class AbstractPersistanceDelegator implements IDelegator{
 	 * @throws EntityRetrievalException 
 	 */
 	public abstract IDelegatorOutput delegate();
+	
+	/**
+	 * Method setting the delegator output due to unrecognized input type
+	 */
+	protected void setUnrecognizedInputDelegatorOutput() {
+		log.severe(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
+		delegatorOutput
+				.setStatusCode(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE);
+		delegatorOutput
+				.setStatusMessage(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
+	}
 
 }

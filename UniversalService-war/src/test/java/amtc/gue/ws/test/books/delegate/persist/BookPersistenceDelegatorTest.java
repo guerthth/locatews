@@ -42,16 +42,20 @@ public class BookPersistenceDelegatorTest {
 	private static PersistenceDelegatorInput invalidReadDelegatorInput;
 	private static PersistenceDelegatorInput invalidAddDelegatorInput;
 	private static PersistenceDelegatorInput invalidDeleteDelegatorInput;
+	private static PersistenceDelegatorInput deleteDelegatorInputWithId;
 	private static PersistenceDelegatorInput unrecognizedDelegatorInput;
 
 	private static Books books;
+	private static Books booksWithId;
 	private static Book firstBook;
 	private static Book secondBook;
 	private static List<Book> bookList;
+	private static List<Book> bookListWithId;
 	private static Tags searchTags;
 	private static List<String> tagList;
 
 	private static BookDAO bookDAOImpl;
+	private static BookDAO bookDAOImplIdRemoval;
 	private static BookDAO bookDAOImplGeneralFail;
 	private static BookDAO bookDAOImplNonExistingDeletionsFail;
 	private static BookDAO bookDAOImplRetrieveDeletionFail;
@@ -59,6 +63,7 @@ public class BookPersistenceDelegatorTest {
 	private static BookEntity retrievedBookEntity;
 	private static List<BookEntity> retrievedBookEntityList;
 	private static BookEntity removedBookEntity;
+	private static BookEntity foundIdBookEntity;
 	private static List<BookEntity> removedBookEntityList;
 	private static List<BookEntity> emptyBookEntityList;
 
@@ -89,6 +94,7 @@ public class BookPersistenceDelegatorTest {
 	private static void setupBooks() {
 
 		bookList = new ArrayList<Book>();
+		bookListWithId = new ArrayList<Book>();
 
 		firstBook = new Book();
 		firstBook.setAuthor("Testauthor1");
@@ -100,16 +106,19 @@ public class BookPersistenceDelegatorTest {
 		bookList.add(firstBook);
 
 		secondBook = new Book();
+		secondBook.setId(2L);
 		secondBook.setAuthor("Testauthor2");
 		secondBook.setDescription("Testdescription2");
 		secondBook.setISBN("TestISBN");
 		secondBook.setPrice("100");
 		secondBook.setTags(searchTags);
 		secondBook.setTitle("Testtitle2");
-		// bookList.add(secondBook);
+		bookListWithId.add(secondBook);
 
 		books = new Books();
 		books.setBooks(bookList);
+		booksWithId = new Books();
+		booksWithId.setBooks(bookListWithId);
 	}
 
 	/**
@@ -161,6 +170,11 @@ public class BookPersistenceDelegatorTest {
 		unrecognizedDelegatorInput = new PersistenceDelegatorInput();
 		unrecognizedDelegatorInput.setInputObject(books);
 		unrecognizedDelegatorInput.setType(PersistenceTypeEnum.UNRECOGNIZED);
+
+		// DelegatorInput with ID book input type
+		deleteDelegatorInputWithId = new PersistenceDelegatorInput();
+		deleteDelegatorInputWithId.setInputObject(booksWithId);
+		deleteDelegatorInputWithId.setType(PersistenceTypeEnum.DELETE);
 	}
 
 	/**
@@ -191,6 +205,16 @@ public class BookPersistenceDelegatorTest {
 				bookDAOImpl.removeEntity(EasyMock.isA(BookEntity.class)))
 				.andReturn(removedBookEntity);
 		EasyMock.replay(bookDAOImpl);
+
+		// Positive Scenario mock for book removal with Id
+		bookDAOImplIdRemoval = EasyMock.createNiceMock(BookDAO.class);
+		EasyMock.expect(
+				bookDAOImplIdRemoval.findSpecificEntity(EasyMock.isA(BookEntity.class)))
+				.andReturn(retrievedBookEntityList);
+		EasyMock.expect(
+				bookDAOImplIdRemoval.removeEntity(EasyMock
+						.isA(BookEntity.class))).andReturn(removedBookEntity);
+		EasyMock.replay(bookDAOImplIdRemoval);
 
 		// Negative Scenario mock (general scenario)
 		bookDAOImplGeneralFail = EasyMock.createNiceMock(BookDAO.class);
@@ -241,6 +265,12 @@ public class BookPersistenceDelegatorTest {
 		retrievedBookEntity.setTags(null);
 
 		retrievedBookEntityList.add(retrievedBookEntity);
+
+		foundIdBookEntity = new BookEntity();
+		foundIdBookEntity.setId(1L);
+		foundIdBookEntity.setAuthor("ReturnAuthor");
+		foundIdBookEntity.setDescription("Testdescription");
+		foundIdBookEntity.setTags(null);
 	}
 
 	/**
@@ -274,8 +304,10 @@ public class BookPersistenceDelegatorTest {
 	public void testDelegateAdd1() {
 		bookPersistenceDelegator.initialize(addDelegatorInput, bookDAOImpl);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(10, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith("Added books"));
+		assertEquals(ErrorConstants.ADD_BOOK_SUCCESS_CODE,
+				delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(
+				ErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertTrue(delegatorOutput.getOutputObject() != null);
 	}
 
@@ -382,9 +414,19 @@ public class BookPersistenceDelegatorTest {
 				delegatorOutput.getStatusMessage());
 	}
 
+	@Test
+	public void testDelegateDelete6() {
+		bookPersistenceDelegator.initialize(deleteDelegatorInputWithId,
+				bookDAOImplIdRemoval);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.DELETE_BOOK_SUCCESS_CODE,
+				delegatorOutput.getStatusCode());
+	}
+
 	@AfterClass
 	public static void tearDown() {
 		EasyMock.verify(bookDAOImpl);
+		EasyMock.verify(bookDAOImplIdRemoval);
 		EasyMock.verify(bookDAOImplGeneralFail);
 		EasyMock.verify(bookDAOImplNonExistingDeletionsFail);
 		EasyMock.verify(bookDAOImplRetrieveDeletionFail);

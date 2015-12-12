@@ -43,11 +43,14 @@ public class BookDAOTest {
 	
 	private static List<String> searchTags;
 	private static final String searchTag1 = "testtag";
+	private static final String searchTag2 = "testtag2";
 	private static Tags tags;
 	
 	private BookEntity be1;
 	private BookEntity be2;
 	private BookEntity be3;
+	private BookEntity be4;
+	private BookEntity be5;
 
 	// top-level point configuration for all local services that might
 	// be accessed
@@ -87,7 +90,7 @@ public class BookDAOTest {
 		be2.setPrice("100");
 		be2.setTags(searchTag1);
 		be2.setTitle("Testtitle2");
-		
+
 		// be3 has same values as be2
 		be3 = new BookEntity();
 		be3.setAuthor("Testauthor2");
@@ -96,6 +99,13 @@ public class BookDAOTest {
 		be3.setPrice("100");
 		be3.setTags(searchTag1);
 		be3.setTitle("Testtitle2");
+		
+		// BookEntities with only some attributes
+		be4 = new BookEntity();
+		be4.setTags(searchTag2);
+		
+		be5 = new BookEntity();
+		be5.setTitle("Testtitle2");
 	}
 
 	@After
@@ -276,6 +286,7 @@ public class BookDAOTest {
 			bookEntityDAO.persistEntity(be1);
 			bookEntityDAO.persistEntity(be2);
 			bookEntityDAO.persistEntity(be3);
+			be2.setId(null);
 			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be2);
 			assertEquals(2,foundBooks.size());
 		} catch (Exception e) {
@@ -300,6 +311,47 @@ public class BookDAOTest {
 	public void testFindSpecificBookEntity4() throws EntityRetrievalException{
 		// search for specific bookEntity with null entitymanager
 		failureBookEntityDAO.findSpecificEntity(be1);
+	}
+	
+	@Test
+	public void testFindSpecificBookEntity5(){
+		// search for BookEntities with title = 'Testtitle2'
+		try {
+			bookEntityDAO.persistEntity(be1);
+			bookEntityDAO.persistEntity(be2);
+			bookEntityDAO.persistEntity(be3);
+			bookEntityDAO.persistEntity(be4);
+			bookEntityDAO.persistEntity(be5);
+			be5.setId(null);
+			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be5);
+			assertEquals(3,foundBooks.size());
+		} catch (EntityRetrievalException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (EntityPersistenceException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testFindSpecificBookEntity6(){
+		// search for BookEntities with tags = 'testtag2'
+		try {
+			bookEntityDAO.persistEntity(be1);
+			bookEntityDAO.persistEntity(be2);
+			bookEntityDAO.persistEntity(be3);
+			bookEntityDAO.persistEntity(be4);
+			bookEntityDAO.persistEntity(be5);
+			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be4);
+			assertEquals(1,foundBooks.size());
+		} catch (EntityRetrievalException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} catch (EntityPersistenceException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 	
 	@Test
