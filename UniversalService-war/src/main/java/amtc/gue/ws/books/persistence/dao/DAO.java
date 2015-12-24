@@ -29,8 +29,9 @@ public interface DAO<E,K> {
 	 * Finding all the Entities of a specific type in the DB
 	 * 
 	 * @return all entities of a specific type
+	 * @throws EntityRetrievalException 
 	 */
-	List<E> findAllEntities();
+	List<E> findAllEntities() throws EntityRetrievalException;
 	
 	/**
 	 * Finding specific Entities in the DB

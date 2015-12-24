@@ -8,12 +8,16 @@
 	<persistence-unit name="gae-jpa">
 		<provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
 		<class>amtc.gue.ws.books.persistence.model.BookEntity</class>
+		<class>amtc.gue.ws.books.persistence.model.TagEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="datanucleus.NontransactionalRead" value="true" />
 			<property name="datanucleus.NontransactionalWrite" value="true" />
 			<property name="datanucleus.ConnectionURL" value="appengine" />
-			<property name="datanucleus.singletonEMFForName" value="true" />
+			<!-- <property name="datanucleus.singletonEMFForName" value="true" /> -->
+			<property name="datanucleus.nontx.atomic" value="true"/>
+			<property name="datanucleus.appengine.datastoreEnableXGTransactions"
+				value="true" />
 		</properties>
 	</persistence-unit>
 

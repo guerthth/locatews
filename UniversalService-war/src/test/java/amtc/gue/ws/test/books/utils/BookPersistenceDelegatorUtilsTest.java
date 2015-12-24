@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.TagEntity;
 import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.utils.BookPersistenceDelegatorUtils;
 import amtc.gue.ws.books.utils.EntityMapper;
@@ -24,7 +25,6 @@ public class BookPersistenceDelegatorUtilsTest {
 
 	private static final String TAG2 = "tag2";
 	private static final String TAG1 = "tag1";
-	private static final String TAGS = "tags";
 	private static final String PRICE = "price";
 	private static final String ISBN = "isbn";
 	private static final String DESCRIPTION = "description";
@@ -36,8 +36,11 @@ public class BookPersistenceDelegatorUtilsTest {
 	private static List<BookEntity> unsuccessfullyAddedBookEntitiesEmpty;
 	private static List<BookEntity> removedBookEntities;
 	private static List<BookEntity> removedBookEntitiesEmpty;
+
 	private static Tags searchTags;
 	private static Tags searchTagsEmpty;
+
+	private static List<TagEntity> tagEntityList;
 
 	private static String exptextedPersisStatusOnlySuccesses;
 	private static String exptextedPersistStatusSuccessesAndFails;
@@ -48,11 +51,19 @@ public class BookPersistenceDelegatorUtilsTest {
 
 	@BeforeClass
 	public static void oneTimeInitialSetup() {
-		setUpBookEntityLists();
 		setUpSearchTags();
+		setUpTagEntityLists();
+		setUpBookEntityLists();
 		setUpExpectedPersistStatusMessages();
 		setUpExpectedTagRetrievalStatusMessages();
 		setUpExpectedRemoveStatusMessage();
+	}
+
+	/**
+	 * Method setting up TagEntityLists for testing
+	 */
+	public static void setUpTagEntityLists() {
+		tagEntityList = EntityMapper.mapTagsToTagEntityList(searchTags);
 	}
 
 	/**
@@ -63,15 +74,14 @@ public class BookPersistenceDelegatorUtilsTest {
 		successfullyAddedBookEntitiesEmpty = new ArrayList<BookEntity>();
 		removedBookEntities = new ArrayList<BookEntity>();
 		removedBookEntitiesEmpty = new ArrayList<BookEntity>();
-		
+
 		for (int i = 0; i < 3; i++) {
 			BookEntity bookEntity = new BookEntity();
-			bookEntity.setTags(TITLE + i);
+			bookEntity.setTags(tagEntityList);
 			bookEntity.setDescription(DESCRIPTION + i);
 			bookEntity.setId(1L);
 			bookEntity.setISBN(ISBN + i);
 			bookEntity.setPrice(PRICE + i);
-			bookEntity.setTags(TAGS + i);
 			bookEntity.setTitle(TITLE + i);
 			successfullyAddedBookEntities.add(bookEntity);
 			removedBookEntities.add(bookEntity);
@@ -81,12 +91,11 @@ public class BookPersistenceDelegatorUtilsTest {
 		unsuccessfullyAddedBookEntitiesEmpty = new ArrayList<BookEntity>();
 		for (int i = 3; i < 5; i++) {
 			BookEntity bookEntity = new BookEntity();
-			bookEntity.setTags(TITLE + i);
+			bookEntity.setTags(tagEntityList);
 			bookEntity.setDescription(DESCRIPTION + i);
 			bookEntity.setId(1L);
 			bookEntity.setISBN(ISBN + i);
 			bookEntity.setPrice(PRICE + i);
-			bookEntity.setTags(TAGS + i);
 			bookEntity.setTitle(TITLE + i);
 			unsuccessfullyAddedBookEntities.add(bookEntity);
 		}
@@ -187,7 +196,7 @@ public class BookPersistenceDelegatorUtilsTest {
 		sb.append(removedBookEntities.size());
 		sb.append(" Entities were removed.");
 		expectedRemoveStatusSuccess = sb.toString();
-		
+
 		sb = new StringBuilder();
 		sb.append(ErrorConstants.DELETE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
@@ -247,9 +256,9 @@ public class BookPersistenceDelegatorUtilsTest {
 				.buildRemoveBooksSuccessStatusMessage(removedBookEntities);
 		assertEquals(expectedRemoveStatusSuccess, statusMessage);
 	}
-	
+
 	@Test
-	public void testBuildRemoveBooksSuccessStatusMessage2(){
+	public void testBuildRemoveBooksSuccessStatusMessage2() {
 		String statusMessage = BookPersistenceDelegatorUtils
 				.buildRemoveBooksSuccessStatusMessage(removedBookEntitiesEmpty);
 		assertEquals(expectedRemoveStatusSuccessNothingRemoved, statusMessage);

@@ -12,6 +12,7 @@ import org.junit.Test;
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.output.PersistenceDelegatorOutput;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.TagEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
@@ -33,7 +34,7 @@ public class EntityMapperTest {
 	private static Books books;
 	private static List<Book> listOfBooks;
 	private static final String firstTag = "firstTag";
-	private static final String secondTag = "second,Tag,";
+	private static final String secondTag = "secondTag";
 	private static Tags tags;
 	private static List<String> listOfTags;
 	private static BookEntity bookEntity;
@@ -41,6 +42,10 @@ public class EntityMapperTest {
 	private static List<BookEntity> secondListOfBookEntities;
 	private static IDelegatorOutput delegatorOutput;
 	private static IDelegatorOutput unrecognizedDelegatorOutput;
+
+	private static TagEntity tagEntity1;
+	private static TagEntity tagEntity2;
+	private static List<TagEntity> tagEntityList;
 
 	private static final String EXPECTED_TAGLIST = "firstTag,secondTag";
 	private static final String SPECIALCHARACTERSTRING = "this,is,a,Test?";
@@ -55,6 +60,8 @@ public class EntityMapperTest {
 	@BeforeClass
 	public static void oneTimeSetUp() {
 		initializeBooks();
+		initializeTagEntities();
+		intitializeTagEntityList();
 		intitializeBookEntities();
 		intitializeDelegatorOutput();
 	}
@@ -83,6 +90,25 @@ public class EntityMapperTest {
 	}
 
 	/**
+	 * Initialize TagEntities
+	 */
+	private static void initializeTagEntities() {
+		tagEntity1 = new TagEntity();
+		tagEntity1.setTagName(firstTag);
+		tagEntity2 = new TagEntity();
+		tagEntity2.setTagName(secondTag);
+	}
+
+	/**
+	 * Initialize the TagEntity collections
+	 */
+	private static void intitializeTagEntityList() {
+		tagEntityList = new ArrayList<TagEntity>();
+		tagEntityList.add(tagEntity1);
+		tagEntityList.add(tagEntity2);
+	}
+
+	/**
 	 * Method initializing the BookEntity objects
 	 */
 	private static void intitializeBookEntities() {
@@ -94,7 +120,7 @@ public class EntityMapperTest {
 		bookEntity.setId(1L);
 		bookEntity.setISBN(TEST_ISBN);
 		bookEntity.setPrice(TEST_PRICE);
-		bookEntity.setTags(EXPECTED_TAGLIST);
+		bookEntity.setTags(tagEntityList);
 		bookEntity.setTitle(TEST_TITLE);
 		listOfBookEntities.add(bookEntity);
 		secondListOfBookEntities.add(bookEntity);
@@ -120,7 +146,8 @@ public class EntityMapperTest {
 
 	@Test
 	public void testMapToBookEntity() {
-		BookEntity bookEntity = EntityMapper.mapBookToEntity(firstBook,PersistenceTypeEnum.ADD);
+		BookEntity bookEntity = EntityMapper.mapBookToEntity(firstBook,
+				PersistenceTypeEnum.ADD);
 		assertTrue(bookEntity != null);
 		assertEquals(firstBook.getAuthor(), bookEntity.getAuthor());
 		assertEquals(firstBook.getDescription(), bookEntity.getDescription());
@@ -133,7 +160,7 @@ public class EntityMapperTest {
 	@Test
 	public void testTransformBooksToEntites() {
 		List<BookEntity> bookEntityList = EntityMapper
-				.transformBooksToBookEntities(books,PersistenceTypeEnum.ADD);
+				.transformBooksToBookEntities(books, PersistenceTypeEnum.ADD);
 		assertTrue(bookEntityList != null);
 	}
 
@@ -226,7 +253,7 @@ public class EntityMapperTest {
 		String consolidatedString = EntityMapper
 				.mapBookEntityListToConsolidatedJSONString(listOfBookEntities);
 		assertEquals(
-				"[{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}]",
+				"[{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: [firstTag, secondTag]}]",
 				consolidatedString);
 	}
 
@@ -236,10 +263,36 @@ public class EntityMapperTest {
 				.mapBookEntityListToConsolidatedJSONString(secondListOfBookEntities);
 		StringBuilder sb = new StringBuilder()
 				.append("[")
-				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}")
+				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: [firstTag, secondTag]}")
 				.append(",")
-				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: firstTag,secondTag}")
+				.append("{id: 1, title: testTitle, author: testAuthor,description: testDescription, ISBN: testISBN, price: testPrice, tags: [firstTag, secondTag]}")
 				.append("]");
 		assertEquals(sb.toString(), consolidatedString);
+	}
+
+	@Test
+	public void testMapTagsToTagEntityList1() {
+		List<TagEntity> tagEntityList = EntityMapper
+				.mapTagsToTagEntityList(tags);
+		assertEquals(tags.getTags().size(), tagEntityList.size());
+	}
+
+	@Test
+	public void testMapTagsToTagEntityList2() {
+		List<TagEntity> tagEntityList = EntityMapper
+				.mapTagsToTagEntityList(null);
+		assertEquals(null, tagEntityList);
+	}
+
+	@Test
+	public void testMapTagEntityListToTags1() {
+		Tags tags = EntityMapper.mapTagEntityListToTags(tagEntityList);
+		assertEquals(tagEntityList.size(), tags.getTags().size());
+	}
+
+	@Test
+	public void testMapTagEntityListToTags2() {
+		Tags tags = EntityMapper.mapTagEntityListToTags(null);
+		assertEquals(0, tags.getTags().size());
 	}
 }

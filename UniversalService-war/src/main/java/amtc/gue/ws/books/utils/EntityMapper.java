@@ -2,10 +2,12 @@ package amtc.gue.ws.books.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.TagEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
@@ -38,7 +40,7 @@ public class EntityMapper {
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		bookEntity.setTags(mapTagsToString(book.getTags()));
+		bookEntity.setTags(mapTagsToTagEntityList(book.getTags()));
 		bookEntity.setTitle(book.getTitle());
 
 		return bookEntity;
@@ -78,7 +80,7 @@ public class EntityMapper {
 		book.setDescription(bookEntity.getDescription());
 		book.setISBN(bookEntity.getISBN());
 		book.setPrice(bookEntity.getPrice());
-		book.setTags(mapTagStringToTags(bookEntity.getTags()));
+		book.setTags(mapTagEntityListToTags(bookEntity.getTags()));
 		book.setTitle(bookEntity.getTitle());
 		return book;
 	}
@@ -150,6 +152,48 @@ public class EntityMapper {
 	}
 
 	/**
+	 * This method maps a Tags input object to a collection of TagEntities
+	 * 
+	 * @param tags
+	 *            the Tags input object that should be mapped
+	 * @return a collection of TagEntities
+	 */
+	public static List<TagEntity> mapTagsToTagEntityList(Tags tags) {
+		List<TagEntity> tagEntityList = null;
+		TagEntity tagEntity = new TagEntity();
+		if (tags != null) {
+			tagEntityList = new ArrayList<TagEntity>();
+			for (String tag : tags.getTags()) {
+				tagEntity.setTagName(tag);
+				tagEntityList.add(tagEntity);
+			}
+		}
+		return tagEntityList;
+	}
+
+	/**
+	 * This methid maps a collection of TagEntities to a Tags object
+	 * 
+	 * @param tagEntityCollection
+	 *            a collection of TagEntities that should be mapped
+	 * @return a Tags object
+	 */
+	public static Tags mapTagEntityListToTags(
+			Collection<TagEntity> tagEntityCollection) {
+		Tags tags = new Tags();
+		List<String> tagList = new ArrayList<String>();
+		if (tagEntityCollection != null) {
+			for (TagEntity tagEntity : tagEntityCollection) {
+				String tag = (tagEntity != null) ? tagEntity.getTagName()
+						: null;
+				tagList.add(tag);
+			}
+		}
+		tags.setTags(tagList);
+		return tags;
+	}
+
+	/**
 	 * Method removing special characters from a string
 	 * 
 	 * @param tag
@@ -215,11 +259,20 @@ public class EntityMapper {
 			String price = bookEntity.getPrice() != null ? bookEntity
 					.getPrice() + ", " : ", ";
 			sb.append(price);
-			// TODO: Changes needed once the datamodel is changed
 			sb.append("tags: ");
-			String tags = bookEntity.getTags() != null ? bookEntity.getTags()
-					+ "" : "";
-			sb.append(tags);
+			sb.append("[");
+			if (bookEntity.getTags() != null) {
+				for (int i = 0; i < bookEntity.getTags().size(); i++) {
+					TagEntity tagEntity = bookEntity.getTags().get(i);
+					String tag = tagEntity != null ? tagEntity.getTagName()
+							: "";
+					sb.append(tag);
+					if (i != bookEntity.getTags().size() - 1) {
+						sb.append(", ");
+					}
+				}
+			}
+			sb.append("]");
 		}
 		sb.append("}");
 		return sb.toString();

@@ -12,7 +12,7 @@ import amtc.gue.ws.books.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.model.BookEntity;
 import amtc.gue.ws.books.service.inout.Tags;
-import amtc.gue.ws.books.utils.BookDAOImplUtils;
+import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
 
 /**
  * Book DAO Implementation Includes methods specifically for bookentities
@@ -42,15 +42,23 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 			Query q = entityManager.createQuery(BookDAOImplUtils
 					.buildSpecificBookQuery(BASIC_BOOK_SPECIFIC_QUERY,
 							bookEntity));
-			if (bookEntity.getId() != null) q.setParameter("id", bookEntity.getId());
-			if (bookEntity.getTitle() != null) q.setParameter("title", bookEntity.getTitle());
-			if (bookEntity.getAuthor() != null)	q.setParameter("author", bookEntity.getAuthor());
-			if (bookEntity.getPrice() != null) q.setParameter("price", bookEntity.getPrice());
-			if (bookEntity.getISBN() != null) q.setParameter("ISBN", bookEntity.getISBN());
-			if (bookEntity.getTags() != null) q.setParameter("tags", bookEntity.getTags());
-			if (bookEntity.getDescription() != null) q.setParameter("description", bookEntity.getDescription());
+			if (bookEntity.getId() != null)
+				q.setParameter("id", bookEntity.getId());
+			if (bookEntity.getTitle() != null)
+				q.setParameter("title", bookEntity.getTitle());
+			if (bookEntity.getAuthor() != null)
+				q.setParameter("author", bookEntity.getAuthor());
+			if (bookEntity.getPrice() != null)
+				q.setParameter("price", bookEntity.getPrice());
+			if (bookEntity.getISBN() != null)
+				q.setParameter("ISBN", bookEntity.getISBN());
+			if (bookEntity.getTags() != null)
+				q.setParameter("be.tags", bookEntity.getTags());
+			if (bookEntity.getDescription() != null)
+				q.setParameter("description", bookEntity.getDescription());
 			foundBooks = q.getResultList();
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new EntityRetrievalException(
 					"Retrieval of specific BookEntity failed.", e);
 		} finally {
@@ -79,6 +87,7 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 			foundBooks = q.getResultList();
 
 		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
 			throw new EntityRetrievalException(
 					"Retrieval of BookEntity for tags: "
 							+ tags.getTags().toString() + " failed.", e);

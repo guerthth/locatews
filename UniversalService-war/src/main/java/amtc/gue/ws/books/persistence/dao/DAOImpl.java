@@ -14,22 +14,25 @@ import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.model.PersistenceEntity;
 
 /**
- * General DAO Implementation. 
- * Includes common method codes for persisting, remove, findAll, and find by ID
+ * General DAO Implementation. Includes common method codes for persisting,
+ * remove, findAll, and find by ID
  * 
  * @author Thomas
  *
- * @param <E> type of the entity
- * @param <K> type of the id
+ * @param <E>
+ *            type of the entity
+ * @param <K>
+ *            type of the id
  */
-public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, K> {
+public abstract class DAOImpl<E extends PersistenceEntity, K> implements
+		DAO<E, K> {
 
 	@SuppressWarnings("rawtypes")
 	protected Class entityClass;
 
 	protected EntityManagerFactory entityManagerFactory;
 	protected EntityManager entityManager;
-	
+
 	protected final String ENTITY_SELECTION_QUERY;
 
 	@SuppressWarnings("rawtypes")
@@ -37,8 +40,7 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 		// set entityClass to 2nd typeargument of generic superclass
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass()
 				.getGenericSuperclass();
-		this.entityClass = (Class) genericSuperclass
-				.getActualTypeArguments()[0];
+		this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
 		this.ENTITY_SELECTION_QUERY = "select e from "
 				+ entityClass.getSimpleName() + " e";
 	}
@@ -52,9 +54,11 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 			entityManager.getTransaction().begin();
 			entityManager.persist(entity);
 			entityManager.getTransaction().commit();
-		} catch (PersistenceException e) {
+		} catch (Exception e) {
 			// rollback
-			entityManager.getTransaction().rollback();
+			if(entityManager != null) {
+				entityManager.getTransaction().rollback();
+			}
 			throw new EntityPersistenceException("Persisting "
 					+ entityClass.getName() + " failed. ", e);
 		} finally {
@@ -66,14 +70,19 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<E> findAllEntities() {
-		
-		// set entitymanager
-		entityManager = entityManagerFactory.createEntityManager();
-		Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
-				entityClass);
-		List<E> entities = q.getResultList();
-		closeEntityManager();
+	public List<E> findAllEntities() throws EntityRetrievalException {
+		List<E> entities;
+		try {
+			// set entitymanager
+			entityManager = entityManagerFactory.createEntityManager();
+			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
+					entityClass);
+			entities = q.getResultList();
+			closeEntityManager();
+		} catch (Exception e) {
+			throw new EntityRetrievalException("Retrieval of all existing "
+					+ entityClass.getName() + " failed.", e);
+		}
 
 		return entities;
 	}
@@ -81,16 +90,17 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public E findEntityById(K id) throws EntityRetrievalException {
-		
+
 		E foundEntity;
 
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			foundEntity = (E) entityManager.find(entityClass, id); // retrieve book by id
+			foundEntity = (E) entityManager.find(entityClass, id); // retrieve
+																	// book by
+																	// id
 		} catch (Exception e) {
-			throw new EntityRetrievalException("Retrieval of " 
-					+ entityClass.getName() + " with id: "
-					+ id + " failed.", e);
+			throw new EntityRetrievalException("Retrieval of "
+					+ entityClass.getName() + " with id: " + id + " failed.", e);
 		} finally {
 			closeEntityManager();
 		}
@@ -106,24 +116,28 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements DAO<E, 
 			// set entitymanager and delete
 			entityManager = entityManagerFactory.createEntityManager();
 			entityManager.getTransaction().begin();
-			entityToRemove = (E) entityManager.find(entityClass,entity.getId());
+			entityToRemove = (E) entityManager
+					.find(entityClass, entity.getId());
 			entityManager.remove(entityToRemove);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
 			// rollback
-			entityManager.getTransaction().rollback();
-			throw new EntityRemovalException("Deleting " + entityClass.getName() + 
-					" for id " + entity.getId() +" failed", e);
+			if(entityManager != null) {
+				entityManager.getTransaction().rollback();
+			}
+			throw new EntityRemovalException("Deleting "
+					+ entityClass.getName() + " for id " + entity.getId()
+					+ " failed", e);
 		} finally {
 			closeEntityManager();
 		}
-		
+
 		return entityToRemove;
 	}
 
 	@Override
 	public abstract E updateEntity(E entity) throws EntityPersistenceException;
-	
+
 	/**
 	 * Close the entityManager instance if it is not null
 	 * 

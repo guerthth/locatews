@@ -1,4 +1,4 @@
-package amtc.gue.ws.test.books.utils;
+package amtc.gue.ws.test.books.utils.dao;
 
 import static org.junit.Assert.*;
 
@@ -9,8 +9,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.TagEntity;
 import amtc.gue.ws.books.service.inout.Tags;
-import amtc.gue.ws.books.utils.BookDAOImplUtils;
+import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
 
 /**
  * This class tests the functionality of the BookDAOImplUtils class
@@ -174,6 +175,7 @@ public class BookDAOImplUtilsTest {
 	 * @return the created BookEntity object
 	 */
 	private static BookEntity setupBookEntityWithTags(String title, String tags) {
+		
 		BookEntity bookEntity = new BookEntity();
 		bookEntity.setTitle(title);
 		bookEntity.setAuthor("test");
@@ -181,8 +183,26 @@ public class BookDAOImplUtilsTest {
 		bookEntity.setId(1L);
 		bookEntity.setISBN("testISBN");
 		bookEntity.setPrice("testPrice");
-		bookEntity.setTags(tags);
+		bookEntity.setTags(buildTagEntityList(tags));
 		return bookEntity;
+	}
+
+	/**
+	 * This method creates a list of TagEntities based on a string for testing
+	 * @param tags String that should be mapped to a TagEntity list
+	 * @return a list of TagEntities
+	 */
+	private static List<TagEntity> buildTagEntityList(String tags) {
+		List<TagEntity> tagEntityList = null;
+		if(tags != null){
+			tagEntityList = new ArrayList<TagEntity>();
+			for(String tag : tags.split(",")){
+				TagEntity tagEntity = new TagEntity();
+				tagEntity.setTagName(tag);
+				tagEntityList.add(tagEntity);
+			}
+		}
+		return tagEntityList;
 	}
 
 }
