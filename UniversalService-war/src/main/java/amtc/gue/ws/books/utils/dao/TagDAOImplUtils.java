@@ -1,6 +1,6 @@
 package amtc.gue.ws.books.utils.dao;
 
-import amtc.gue.ws.books.persistence.model.TagEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 
 /**
  * Utility class for the TagDAOImpl
@@ -20,12 +20,12 @@ public class TagDAOImplUtils {
 	 * @return the built up complete query based on the search TagEntity
 	 */
 	public static String buildSpecificTagQuery(String initialTagQuery,
-			TagEntity tagEntity) {
+			GAEJPATagEntity tagEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialTagQuery);
 		int initialLenght = sb.length();
 		if(tagEntity != null){
-			if(tagEntity.getId() != null){
+			if(tagEntity.getKey() != null){
 				sb.append(" and t.tagId = :id");
 			}
 			if(tagEntity.getTagName() != null){

@@ -1,18 +1,20 @@
 package amtc.gue.ws.books.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
-import amtc.gue.ws.books.persistence.model.BookEntity;
-import amtc.gue.ws.books.persistence.model.TagEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
 import amtc.gue.ws.books.service.inout.output.Status;
+import amtc.gue.ws.books.service.inout.output.TagServiceResponse;
 
 /**
  * Class mapping objects to JPA entities
@@ -23,6 +25,25 @@ import amtc.gue.ws.books.service.inout.output.Status;
 public class EntityMapper {
 
 	/**
+	 * This method maps a Tags input object to a collection of TagEntities
+	 * 
+	 * @param tags
+	 *            the Tags input object that should be mapped
+	 * @return a collection of TagEntities
+	 */
+	public static Set<GAEJPATagEntity> mapTagsToTagEntityList(Tags tags) {
+		Set<GAEJPATagEntity> tagEntityList = new HashSet<GAEJPATagEntity>();
+		if (tags != null) {
+			for (String tag : tags.getTags()) {
+				GAEJPATagEntity tagEntity = new GAEJPATagEntity();
+				tagEntity.setTagName(tag);
+				tagEntityList.add(tagEntity);
+			}
+		}
+		return tagEntityList;
+	}
+
+	/**
 	 * Method for the mapping of Books
 	 * 
 	 * @param book
@@ -31,16 +52,22 @@ public class EntityMapper {
 	 *            the database action
 	 * @return mapped BookEntity
 	 */
-	public static BookEntity mapBookToEntity(Book book, PersistenceTypeEnum type) {
+	public static GAEJPABookEntity mapBookToEntity(Book book,
+			PersistenceTypeEnum type) {
 
-		BookEntity bookEntity = new BookEntity();
+		GAEJPABookEntity bookEntity = new GAEJPABookEntity();
 		if (book.getId() != null && type != PersistenceTypeEnum.ADD)
-			bookEntity.setId(book.getId());
+			bookEntity.setKey(book.getId());
 		bookEntity.setAuthor(book.getAuthor());
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		bookEntity.setTags(mapTagsToTagEntityList(book.getTags()));
+		if(type != PersistenceTypeEnum.ADD){
+			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()),true);
+		} else {
+			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()),false);
+		}
+		
 		bookEntity.setTitle(book.getTitle());
 
 		return bookEntity;
@@ -55,15 +82,38 @@ public class EntityMapper {
 	 *            the database action
 	 * @return list of BookEntity objects that should be persisted
 	 */
-	public static List<BookEntity> transformBooksToBookEntities(Books books,
-			PersistenceTypeEnum type) {
+	public static List<GAEJPABookEntity> transformBooksToBookEntities(
+			Books books, PersistenceTypeEnum type) {
 
-		List<BookEntity> bookEntityList = new ArrayList<BookEntity>();
-		for (Book book : books.getBooks()) {
-			bookEntityList.add(mapBookToEntity(book, type));
+		List<GAEJPABookEntity> bookEntityList = new ArrayList<GAEJPABookEntity>();
+		if (books != null) {
+			for (Book book : books.getBooks()) {
+				bookEntityList.add(mapBookToEntity(book, type));
+			}
 		}
-
 		return bookEntityList;
+	}
+
+	/**
+	 * This method maps a collection of TagEntities to a Tags object
+	 * 
+	 * @param tagEntityCollection
+	 *            a collection of TagEntities that should be mapped
+	 * @return a Tags object
+	 */
+	public static Tags mapTagEntityListToTags(
+			Collection<GAEJPATagEntity> tagEntityCollection) {
+		Tags tags = new Tags();
+		List<String> tagList = new ArrayList<String>();
+		if (tagEntityCollection != null) {
+			for (GAEJPATagEntity tagEntity : tagEntityCollection) {
+				String tag = (tagEntity != null) ? tagEntity.getTagName()
+						: null;
+				tagList.add(tag);
+			}
+		}
+		tags.setTags(tagList);
+		return tags;
 	}
 
 	/**
@@ -73,15 +123,17 @@ public class EntityMapper {
 	 *            the BookEntity that should be mapped
 	 * @return the Book object
 	 */
-	public static Book mapBookEntityToBook(BookEntity bookEntity) {
+	public static Book mapBookEntityToBook(GAEJPABookEntity bookEntity) {
 		Book book = new Book();
-		book.setId(bookEntity.getId());
-		book.setAuthor(bookEntity.getAuthor());
-		book.setDescription(bookEntity.getDescription());
-		book.setISBN(bookEntity.getISBN());
-		book.setPrice(bookEntity.getPrice());
-		book.setTags(mapTagEntityListToTags(bookEntity.getTags()));
-		book.setTitle(bookEntity.getTitle());
+		if (bookEntity != null) {
+			book.setId(bookEntity.getKey());
+			book.setAuthor(bookEntity.getAuthor());
+			book.setDescription(bookEntity.getDescription());
+			book.setISBN(bookEntity.getISBN());
+			book.setPrice(bookEntity.getPrice());
+			book.setTags(mapTagEntityListToTags(bookEntity.getTags()));
+			book.setTitle(bookEntity.getTitle());
+		}
 		return book;
 	}
 
@@ -93,134 +145,16 @@ public class EntityMapper {
 	 * @return a Books object
 	 */
 	public static Books transformBookEntitiesToBooks(
-			List<BookEntity> bookEntityList) {
+			List<GAEJPABookEntity> bookEntityList) {
 		Books books = new Books();
 		List<Book> bookList = new ArrayList<Book>();
-		for (BookEntity bookEntity : bookEntityList) {
-			bookList.add(mapBookEntityToBook(bookEntity));
+		if (bookEntityList != null) {
+			for (GAEJPABookEntity bookEntity : bookEntityList) {
+				bookList.add(mapBookEntityToBook(bookEntity));
+			}
 		}
 		books.setBooks(bookList);
 		return books;
-	}
-
-	/**
-	 * Method mapping a business delegator output to a service response
-	 * 
-	 * @param bdOutput
-	 *            business output of a business delegator
-	 * @return mapped service response object
-	 */
-	public static BookServiceResponse mapBdOutputToBookServiceResponse(
-			IDelegatorOutput bdOutput) {
-
-		// create the status object
-		Status status = new Status();
-		status.setStatusMessage(bdOutput.getStatusMessage());
-		status.setStatusCode(bdOutput.getStatusCode());
-
-		// create Service Response
-		BookServiceResponse bookServiceResponse = new BookServiceResponse();
-		bookServiceResponse.setStatus(status);
-
-		if (bdOutput.getOutputObject() instanceof Books) {
-			bookServiceResponse.setBook((Books) bdOutput.getOutputObject());
-		} else {
-			bookServiceResponse.setBook(null);
-		}
-
-		return bookServiceResponse;
-	}
-
-	/**
-	 * Method taking a Tags object and returning the tags as one String
-	 * seperated by |
-	 * 
-	 * @param tags
-	 *            the Tags object that should be transformed to a String
-	 * @return the transformed tagstring
-	 */
-	public static String mapTagsToString(Tags tags) {
-		StringBuilder sb = new StringBuilder();
-		if (tags != null && tags.getTags() != null) {
-			for (String tag : tags.getTags()) {
-				sb.append(removeSpecialCharacters(tag)).append(",");
-			}
-			String tagString = sb.toString();
-			return tagString.substring(0, tagString.length() - 1);
-		} else
-			return null;
-	}
-
-	/**
-	 * This method maps a Tags input object to a collection of TagEntities
-	 * 
-	 * @param tags
-	 *            the Tags input object that should be mapped
-	 * @return a collection of TagEntities
-	 */
-	public static List<TagEntity> mapTagsToTagEntityList(Tags tags) {
-		List<TagEntity> tagEntityList = null;
-		TagEntity tagEntity = new TagEntity();
-		if (tags != null) {
-			tagEntityList = new ArrayList<TagEntity>();
-			for (String tag : tags.getTags()) {
-				tagEntity.setTagName(tag);
-				tagEntityList.add(tagEntity);
-			}
-		}
-		return tagEntityList;
-	}
-
-	/**
-	 * This methid maps a collection of TagEntities to a Tags object
-	 * 
-	 * @param tagEntityCollection
-	 *            a collection of TagEntities that should be mapped
-	 * @return a Tags object
-	 */
-	public static Tags mapTagEntityListToTags(
-			Collection<TagEntity> tagEntityCollection) {
-		Tags tags = new Tags();
-		List<String> tagList = new ArrayList<String>();
-		if (tagEntityCollection != null) {
-			for (TagEntity tagEntity : tagEntityCollection) {
-				String tag = (tagEntity != null) ? tagEntity.getTagName()
-						: null;
-				tagList.add(tag);
-			}
-		}
-		tags.setTags(tagList);
-		return tags;
-	}
-
-	/**
-	 * Method removing special characters from a string
-	 * 
-	 * @param tag
-	 *            the tag which should be cleaned of special characters
-	 * @return the string without special characters
-	 */
-	public static String removeSpecialCharacters(String tag) {
-		return tag.replace(",", "");
-	}
-
-	/**
-	 * Method taking a String of tags and transforms it into a Tags object
-	 * 
-	 * @param tags
-	 *            the String containing all the tags
-	 * @return the Tags object
-	 */
-	public static Tags mapTagStringToTags(String tagString) {
-		Tags tags = new Tags();
-		List<String> tagList;
-		if (tagString != null) {
-			tagList = Arrays.asList(tagString.split(","));
-		} else {
-			tagList = new ArrayList<String>();
-		}
-		tags.setTags(tagList);
-		return tags;
 	}
 
 	/**
@@ -230,42 +164,43 @@ public class EntityMapper {
 	 *            the BookEntity object that should be mapped
 	 * @return the JSON String
 	 */
-	public static String mapBookEntityToJSONString(BookEntity bookEntity) {
+	public static String mapBookEntityToJSONString(GAEJPABookEntity bookEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		if (bookEntity != null) {
 			sb.append("id: ");
-			String id = bookEntity.getId() != null ? bookEntity.getId() + ", "
-					: ", ";
+			String id = bookEntity.getKey() != null ? bookEntity.getKey()
+					+ ", " : "null, ";
 			sb.append(id);
 			sb.append("title: ");
 			String title = bookEntity.getTitle() != null ? bookEntity
-					.getTitle() + ", " : ",";
+					.getTitle() + ", " : "null, ";
 			sb.append(title);
 			sb.append("author: ");
 			String author = bookEntity.getAuthor() != null ? bookEntity
-					.getAuthor() + "," : ",";
+					.getAuthor() + ", " : "null, ";
 			sb.append(author);
 			sb.append("description: ");
 			String description = bookEntity.getDescription() != null ? bookEntity
 					.getDescription() + ", "
-					: ", ";
+					: "null, ";
 			sb.append(description);
 			sb.append("ISBN: ");
 			String ISBN = bookEntity.getISBN() != null ? bookEntity.getISBN()
-					+ ", " : ", ";
+					+ ", " : "null, ";
 			sb.append(ISBN);
 			sb.append("price: ");
 			String price = bookEntity.getPrice() != null ? bookEntity
-					.getPrice() + ", " : ", ";
+					.getPrice() + ", " : "null, ";
 			sb.append(price);
 			sb.append("tags: ");
 			sb.append("[");
 			if (bookEntity.getTags() != null) {
 				for (int i = 0; i < bookEntity.getTags().size(); i++) {
-					TagEntity tagEntity = bookEntity.getTags().get(i);
+					GAEJPATagEntity tagEntity = (new ArrayList<GAEJPATagEntity>(
+							bookEntity.getTags())).get(i);
 					String tag = tagEntity != null ? tagEntity.getTagName()
-							: "";
+							: "null";
 					sb.append(tag);
 					if (i != bookEntity.getTags().size() - 1) {
 						sb.append(", ");
@@ -287,7 +222,7 @@ public class EntityMapper {
 	 * @return the consolidated JSON String
 	 */
 	public static String mapBookEntityListToConsolidatedJSONString(
-			List<BookEntity> bookEntities) {
+			List<GAEJPABookEntity> bookEntities) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		if (bookEntities != null && bookEntities.size() > 0) {
@@ -295,11 +230,134 @@ public class EntityMapper {
 			for (int i = 0; i < listSize; i++) {
 				sb.append(mapBookEntityToJSONString(bookEntities.get(i)));
 				if (i != listSize - 1) {
-					sb.append(",");
+					sb.append(", ");
 				}
 			}
 		}
 		sb.append("]");
 		return sb.toString();
+	}
+
+	/**
+	 * Method mapping a TagEntity to a JSON String
+	 * 
+	 * @param tagEntity
+	 *            the TagEntity object that should be mapped
+	 * @return the JSON String
+	 */
+	public static String mapTagEntityToJSONString(GAEJPATagEntity tagEntity) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		if (tagEntity != null) {
+			sb.append("id: ");
+			String id = tagEntity.getKey() != null ? tagEntity.getKey() + ", "
+					: "null, ";
+			sb.append(id);
+			sb.append("tagName: ");
+			String tagName = tagEntity.getTagName() != null ? tagEntity
+					.getTagName() + ", " : "null, ";
+			sb.append(tagName);
+			sb.append("books: ");
+			sb.append("[");
+			if (tagEntity.getBooks() != null) {
+				for (int i = 0; i < tagEntity.getBooks().size(); i++) {
+					GAEJPABookEntity bookEntity = new ArrayList<GAEJPABookEntity>(
+							tagEntity.getBooks()).get(i);
+					String book = bookEntity != null ? mapBookEntityToJSONString(bookEntity)
+							: "null";
+					sb.append(book);
+					if (i != tagEntity.getBooks().size() - 1) {
+						sb.append(", ");
+					}
+				}
+			}
+			sb.append("]");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+
+	/**
+	 * Method mapping a List of TagEntities to one consolidated JSON String
+	 * 
+	 * @param tagEntities
+	 *            the list of TagEntities that should be mapped to a JSON String
+	 * @return the consolidated JSON String
+	 */
+	public static String mapTagEntityListToConsolidatedJSONString(
+			List<GAEJPATagEntity> tagEntities) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		if (tagEntities != null && tagEntities.size() > 0) {
+			int listSize = tagEntities.size();
+			for (int i = 0; i < listSize; i++) {
+				sb.append(mapTagEntityToJSONString(tagEntities.get(i)));
+				if (i != listSize - 1) {
+					sb.append(", ");
+				}
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
+	/**
+	 * Method mapping a business delegator output to a service response
+	 * 
+	 * @param bdOutput
+	 *            business output of a business delegator
+	 * @return mapped service response object
+	 */
+	public static BookServiceResponse mapBdOutputToBookServiceResponse(
+			IDelegatorOutput bdOutput) {
+		// create Service Response
+		BookServiceResponse bookServiceResponse = null;
+
+		if (bdOutput != null) {
+			// create the status object and set the response
+			Status status = new Status();
+			status.setStatusMessage(bdOutput.getStatusMessage());
+			status.setStatusCode(bdOutput.getStatusCode());
+
+			bookServiceResponse = new BookServiceResponse();
+			bookServiceResponse.setStatus(status);
+
+			if (bdOutput.getOutputObject() instanceof Books) {
+				bookServiceResponse.setBook((Books) bdOutput.getOutputObject());
+			} else {
+				bookServiceResponse.setBook(null);
+			}
+		}
+
+		return bookServiceResponse;
+	}
+
+	/**
+	 * Method mapping a business delegator output to a service response
+	 * 
+	 * @param bdOutput
+	 *            business output of a business delegator
+	 * @return mapped service response object
+	 */
+	public static TagServiceResponse mapBdOutputToTagServiceResponse(
+			IDelegatorOutput bdOutput) {
+		TagServiceResponse tagServiceResponse = null;
+
+		if (bdOutput != null) {
+			Status status = new Status();
+			status.setStatusMessage(bdOutput.getStatusMessage());
+			status.setStatusCode(bdOutput.getStatusCode());
+
+			tagServiceResponse = new TagServiceResponse();
+			tagServiceResponse.setStatus(status);
+
+			if (bdOutput.getOutputObject() instanceof Tags) {
+				tagServiceResponse.setTags((Tags) bdOutput.getOutputObject());
+			} else {
+				tagServiceResponse.setTags(null);
+			}
+		}
+
+		return tagServiceResponse;
 	}
 }

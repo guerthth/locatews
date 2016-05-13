@@ -4,7 +4,7 @@ import java.util.List;
 
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.dao.DAO;
-import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.service.inout.Tags;
 
 /**
@@ -13,7 +13,7 @@ import amtc.gue.ws.books.service.inout.Tags;
  * @author Thomas
  *
  */
-public interface BookDAO extends DAO<BookEntity,Long> {
+public interface BookDAO extends DAO<GAEJPABookEntity,String> {
 	
 	/**
 	 * Finding BookEntities that possess a specific tag
@@ -22,6 +22,6 @@ public interface BookDAO extends DAO<BookEntity,Long> {
 	 * @return list of bookentities posessing the tags
 	 * @throws EntityRetrievalException 
 	 */
-	List<BookEntity> getBookEntityByTag(Tags tags) throws EntityRetrievalException;
+	List<GAEJPABookEntity> getBookEntityByTag(Tags tags) throws EntityRetrievalException;
 	
 }

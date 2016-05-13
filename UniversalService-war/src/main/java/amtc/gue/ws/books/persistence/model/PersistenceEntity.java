@@ -1,8 +1,17 @@
 package amtc.gue.ws.books.persistence.model;
 
-public abstract class PersistenceEntity {
+import java.io.Serializable;
+
+/**
+ * PersistenceEntity representing entities that can be stored to a DB
+ * 
+ * @author Thomas
+ *
+ */
+public abstract class PersistenceEntity implements Serializable{
 	
-	public abstract Long getId();
-	
-	public abstract void setId(Long id);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 }

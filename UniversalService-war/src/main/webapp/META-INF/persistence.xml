@@ -5,21 +5,29 @@
         http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
 	version="1.0">
 
-    <!-- persistence unit for productive usage -->
 	<persistence-unit name="gae-jpa">
 		<provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
-		<class>amtc.gue.ws.books.persistence.model.BookEntity</class>
-		<class>amtc.gue.ws.books.persistence.model.TagEntity</class>
+		<class>amtc.gue.ws.books.persistence.model.GAEJPABookEntity</class>
+		<class>amtc.gue.ws.books.persistence.model.GAEJPATagEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<property name="datanucleus.NontransactionalRead" value="true" />
+<!-- 			<property name="datanucleus.NontransactionalRead" value="true" /> -->
 			<property name="datanucleus.NontransactionalWrite" value="true" />
 			<property name="datanucleus.ConnectionURL" value="appengine" />
-			<!-- <property name="datanucleus.singletonEMFForName" value="true" /> -->
-			<property name="datanucleus.nontx.atomic" value="true"/>
+<!-- 			<property name="datanucleus.metadata.allowLoadAtRuntime" -->
+<!-- 				value="true" /> -->
+<!-- 			<property name="datanucleus.appengine.ignorableMetaDataBehavior" -->
+<!-- 				value="NONE" /> -->
+<!-- 			<property name="datanucleus.singletonEMFForName" value="true" /> -->
+<!-- 			<property name="datanucleus.appengine.relationDefault" value="unowned" /> -->
+			<property name="datanucleus.nontx.atomic" value="true" />
 			<property name="datanucleus.appengine.datastoreEnableXGTransactions"
 				value="true" />
+<!-- 			<property name="datanucleus.cache.level2.type" value="None"></property> -->
+<!-- 			<property name="datanucleus.jpa.persistenceContextType" -->
+<!-- 				value="extended" /> -->
+<!-- 			<property name="datanucleus.maxFetchDepth" value="2" /> -->
+<!-- 			<property name="datanucleus.appengine.storageVersion" value="WRITE_OWNED_CHILD_KEYS_TO_PARENTS" /> -->
 		</properties>
 	</persistence-unit>
-
 </persistence>

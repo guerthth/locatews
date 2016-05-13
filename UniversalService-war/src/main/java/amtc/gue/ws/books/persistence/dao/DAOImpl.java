@@ -5,13 +5,12 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRemovalException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.persistence.model.PersistenceEntity;
+import amtc.gue.ws.books.persistence.model.gae.GAEPersistenceEntity;
 
 /**
  * General DAO Implementation. Includes common method codes for persisting,
@@ -24,7 +23,7 @@ import amtc.gue.ws.books.persistence.model.PersistenceEntity;
  * @param <K>
  *            type of the id
  */
-public abstract class DAOImpl<E extends PersistenceEntity, K> implements
+public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		DAO<E, K> {
 
 	@SuppressWarnings("rawtypes")
@@ -40,9 +39,9 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 		// set entityClass to 2nd typeargument of generic superclass
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass()
 				.getGenericSuperclass();
-		this.entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
-		this.ENTITY_SELECTION_QUERY = "select e from "
-				+ entityClass.getSimpleName() + " e";
+		entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
+		ENTITY_SELECTION_QUERY = "select e from " + entityClass.getSimpleName()
+				+ " e";
 	}
 
 	@Override
@@ -56,7 +55,8 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
 			// rollback
-			if(entityManager != null) {
+			if (entityManager != null
+					&& entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
 			throw new EntityPersistenceException("Persisting "
@@ -75,13 +75,17 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 		try {
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
-					entityClass);
+			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY);
 			entities = q.getResultList();
-			closeEntityManager();
 		} catch (Exception e) {
+			if (entityManager != null
+					&& entityManager.getTransaction().isActive()) {
+				entityManager.getTransaction().rollback();
+			}
 			throw new EntityRetrievalException("Retrieval of all existing "
 					+ entityClass.getName() + " failed.", e);
+		} finally {
+			closeEntityManager();
 		}
 
 		return entities;
@@ -95,9 +99,7 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			foundEntity = (E) entityManager.find(entityClass, id); // retrieve
-																	// book by
-																	// id
+			foundEntity = (E) entityManager.find(entityClass, id);
 		} catch (Exception e) {
 			throw new EntityRetrievalException("Retrieval of "
 					+ entityClass.getName() + " with id: " + id + " failed.", e);
@@ -116,17 +118,18 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 			// set entitymanager and delete
 			entityManager = entityManagerFactory.createEntityManager();
 			entityManager.getTransaction().begin();
-			entityToRemove = (E) entityManager
-					.find(entityClass, entity.getId());
+			entityToRemove = (E) entityManager.find(entityClass,
+					entity.getKey());
 			entityManager.remove(entityToRemove);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
 			// rollback
-			if(entityManager != null) {
+			if (entityManager != null
+					&& entityManager.getTransaction().isActive()) {
 				entityManager.getTransaction().rollback();
 			}
 			throw new EntityRemovalException("Deleting "
-					+ entityClass.getName() + " for id " + entity.getId()
+					+ entityClass.getName() + " for id " + entity.getKey()
 					+ " failed", e);
 		} finally {
 			closeEntityManager();
@@ -145,8 +148,18 @@ public abstract class DAOImpl<E extends PersistenceEntity, K> implements
 	 *            the EntityManager instance
 	 */
 	protected void closeEntityManager() {
-		if (this.entityManager != null) {
+		if (this.entityManager != null && this.entityManager.isOpen()) {
+			// this.entityManager.clear();
 			this.entityManager.close();
+		}
+	}
+
+	/**
+	 * Clearing the EntityManagerFactory Cache
+	 */
+	protected void clearCache() {
+		if (entityManagerFactory.getCache() != null) {
+			entityManagerFactory.getCache().evictAll();
 		}
 	}
 

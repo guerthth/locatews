@@ -49,7 +49,4 @@ public class PersistenceDelegatorInput implements IDelegatorInput{
 		
 		this.inputObject = inputObject;
 	}
-	
-	
-	
 }

@@ -14,7 +14,7 @@ import amtc.gue.ws.books.service.inout.Books;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BookServiceResponse extends ServiceResponse {
-	
+
 	@XmlElement(name = "books", nillable = true, required = false)
 	public Books book;
 

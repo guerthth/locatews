@@ -7,7 +7,9 @@ import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
+import amtc.gue.ws.books.persistence.dao.DAOs;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
+import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.utils.ErrorConstants;
 
 /**
@@ -24,8 +26,9 @@ public abstract class AbstractPersistenceDelegator implements IDelegator{
 	/** PersistenceDelegatorInput */
 	protected PersistenceDelegatorInput persistenceInput;
 	
-	/** DAOImplementation used by the deletator */
+	/** DAOImplementations used by the deletator */
 	protected BookDAO daoImpl;
+	protected TagDAO tagDAOImpl;
 	
 	/** DelegatorOutput */
 	protected IDelegatorOutput delegatorOutput;
@@ -34,15 +37,9 @@ public abstract class AbstractPersistenceDelegator implements IDelegator{
 	 * initialize EntitiyManagerFactory Instance
 	 * 
 	 * @param input the input object
-	 * @param daoImpl the used DAO Implementation
+	 * @param daoImplementations the used DAO Implementations
 	 */
-	public void initialize(PersistenceDelegatorInput input, BookDAO daoImpl){
-		
-		// set persistenceDelegatorInput and DAO Implementation
-		this.persistenceInput = input;
-		this.daoImpl = daoImpl;
-			
-	}
+	public abstract void initialize(PersistenceDelegatorInput input, DAOs daoImplementations);
 	
 	/**
 	 * Delegate method persisting object to the underlying DB

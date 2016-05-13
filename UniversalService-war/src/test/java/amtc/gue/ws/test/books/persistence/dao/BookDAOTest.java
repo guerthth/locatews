@@ -4,33 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRemovalException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.persistence.EMF;
-import amtc.gue.ws.books.persistence.ProductiveEMF;
-import amtc.gue.ws.books.persistence.dao.book.BookDAO;
-import amtc.gue.ws.books.persistence.dao.book.impl.BookDAOImpl;
-import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
-import amtc.gue.ws.books.persistence.dao.tag.impl.TagDAOImpl;
-import amtc.gue.ws.books.persistence.model.BookEntity;
-import amtc.gue.ws.books.persistence.model.TagEntity;
-import amtc.gue.ws.books.service.inout.Tags;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 
 /**
  * Testclass for the Book DAO
@@ -39,409 +25,366 @@ import amtc.gue.ws.books.service.inout.Tags;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BookDAOTest {
+public class BookDAOTest extends JPATest {
 
-	private static BookDAO bookEntityDAO;
-	private static BookDAO failureBookEntityDAO;
-	private static TagDAO tagEntityDAO;
-
-	private static List<String> searchTags;
-	private static final String searchTag1 = "testtag";
-	private static final String searchTag2 = "testtag2";
-	private static Tags tags;
-
-	private static TagEntity tagEntity1;
-	private static List<TagEntity> tagEntityList1;
-	private static TagEntity tagEntity2;
-	private static List<TagEntity> tagEntityList2;
-
-	private BookEntity be1;
-	private BookEntity be2;
-	private BookEntity be3;
-	private BookEntity be4;
-	private BookEntity be5;
-
-	// top-level point configuration for all local services that might
-	// be accessed. set with high replication
-	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(
-			new LocalDatastoreServiceTestConfig().setDefaultHighRepJobPolicyUnappliedJobPercentage(100));
-
-
-	@BeforeClass
-	public static void oneTimeSetUp() {
-		setupEnvironment();	
-	}
-
-	@Before
-	public void setUp() throws EntityPersistenceException {
-		helper.setUp();
-
-		// intitialize some book entities
-		be1 = new BookEntity();
-		be1.setAuthor("Testauthor1");
-		be1.setDescription("Testdescription1");
-		be1.setISBN("TestISBN");
-		be1.setPrice("100");
-		be1.setTags(tagEntityList1);
-		be1.setTitle("Testtitle1");
-
-		be2 = new BookEntity();
-		be2.setAuthor("Testauthor2");
-		be2.setDescription("Testdescription2");
-		be2.setISBN("TestISBN");
-		be2.setPrice("100");
-		be2.setTags(tagEntityList1);
-		be2.setTitle("Testtitle2");
-
-		// be3 has same values as be2
-		be3 = new BookEntity();
-		be3.setAuthor("Testauthor2");
-		be3.setDescription("Testdescription2");
-		be3.setISBN("TestISBN");
-		be3.setPrice("100");
-		be3.setTags(tagEntityList1);
-		be3.setTitle("Testtitle2");
-
-		// BookEntities with only some attributes
-		be4 = new BookEntity();
-		be4.setTags(tagEntityList2);
-
-		be5 = new BookEntity();
-		be5.setTitle("Testtitle2");
-		
-		prepareTagEntities();	
-		saveTagEntities();
-	}
-
-	@After
-	public void tearDown() {
-		helper.tearDown();
-	}
+	private static final String BOOK_TITLE_FOR_TESTING = "BookTitleForTesting";
 
 	@Test
 	public void testDAOSetUp() {
 		assertNotNull(bookEntityDAO);
+		assertNotNull(failureBookEntityDAO);
 	}
 
 	@Test
-	public void testAddBookEntity1() {
+	public void testAddSimpleBookEntity() throws EntityPersistenceException,
+			EntityRetrievalException {
+		assertNull(bookEntity1.getKey());
+		bookEntityDAO.persistEntity(bookEntity1);
+		assertNotNull(bookEntity1.getKey());
+	}
 
-		try {			
-			// add be1 to datastore should work
-			BookEntity result = new BookEntity();
-			assertNull(result.getId());
-			result = bookEntityDAO.persistEntity(be1);
-			assertNotNull(result);
-			assertNotNull(result.getId());
-			assertEquals(1, bookEntityDAO.findAllEntities().size());
-		} catch (Exception e) {
-			// let testcase fail if exception is thrown
-			fail(e.getMessage());
-		}
+	@Test
+	public void testAddBookEntityWithSingleTag()
+			throws EntityPersistenceException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity1);
+		assertEquals(1, bookEntity1.getTags().size());
+	}
+
+	@Test
+	public void testAddBookEntityWithMultipleTags()
+			throws EntityPersistenceException, EntityRetrievalException {
+		// persist bookentity and add two tagentities to it
+		tagEntityDAO.persistEntity(tagEntity1);
+		tagEntityDAO.persistEntity(tagEntity2);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity2);
+		assertEquals(2, bookEntity1.getTags().size());
+		assertNull(bookEntity1.getKey());
+		bookEntityDAO.persistEntity(bookEntity1);
+		assertNotNull(bookEntity1.getKey());
+		assertEquals(1, bookEntityDAO.findAllEntities().size());
+		assertEquals(2, tagEntityDAO.findAllEntities().size());
+
 	}
 
 	@Test(expected = EntityPersistenceException.class)
-	public void testAddBookEntity2() throws EntityPersistenceException {
-
+	public void testAddSameBookEntityTwice() throws EntityPersistenceException {
 		// add be1 to the datastore two times
 		// EntityPersistenceException is expected
-		bookEntityDAO.persistEntity(be1);
-		bookEntityDAO.persistEntity(be1);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity1);
+	}
+
+	@Test(expected = EntityPersistenceException.class)
+	public void testAddBookEntityUsingInvalidEM()
+			throws EntityPersistenceException {
+		failureBookEntityDAO.persistEntity(bookEntity1);
 	}
 
 	@Test
-	public void testGetAllBookEntities1() throws EntityRetrievalException {
+	public void testGetAllBookEntitiesWithoutAdding()
+			throws EntityRetrievalException {
 		assertEquals(0, bookEntityDAO.findAllEntities().size());
 	}
 
 	@Test
-	public void testGetBookEntity1() {
-
-		try {
-			// add be1 to datastore
-			BookEntity result = bookEntityDAO.persistEntity(be1);
-			Long id = result.getId();
-			assertNotNull(id);
-			// retrieve persisted item and compare
-			BookEntity foundEntity = bookEntityDAO.findEntityById(id);
-			assertEquals(result.getId(), foundEntity.getId());
-			assertEquals(result.getTitle(), foundEntity.getTitle());
-			assertEquals(result.getISBN(), foundEntity.getISBN());
-			assertEquals(result.getPrice(), foundEntity.getPrice());
-			assertEquals(result.getTags(), foundEntity.getTags());
-		} catch (Exception e) {
-			// let testcase fail if exception is thrown
-			fail(e.getMessage());
-		}
+	public void testGetAllBookEntitiesAfterAddingSimpleBookEntities()
+			throws EntityPersistenceException, EntityRetrievalException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity2);
+		bookEntityDAO.persistEntity(bookEntity3);
+		bookEntityDAO.persistEntity(bookEntity4);
+		bookEntityDAO.persistEntity(bookEntity5);
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO.findAllEntities();
+		assertEquals(5, foundBooks.size());
 	}
 
 	@Test
-	public void testGetBookEntity2() {
-
-		try {
-			// add be1 and be2 to datastore
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			assertEquals(2, bookEntityDAO.findAllEntities().size());
-			// retrieve persisted item and compare
-			BookEntity foundEntity = bookEntityDAO.findEntityById(be2.getId());
-			assertEquals(be2.getId(), foundEntity.getId());
-			assertEquals(be2.getTitle(), foundEntity.getTitle());
-			assertEquals(be2.getISBN(), foundEntity.getISBN());
-			assertEquals(be2.getPrice(), foundEntity.getPrice());
-			assertEquals(be2.getTags(), foundEntity.getTags());
-		} catch (Exception e) {
-			// let testcase fail if exception is thrown
-			fail(e.getMessage());
-		}
+	public void testGetAllBookEntitiesAfterAddingComplexBookEntities()
+			throws EntityPersistenceException, EntityRetrievalException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		tagEntityDAO.persistEntity(tagEntity2);
+		tagEntityDAO.persistEntity(tagEntity3);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity2);
+		bookEntity1.addToTagsAndBooks(tagEntity3);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity2);
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO.findAllEntities();
+		List<GAEJPATagEntity> foundTags = tagEntityDAO.findAllEntities();
+		assertEquals(2, foundBooks.size());
+		assertEquals(3, foundTags.size());
+		List<GAEJPATagEntity> bookTags = new ArrayList<GAEJPATagEntity>(
+				foundBooks.get(0).getTags());
+		assertEquals(3, bookTags.size());
 	}
 
 	@Test(expected = EntityRetrievalException.class)
-	public void testGetBookEntity3() throws EntityRetrievalException {
-		// do not add anything but try to retrieve bookentity with id 1
+	public void testGetAllBookEntitiesUsingInvalidEM()
+			throws EntityRetrievalException {
+		failureBookEntityDAO.findAllEntities();
+	}
+
+	@Test
+	public void testGetSimpleBookEntity() throws EntityPersistenceException,
+			EntityRetrievalException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		GAEJPABookEntity retrievedEntity = bookEntityDAO
+				.findEntityById(bookEntity1.getKey());
+		assertNotNull(retrievedEntity);
+		assertEquals(bookEntity1.getKey(), retrievedEntity.getKey());
+	}
+
+	@Test
+	public void testGetComplexBookEntity() throws EntityPersistenceException,
+			EntityRetrievalException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		tagEntityDAO.persistEntity(tagEntity2);
+		tagEntityDAO.persistEntity(tagEntity3);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity2);
+		bookEntity1.addToTagsAndBooks(tagEntity3);
+		bookEntityDAO.persistEntity(bookEntity1);
+
+		GAEJPABookEntity retrievedEntity = bookEntityDAO
+				.findEntityById(bookEntity1.getKey());
+		assertNotNull(retrievedEntity);
+		assertEquals(bookEntity1.getKey(), retrievedEntity.getKey());
+		assertNotNull(retrievedEntity.getTags());
+	}
+
+	@Test(expected = EntityRetrievalException.class)
+	public void testGetBookEntityWithNullID() throws EntityRetrievalException {
 		bookEntityDAO.findEntityById(null);
 	}
 
+	@Test(expected = EntityRetrievalException.class)
+	public void testGetBookEntityUsingInvalidEM()
+			throws EntityRetrievalException, EntityPersistenceException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		failureBookEntityDAO.findEntityById(bookEntity1.getKey());
+	}
+	
 	@Test
-	public void testDeleteBookEntity1() {
-		try {
-			// add be1 to datastore
-			bookEntityDAO.persistEntity(be1);
-			assertEquals(1, bookEntityDAO.findAllEntities().size());
-			// delete be1
-			bookEntityDAO.removeEntity(be1);
-			assertEquals(0, bookEntityDAO.findAllEntities().size());
-		} catch (Exception e) {
-			// let testcase fail if exception is thrown
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+	public void testDeleteSimpleBookEntity() throws EntityPersistenceException,
+			EntityRetrievalException, EntityRemovalException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity2);
+		assertEquals(2, bookEntityDAO.findAllEntities().size());
+		bookEntityDAO.removeEntity(bookEntity2);
+		assertEquals(1, bookEntityDAO.findAllEntities().size());
 	}
 
 	@Test
-	public void testDeleteBookEntity2() {
-		try {
-			// add be1 and be2 to datastore
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			assertEquals(2, bookEntityDAO.findAllEntities().size());
-			// delete be2
-			bookEntityDAO.removeEntity(be2);
-			;
-			assertEquals(1, bookEntityDAO.findAllEntities().size());
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
+	public void testDeleteComplexBookEntity()
+			throws EntityPersistenceException, EntityRetrievalException,
+			EntityRemovalException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity1);
+
+		assertEquals(1, bookEntityDAO.findAllEntities().size());
+		assertEquals(1, tagEntityDAO.findAllEntities().size());
+
+		GAEJPABookEntity foundBook = bookEntityDAO.findEntityById(bookEntity1
+				.getKey());
+		bookEntityDAO.removeEntity(foundBook);
+		assertEquals(0, bookEntityDAO.findAllEntities().size());
+		assertEquals(1, tagEntityDAO.findAllEntities().size());
+
 	}
 
 	@Test(expected = EntityRemovalException.class)
-	public void testDeleteBookEntity3() throws EntityRemovalException {
-		// remove be1 without adding it before
-		bookEntityDAO.removeEntity(be1);
+	public void testDeleteBookEntityBeforeAddingEntity()
+			throws EntityRemovalException {
+		bookEntityDAO.removeEntity(bookEntity1);
+	}
+
+	@Test(expected = EntityRemovalException.class)
+	public void testDeleteBookEntityUsingInvalidEM()
+			throws EntityRemovalException {
+		failureBookEntityDAO.removeEntity(bookEntity1);
 	}
 
 	@Test
-	public void testUpdateBookEntity1() {
-		try {
-			// add be1
-			BookEntity addedEntity = bookEntityDAO.persistEntity(be1);
-			assertEquals(1, bookEntityDAO.findAllEntities().size());
+	public void testUpdateSimpleBookEntity() throws EntityRetrievalException,
+			EntityPersistenceException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		assertEquals(TEST_AUTHOR_A, bookEntity1.getAuthor());
+		String entityKey = bookEntity1.getKey();
 
-			// updated TagEntities for be1
-			TagEntity updatedTagEntity = new TagEntity();
-			updatedTagEntity.setTagName("Updatedtesttag");
-			List<TagEntity> updatedTagEntities = new ArrayList<TagEntity>();
-			updatedTagEntities.add(updatedTagEntity);
+		bookEntity1.setAuthor(TEST_AUTHOR_B);
+		bookEntityDAO.updateEntity(bookEntity1);
+		assertEquals(entityKey, bookEntity1.getKey());
 
-			// update be1
-			addedEntity.setAuthor("UpdatedTestauthor1");
-			addedEntity.setDescription("UpdatedTestdescription1");
-			addedEntity.setISBN("UpdatedTestISBN");
-			addedEntity.setPrice("200");
-			addedEntity.setTags(updatedTagEntities);
-			addedEntity.setTitle("UpdatedTesttitle1");
-			bookEntityDAO.updateEntity(addedEntity);
-			assertEquals(1, bookEntityDAO.findAllEntities().size());
+		// retrieve that item from DB and check some values
+		GAEJPABookEntity retrievedEntity = bookEntityDAO
+				.findEntityById(bookEntity1.getKey());
+		assertTrue(TEST_AUTHOR_B.equals(retrievedEntity.getAuthor()));
+	}
 
-			// retrieve that item from DB and check some values
-			BookEntity retrievedEntity = bookEntityDAO
-					.findEntityById(addedEntity.getId());
-			assertTrue(addedEntity.getAuthor().equals(
-					retrievedEntity.getAuthor()));
-			assertTrue(addedEntity.getTitle()
-					.equals(retrievedEntity.getTitle()));
-			assertTrue(addedEntity.getTags().get(0).getTagName()
-					.equals(retrievedEntity.getTags().get(0).getTagName()));
-			// TODO: Check whats wrong here? transaction already closed on
-			// manytomany?
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
+	@Test
+	public void testUpdateComplexBookEntity()
+			throws EntityPersistenceException, EntityRetrievalException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity1);
+		assertEquals(1, bookEntityDAO.findAllEntities().size());
+		assertEquals(1, tagEntityDAO.findAllEntities().size());
+		assertEquals(1, bookEntity1.getTags().size());
+
+		GAEJPABookEntity foundBookEntity = bookEntityDAO.findEntityById(bookEntity1
+				.getKey());
+		ArrayList<GAEJPATagEntity> list = new ArrayList<GAEJPATagEntity>(
+				foundBookEntity.getTags());
+		assertNotNull(list);
+		GAEJPATagEntity firstTag = list.get(0);
+		assertEquals(TAG_NAME_A, firstTag.getTagName());
+
+		// update entity
+		tagEntity1.setTagName(TAG_NAME_C);
+		tagEntityDAO.updateEntity(tagEntity1);
+		bookEntityDAO.updateEntity(bookEntity1);
+
+		GAEJPABookEntity retrievedEntity = bookEntityDAO
+				.findEntityById(bookEntity1.getKey());
+		list = new ArrayList<GAEJPATagEntity>(retrievedEntity.getTags());
+		GAEJPATagEntity firstRetrievedTag = list.get(0);
+		assertEquals(TAG_NAME_C, firstRetrievedTag.getTagName());
 	}
 
 	@Test(expected = EntityPersistenceException.class)
-	public void testUpdatedBookEntity2() throws EntityPersistenceException {
+	public void testUpdateBookEntityWithoutAdding()
+			throws EntityPersistenceException {
 		// try updating be1 without initially adding
-		bookEntityDAO.updateEntity(be1);
+		bookEntityDAO.updateEntity(bookEntity1);
+	}
+
+	@Test(expected = EntityPersistenceException.class)
+	public void testUpdateBookEntityUsingInvalidEM()
+			throws EntityPersistenceException {
+		failureBookEntityDAO.updateEntity(bookEntity1);
 	}
 
 	@Test
-	public void testFindSpecificBookEntity1() {
-		try {
-			// add be1 and assure that it is found
-			bookEntityDAO.persistEntity(be1);
-			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be1);
-			assertEquals(1, foundBooks.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+	public void testFindSpecificSimpleBookEntity()
+			throws EntityRetrievalException, EntityPersistenceException {
+		// add be1 and assure that it is found
+		bookEntityDAO.persistEntity(bookEntity1);
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO
+				.findSpecificEntity(bookEntity1);
+		assertEquals(1, foundBooks.size());
 	}
 
 	@Test
-	public void testFindSpecificBookEntity2() {
-		try {
-			// add 3 bookentities. search for values that occur in 2 of them
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			bookEntityDAO.persistEntity(be3);
-			be2.setId(null);
-			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be2);
-			assertEquals(2, foundBooks.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+	public void testFindSpecificComplexBookEntity()
+			throws EntityPersistenceException, EntityRetrievalException {
+		bookEntity1.setTitle(null);
+		tagEntityDAO.persistEntity(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity2);
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO
+				.findSpecificEntity(bookEntity1);
+		assertEquals(1, foundBooks.size());
 	}
 
 	@Test
-	public void testFindSpecificBookEntity3() {
-		try {
-			// search for specific bookEntity that was not persisted
-			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be1);
-			assertEquals(0, foundBooks.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
+	public void testFindSpecificComplexTagEntityByCommonSearchCriteria()
+			throws EntityPersistenceException, EntityRetrievalException {
+		bookEntity1.setTitle(BOOK_TITLE_FOR_TESTING);
+		bookEntity4.setTitle(BOOK_TITLE_FOR_TESTING);
+		bookEntity5.setTitle(BOOK_TITLE_FOR_TESTING);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity4);
+		bookEntityDAO.persistEntity(bookEntity5);
 
-	@Test(expected = EntityRetrievalException.class)
-	public void testFindSpecificBookEntity4() throws EntityRetrievalException {
-		// search for specific bookEntity with null entitymanager
-		failureBookEntityDAO.findSpecificEntity(be1);
-	}
+		GAEJPABookEntity searchBook = new GAEJPABookEntity();
+		searchBook.setTitle(BOOK_TITLE_FOR_TESTING);
 
-	@Test
-	public void testFindSpecificBookEntity5() {
-		// search for BookEntities with title = 'Testtitle2'
-		try {
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			bookEntityDAO.persistEntity(be3);
-			bookEntityDAO.persistEntity(be4);
-			bookEntityDAO.persistEntity(be5);
-			be5.setId(null);
-			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be5);
-			assertEquals(3, foundBooks.size());
-		} catch (EntityRetrievalException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		} catch (EntityPersistenceException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO
+				.findSpecificEntity(searchBook);
+		assertEquals(3, foundBooks.size());
 	}
 
 	@Test
-	public void testFindSpecificBookEntity6() {
-		// search for BookEntities with tags = 'testtag2'
-		try {
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			bookEntityDAO.persistEntity(be3);
-			bookEntityDAO.persistEntity(be4);
-			bookEntityDAO.persistEntity(be5);
-			List<BookEntity> foundBooks = bookEntityDAO.findSpecificEntity(be4);
-			assertEquals(1, foundBooks.size());
-		} catch (EntityRetrievalException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		} catch (EntityPersistenceException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
-
-	@Test
-	public void testGetEntityByTag1() {
-		try {
-			// add be1 and be2 and search for searchTag1
-			bookEntityDAO.persistEntity(be1);
-			bookEntityDAO.persistEntity(be2);
-			List<BookEntity> foundBooks = bookEntityDAO
-					.getBookEntityByTag(tags);
-			assertEquals(2, foundBooks.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-
-	}
-
-	@Test
-	public void testGetEntityByTag2() throws EntityRetrievalException {
-		// search for searchTag1 without adding anything to the store
-		List<BookEntity> foundBooks = bookEntityDAO.getBookEntityByTag(tags);
+	public void testFindSpecificBookEntityWithoutPersising()
+			throws EntityRetrievalException {
+		List<GAEJPABookEntity> foundBooks = bookEntityDAO
+				.findSpecificEntity(bookEntity1);
 		assertEquals(0, foundBooks.size());
 	}
 
 	@Test(expected = EntityRetrievalException.class)
-	public void testGetEntityByTag3() throws EntityRetrievalException {
-		// search for tag in bookentity DAO where entitymanager is null
-		failureBookEntityDAO.getBookEntityByTag(tags);
+	public void testFindSpecificBookEntityusinInvalidEM()
+			throws EntityRetrievalException {
+		failureBookEntityDAO.findSpecificEntity(bookEntity1);
 	}
 
-	/**
-	 * General setup
-	 */
-	private static void setupEnvironment() {
-		// create DAO instances
-		EMF emf = new ProductiveEMF();
-		bookEntityDAO = new BookDAOImpl(emf);
-		failureBookEntityDAO = new BookDAOImpl(null);
-		tagEntityDAO = new TagDAOImpl(emf);
-		searchTags = new ArrayList<String>();
-		searchTags.add(searchTag1);
-		tags = new Tags();
-		tags.setTags(searchTags);
-	}
-	
-	/**
-	 * prepare tagentities
-	 */
-	private static void prepareTagEntities() {
-		tagEntity1 = new TagEntity();
-		tagEntity1.setTagName(searchTag1);
-		tagEntityList1 = new ArrayList<TagEntity>();
-		tagEntityList1.add(tagEntity1);
-
-		tagEntity2 = new TagEntity();
-		tagEntity2.setTagName(searchTag2);
-		tagEntityList2 = new ArrayList<TagEntity>();
-		tagEntityList2.add(tagEntity2);
+	@Test
+	public void testGetEntityByTagSingleResult()
+			throws EntityRetrievalException, EntityPersistenceException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		tagEntityDAO.persistEntity(tagEntity2);
+		tagEntityDAO.persistEntity(tagEntity4);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity2);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntity2.addToTagsAndBooks(tagEntity2);
+		bookEntity2.addToTagsAndBooks(tagEntity4);
+		bookEntityDAO.persistEntity(bookEntity2);
+		List<GAEJPABookEntity> foundBooksHavingTagAB = bookEntityDAO
+				.getBookEntityByTag(tagsAB);
+		assertEquals(1, foundBooksHavingTagAB.size());
 	}
 
-	/**
-	 * store tagentities in datastore for testing
-	 * @throws EntityPersistenceException 
-	 */
-	private void saveTagEntities() throws EntityPersistenceException {
-		for(TagEntity tagEntity : tagEntityList1){
-			tagEntityDAO.persistEntity(tagEntity);
-		}
-		for(TagEntity tagEntity : tagEntityList2){
-			tagEntityDAO.persistEntity(tagEntity);
-		}
+	@Test
+	public void testGetEntityByTagMultipleResult()
+			throws EntityPersistenceException, EntityRetrievalException {
+		tagEntityDAO.persistEntity(tagEntity1);
+		tagEntityDAO.persistEntity(tagEntity2);
+		bookEntity1.addToTagsAndBooks(tagEntity1);
+		bookEntity1.addToTagsAndBooks(tagEntity2);
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntity2.addToTagsAndBooks(tagEntity1);
+		bookEntity2.addToTagsAndBooks(tagEntity2);
+		bookEntityDAO.persistEntity(bookEntity2);
+		bookEntity3.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity3);
+		bookEntity4.addToTagsAndBooks(tagEntity1);
+		bookEntityDAO.persistEntity(bookEntity4);
+		List<GAEJPABookEntity> foundBooksHavingTagA = bookEntityDAO
+				.getBookEntityByTag(tagsA);
+		List<GAEJPABookEntity> foundBooksHavingTagB = bookEntityDAO
+				.getBookEntityByTag(tagsB);
+		assertEquals("Incorrect Number of Bookentities with Tag A", 4,
+				foundBooksHavingTagA.size());
+		assertEquals("Incorrect Number of Bookentities with Tag B", 2,
+				foundBooksHavingTagB.size());
+	}
+
+	@Test
+	public void testGetEntityByTagOnlyBooksWithoutTags()
+			throws EntityRetrievalException, EntityPersistenceException {
+		bookEntityDAO.persistEntity(bookEntity1);
+		bookEntityDAO.persistEntity(bookEntity2);
+		List<GAEJPABookEntity> foundBooksHavingTagAB = bookEntityDAO
+				.getBookEntityByTag(tagsAB);
+		assertEquals(0,foundBooksHavingTagAB.size());
+	}
+
+	@Test
+	public void testGetEntityByTagNoBooksPersisted()
+			throws EntityRetrievalException {
+		List<GAEJPABookEntity> foundBooksHavingTagAB = bookEntityDAO
+				.getBookEntityByTag(tagsAB);
+		assertEquals(0,foundBooksHavingTagAB.size());
+	}
+
+	@Test(expected = EntityRetrievalException.class)
+	public void testGetEntityByTagUsingInvalidEM() throws EntityRetrievalException {
+		failureBookEntityDAO.getBookEntityByTag(tagsAB);
 	}
 }

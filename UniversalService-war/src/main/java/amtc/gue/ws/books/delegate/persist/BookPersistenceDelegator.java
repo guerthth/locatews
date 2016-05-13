@@ -1,15 +1,21 @@
 package amtc.gue.ws.books.delegate.persist;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
 import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRemovalException;
 import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
+import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
 import amtc.gue.ws.books.delegate.persist.output.PersistenceDelegatorOutput;
-import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.dao.DAOs;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.utils.BookPersistenceDelegatorUtils;
@@ -22,6 +28,14 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 
 	private static final Logger log = Logger
 			.getLogger(BookPersistenceDelegator.class.getName());
+
+	@Override
+	public void initialize(PersistenceDelegatorInput input,
+			DAOs daoImplementations) {
+		persistenceInput = input;
+		tagDAOImpl = daoImplementations.getTagDAO();
+		daoImpl = daoImplementations.getBookDAO();
+	}
 
 	@Override
 	/**
@@ -56,24 +70,26 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			// initialize delegatoroutput status
 			delegatorOutput.setStatusCode(ErrorConstants.ADD_BOOK_SUCCESS_CODE);
 
-			// transfor inputobject to bookentities bookentities
-			List<BookEntity> bookList = EntityMapper
+			// transform inputobject to bookentities bookentities
+			List<GAEJPABookEntity> bookEntityList = EntityMapper
 					.transformBooksToBookEntities(books,
 							PersistenceTypeEnum.ADD);
 
 			// list of books
-			List<BookEntity> successfullyAddedBookEntities = new ArrayList<BookEntity>();
-			List<BookEntity> unsuccessfullyAddedBookEntities = new ArrayList<BookEntity>();
+			List<GAEJPABookEntity> successfullyAddedBookEntities = new ArrayList<GAEJPABookEntity>();
+			List<GAEJPABookEntity> unsuccessfullyAddedBookEntities = new ArrayList<GAEJPABookEntity>();
 
 			// add every BookEntity to the DB
-			for (BookEntity bookEntity : bookList) {
+			for (GAEJPABookEntity bookEntity : bookEntityList) {
+				// check for existing TagEntities. if not existing then add
 				String bookEntityJSON;
-				BookEntity persistedBook;
+				GAEJPABookEntity persistedBookEntity;
 				try {
-					persistedBook = daoImpl.persistEntity(bookEntity);
+					handleTagPersistenceForBookEntity(bookEntity);
+					persistedBookEntity = daoImpl.persistEntity(bookEntity);
 					bookEntityJSON = EntityMapper
-							.mapBookEntityToJSONString(persistedBook);
-					successfullyAddedBookEntities.add(persistedBook);
+							.mapBookEntityToJSONString(persistedBookEntity);
+					successfullyAddedBookEntities.add(persistedBookEntity);
 					log.info(bookEntityJSON + " added to DB");
 				} catch (EntityPersistenceException e) {
 					bookEntityJSON = EntityMapper
@@ -106,11 +122,52 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 	}
 
 	/**
+	 * This method adds TagEntities to the DB. The Entities are only added, if
+	 * they are not existing so far.
+	 * 
+	 * @param bookEntity
+	 *            the GAEJPABookEntity whose tag should be added
+	 */
+	private void handleTagPersistenceForBookEntity(GAEJPABookEntity bookEntity) {
+		Set<GAEJPATagEntity> tagEntities = Collections
+				.synchronizedSet(new HashSet<GAEJPATagEntity>(bookEntity
+						.getTags()));
+		String tagEntityJSON;
+		GAEJPATagEntity persistedTagEntity;
+		bookEntity.getTags().clear();
+		
+		synchronized(tagEntities){
+			for (GAEJPATagEntity tagEntity : tagEntities) {
+				tagEntityJSON = EntityMapper.mapTagEntityToJSONString(tagEntity);
+				try {
+					tagEntity.getBooks().clear();
+					List<GAEJPATagEntity> foundTagEntities = tagDAOImpl
+							.findSpecificEntity(tagEntity);
+					if (foundTagEntities.size() == 0) {
+						persistedTagEntity = tagDAOImpl.persistEntity(tagEntity);
+					} else {
+						persistedTagEntity = foundTagEntities.get(0);
+						String foundKey = persistedTagEntity.getKey();
+						persistedTagEntity = tagDAOImpl.findEntityById(foundKey);
+					}
+					bookEntity.addToTagsAndBooks(persistedTagEntity);
+				} catch (EntityRetrievalException e) {
+					log.severe("Error while trying to retrieve tagEntity: "
+							+ tagEntityJSON);
+				} catch (EntityPersistenceException e) {
+					log.severe("Error while trying to persist tagEntity: "
+							+ tagEntityJSON);
+				}
+			}
+		}	
+	}
+
+	/**
 	 * Retrieve BookEntities by tag
 	 */
 	private void retrieveBooksByTag() {
 		log.info("READ by tag action triggered");
-		// detemine dao action to be called by input object type
+		// determine dao action to be called by input object type
 		if (persistenceInput.getInputObject() instanceof Tags) {
 
 			Tags searchTags = (Tags) persistenceInput.getInputObject();
@@ -119,7 +176,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			delegatorOutput
 					.setStatusCode(ErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
 
-			List<BookEntity> foundBooks = new ArrayList<BookEntity>();
+			List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
 			try {
 				foundBooks = daoImpl.getBookEntityByTag(searchTags);
 
@@ -152,7 +209,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 
 		// check input object
 		if (persistenceInput.getInputObject() instanceof Books) {
-			List<BookEntity> removedBookEntities = new ArrayList<BookEntity>();
+			List<GAEJPABookEntity> removedBookEntities = new ArrayList<GAEJPABookEntity>();
 			Books booksToRemove = (Books) persistenceInput.getInputObject();
 
 			// initialize delegatoroutput status
@@ -160,11 +217,11 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 					.setStatusCode(ErrorConstants.DELETE_BOOK_SUCCESS_CODE);
 
 			// transfor inputobejct to bookentities bookentities and remove
-			List<BookEntity> bookEntities = EntityMapper
+			List<GAEJPABookEntity> bookEntities = EntityMapper
 					.transformBooksToBookEntities(booksToRemove,
 							PersistenceTypeEnum.DELETE);
-			for (BookEntity bookEntity : bookEntities) {
-				List<BookEntity> bookEntitiesToRemove;
+			for (GAEJPABookEntity bookEntity : bookEntities) {
+				List<GAEJPABookEntity> bookEntitiesToRemove;
 				String bookEntityJSON = EntityMapper
 						.mapBookEntityToJSONString(bookEntity);
 				try {
@@ -172,11 +229,11 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 							.findSpecificEntity(bookEntity);
 					if (bookEntitiesToRemove != null
 							&& bookEntitiesToRemove.size() != 0) {
-						for (BookEntity bookEntityToRemove : bookEntitiesToRemove) {
+						for (GAEJPABookEntity bookEntityToRemove : bookEntitiesToRemove) {
 							String bookEntityToRemoveJSON = EntityMapper
 									.mapBookEntityToJSONString(bookEntityToRemove);
 							try {
-								BookEntity removedBookEntity = daoImpl
+								GAEJPABookEntity removedBookEntity = daoImpl
 										.removeEntity(bookEntityToRemove);
 								log.info("BookEntity " + bookEntityToRemoveJSON
 										+ " was successfully removed");

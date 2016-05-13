@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import amtc.gue.ws.books.persistence.model.BookEntity;
-import amtc.gue.ws.books.persistence.model.TagEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Tags;
 
 /**
@@ -25,19 +25,19 @@ public class BookDAOImplUtils {
 	 * @return the list if books containing only those who do possess all the
 	 *         tags
 	 */
-	public static List<BookEntity> retrieveBookEntitiesWithSpecificTags(
-			List<BookEntity> books, Tags searchTags) {
-		List<BookEntity> modifiableBookList = copyBookList(books);
+	public static List<GAEJPABookEntity> retrieveBookEntitiesWithSpecificTags(
+			List<GAEJPABookEntity> books, Tags searchTags) {
+		List<GAEJPABookEntity> modifiableBookList = copyBookList(books);
 
-		for (Iterator<BookEntity> bookIterator = modifiableBookList.iterator(); bookIterator
-				.hasNext();) {
-			BookEntity book = bookIterator.next();
+		for (Iterator<GAEJPABookEntity> bookIterator = modifiableBookList
+				.iterator(); bookIterator.hasNext();) {
+			GAEJPABookEntity book = bookIterator.next();
 			int foundTags = 0;
 			for (String tag : searchTags.getTags()) {
 				if (book != null && book.getTags() != null
 						&& book.getTags().size() > 0) {
 					// evaluate how many tags are found in the bookEntity
-					for (TagEntity tagEntity : book.getTags()) {
+					for (GAEJPATagEntity tagEntity : book.getTags()) {
 						if (tagEntity.getTagName().equals(tag)) {
 							foundTags++;
 							break;
@@ -46,42 +46,26 @@ public class BookDAOImplUtils {
 				}
 			}
 			// check if all searchtags were found for the book
-			if(foundTags != searchTags.getTags().size()){
+			if (foundTags != searchTags.getTags().size()) {
 				bookIterator.remove();
 			}
 		}
-
-		// TODO: CLean up
-//		for (Iterator<BookEntity> bookIterator = modifiableBookList.iterator(); bookIterator
-//				.hasNext();) {
-//			BookEntity book = bookIterator.next();
-//			for (String tag : searchTags.getTags()) {
-//				if (book != null) {
-//					// TODO: due to the implementation with contains and the
-//					// consolidated tags string in books the contains method is
-//					// somehow fuzzy which will be fixed once the data model is
-//					// updated.
-//					if ((book.getTags() == null)
-//							|| (book.getTags() != null && !book.getTags()
-//									.contains(tag))) {
-//						bookIterator.remove();
-//						break;
-//					}
-//				}
-//			}
-//		}
 		return modifiableBookList;
 	}
 
 	/**
 	 * Method that copies the content of a specific List to another list
 	 * 
-	 * @param books
+	 * @param bookListToCopy
 	 *            the list that should be copied
 	 * @return the copy of the list
 	 */
-	public static List<BookEntity> copyBookList(List<BookEntity> books) {
-		List<BookEntity> copiedList = new ArrayList<BookEntity>(books);
+	public static List<GAEJPABookEntity> copyBookList(
+			List<GAEJPABookEntity> bookListToCopy) {
+		List<GAEJPABookEntity> copiedList = null;
+		if (bookListToCopy != null) {
+			copiedList = new ArrayList<GAEJPABookEntity>(bookListToCopy);
+		}
 		return copiedList;
 	}
 
@@ -92,15 +76,17 @@ public class BookDAOImplUtils {
 	 *            the basic bookQuery
 	 * @param bookEntity
 	 *            the BookEntity that is searched for
-	 * @return the built up complete query based on the searched BookEntity
+	 * @return the built up complete query based on the searched BookEntity note
+	 *         that tag comparison is not included here. The reason therefore is
+	 *         that there are separate tag search operations
 	 */
 	public static String buildSpecificBookQuery(String initialBookQuery,
-			BookEntity bookEntity) {
+			GAEJPABookEntity bookEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialBookQuery);
 		int initialLength = sb.length();
 		if (bookEntity != null) {
-			if (bookEntity.getId() != null) {
+			if (bookEntity.getKey() != null) {
 				sb.append(" and be.bookId = :id");
 			}
 			if (bookEntity.getTitle() != null) {
@@ -115,9 +101,6 @@ public class BookDAOImplUtils {
 			if (bookEntity.getISBN() != null) {
 				sb.append(" and be.ISBN = :ISBN");
 			}
-			if (bookEntity.getTags() != null) {
-				sb.append(" and be.tags = :tags");
-			}
 			if (bookEntity.getDescription() != null) {
 				sb.append(" and be.description = :description");
 			}
@@ -129,4 +112,5 @@ public class BookDAOImplUtils {
 		}
 		return sb.toString();
 	}
+
 }

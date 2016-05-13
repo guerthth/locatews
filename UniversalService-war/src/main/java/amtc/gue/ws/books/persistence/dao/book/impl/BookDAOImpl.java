@@ -10,7 +10,7 @@ import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.EMF;
 import amtc.gue.ws.books.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
-import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
 
@@ -20,9 +20,10 @@ import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
  * @author Thomas
  *
  */
-public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
+public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
+		BookDAO {
 
-	/** Select specific book query */
+	/** Select queries */
 	private final String BASIC_BOOK_SPECIFIC_QUERY = "select be from "
 			+ this.entityClass.getSimpleName() + " be";
 
@@ -32,18 +33,41 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<BookEntity> findSpecificEntity(BookEntity bookEntity)
-			throws EntityRetrievalException {
-		List<BookEntity> foundBooks = new ArrayList<BookEntity>();
+	public GAEJPABookEntity persistEntity(GAEJPABookEntity bookEntity)
+			throws EntityPersistenceException {
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager.createQuery(BookDAOImplUtils
-					.buildSpecificBookQuery(BASIC_BOOK_SPECIFIC_QUERY,
-							bookEntity));
-			if (bookEntity.getId() != null)
-				q.setParameter("id", bookEntity.getId());
+			entityManager.getTransaction().begin();
+//			if(bookEntity.getTags() != null){
+//				for
+//			}
+			entityManager.persist(bookEntity);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			if (entityManager != null) {
+				entityManager.getTransaction().rollback();
+			}
+			throw new EntityPersistenceException("Persisting "
+					+ entityClass.getName() + " failed. ", e);
+
+		} finally {
+			closeEntityManager();
+		}
+		return bookEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GAEJPABookEntity> findSpecificEntity(GAEJPABookEntity bookEntity)
+			throws EntityRetrievalException {
+		List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
+		try {
+			entityManager = entityManagerFactory.createEntityManager();
+			Query q = entityManager.createQuery(BookDAOImplUtils.buildSpecificBookQuery(
+					BASIC_BOOK_SPECIFIC_QUERY, bookEntity));
+			if (bookEntity.getKey() != null)
+				q.setParameter("id", bookEntity.getKey());
 			if (bookEntity.getTitle() != null)
 				q.setParameter("title", bookEntity.getTitle());
 			if (bookEntity.getAuthor() != null)
@@ -52,13 +76,10 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 				q.setParameter("price", bookEntity.getPrice());
 			if (bookEntity.getISBN() != null)
 				q.setParameter("ISBN", bookEntity.getISBN());
-			if (bookEntity.getTags() != null)
-				q.setParameter("be.tags", bookEntity.getTags());
 			if (bookEntity.getDescription() != null)
 				q.setParameter("description", bookEntity.getDescription());
 			foundBooks = q.getResultList();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new EntityRetrievalException(
 					"Retrieval of specific BookEntity failed.", e);
 		} finally {
@@ -70,24 +91,23 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<BookEntity> getBookEntityByTag(Tags tags)
+	public List<GAEJPABookEntity> getBookEntityByTag(Tags tags)
 			throws EntityRetrievalException {
 
-		List<BookEntity> foundBooks = new ArrayList<BookEntity>();
-
+		List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
+		
 		try {
-			foundBooks = new ArrayList<BookEntity>();
+			foundBooks = new ArrayList<GAEJPABookEntity>();
 
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
 
 			// read bookentites from DB that possess specific tags
 			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
-					BookEntity.class);
+					GAEJPABookEntity.class);
 			foundBooks = q.getResultList();
 
 		} catch (Exception e) {
-			entityManager.getTransaction().rollback();
 			throw new EntityRetrievalException(
 					"Retrieval of BookEntity for tags: "
 							+ tags.getTags().toString() + " failed.", e);
@@ -100,39 +120,33 @@ public class BookDAOImpl extends DAOImpl<BookEntity, Long> implements BookDAO {
 	}
 
 	@Override
-	public BookEntity updateEntity(BookEntity entity)
+	public GAEJPABookEntity updateEntity(GAEJPABookEntity entity)
 			throws EntityPersistenceException {
-
-		BookEntity updatedBookEntity;
-
+		GAEJPABookEntity updatedBookEntity;
 		try {
-			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
-
-			// find existing bookentity and update
 			entityManager.getTransaction().begin();
 
-			updatedBookEntity = entityManager.find(BookEntity.class,
-					entity.getId());
+			updatedBookEntity = (GAEJPABookEntity) entityManager.find(
+					GAEJPABookEntity.class, entity.getKey());
 			updatedBookEntity.setAuthor(entity.getAuthor());
 			updatedBookEntity.setDescription(entity.getDescription());
 			updatedBookEntity.setISBN(entity.getISBN());
 			updatedBookEntity.setPrice(entity.getPrice());
-			updatedBookEntity.setTags(entity.getTags());
+			updatedBookEntity.setTags(entity.getTags(),true);
 			updatedBookEntity.setTitle(entity.getTitle());
-
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			// rollback
-			entityManager.getTransaction().rollback();
+			if (entityManager != null) {
+				entityManager.getTransaction().rollback();
+			}
 			throw new EntityPersistenceException(
 					"Updating BookEntity for ISBN " + entity.getISBN()
-							+ " and ID " + entity.getId() + " failed", e);
+							+ " and ID " + entity.getKey() + " failed", e);
 		} finally {
 			closeEntityManager();
 		}
 
-		// return the updated BookEntity
 		return updatedBookEntity;
 	}
 }

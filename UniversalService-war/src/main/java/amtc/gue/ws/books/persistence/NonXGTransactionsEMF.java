@@ -5,28 +5,17 @@ import javax.persistence.Persistence;
 
 /**
  * Class that holds the EntityManagerFactory instance
+ * for non alloweg xg transactions
  * 
  * @author Thomas
  *
  */
-public class ProductiveEMF implements EMF {
+public class NonXGTransactionsEMF implements EMF{
 
 	/** EntityManagerFactory for gae-jpa persistence unit */
 	private static final EntityManagerFactory emfInstance = Persistence
-			.createEntityManagerFactory("gae-jpa");
-
-	/**
-	 * Constructor
-	 */
-	public ProductiveEMF() {
-
-	}
-
-	/**
-	 * Method returning the instance of the productive EntitiyManagerFactory
-	 * 
-	 * @return the EntityManagerFactory Instance
-	 */
+			.createEntityManagerFactory("gae-jpa-XGTransactions-not-enabled");
+	
 	@Override
 	public EntityManagerFactory getEntityManagerFactory() {
 		return emfInstance;

@@ -10,6 +10,7 @@ import javax.jws.soap.SOAPBinding.Use;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
+import amtc.gue.ws.books.service.inout.output.TagServiceResponse;
 
 /**
  * Webservice interface that can be implemented by several 
@@ -18,12 +19,12 @@ import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
  *
  */
 @WebService
-//@HandlerChain(file="handler-chain.xml")
 @SOAPBinding(style = Style.DOCUMENT, use = Use.LITERAL)
 public interface IBookGrabber {
 	
 	/**
 	 * Method adding Items to the store
+	 * 
 	 * @param items list of items that shall be added to the store
 	 * @return serviceresponse object
 	 * 
@@ -32,14 +33,28 @@ public interface IBookGrabber {
 	public BookServiceResponse addBooks(@WebParam(name = "books") Books items);
 	
 	/**
-	 * Method retrieving items by criteria
-	 * @param items
-	 * @return list of items
+	 * Method retrieving books possessing specific tags
+	 * 
+	 * @param tags list of tags the books should possess
+	 * @return list of books possessing the tags
 	 */
 	@WebMethod(operationName = "getBooksByTag")
 	public BookServiceResponse getBooksByTag(@WebParam(name = "searchTags") Tags tags);
 	
+	/**
+	 * Method removing specific books
+	 * 
+	 * @param booksToRemove a list of books that should be removed
+	 * @return the books that have been removed
+	 */
 	@WebMethod(operationName = "removeBooks")
 	public BookServiceResponse removeBooks(@WebParam(name = "booksToRemove") Books booksToRemove);
 	
+	/**
+	 * Method retriebing all existing tags from the datastore
+	 * 
+	 * @return the found tags
+	 */
+	@WebMethod(operationName = "getTags")
+	public TagServiceResponse getTags();
 }

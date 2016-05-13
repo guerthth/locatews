@@ -10,10 +10,10 @@ import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.EMF;
 import amtc.gue.ws.books.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
-import amtc.gue.ws.books.persistence.model.TagEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.utils.dao.TagDAOImplUtils;
 
-public class TagDAOImpl extends DAOImpl<TagEntity, Long> implements TagDAO {
+public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements TagDAO {
 
 	/** Select specific tag query */
 	private final String BASIC_TAG_SPECIFIC_QUERY = "select t from "
@@ -27,16 +27,16 @@ public class TagDAOImpl extends DAOImpl<TagEntity, Long> implements TagDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<TagEntity> findSpecificEntity(TagEntity tagEntity)
+	public List<GAEJPATagEntity> findSpecificEntity(GAEJPATagEntity tagEntity)
 			throws EntityRetrievalException {
-		List<TagEntity> foundTags = new ArrayList<TagEntity>();
+		List<GAEJPATagEntity> foundTags = new ArrayList<GAEJPATagEntity>();
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
 			Query q = entityManager
 					.createQuery(TagDAOImplUtils.buildSpecificTagQuery(
 							BASIC_TAG_SPECIFIC_QUERY, tagEntity));
-			if (tagEntity.getId() != null)
-				q.setParameter("id", tagEntity.getId());
+			if (tagEntity.getKey() != null)
+				q.setParameter("id", tagEntity.getKey());
 			if (tagEntity.getTagName() != null)
 				q.setParameter("tagname", tagEntity.getTagName());
 			foundTags = q.getResultList();
@@ -51,22 +51,24 @@ public class TagDAOImpl extends DAOImpl<TagEntity, Long> implements TagDAO {
 	}
 
 	@Override
-	public TagEntity updateEntity(TagEntity tagEntity)
+	public GAEJPATagEntity updateEntity(GAEJPATagEntity tagEntity)
 			throws EntityPersistenceException {
-		TagEntity updatedTagEntity;
+		GAEJPATagEntity updatedTagEntity;
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
 			entityManager.getTransaction().begin();
-			updatedTagEntity = entityManager.find(TagEntity.class,
-					tagEntity.getId());
+			updatedTagEntity = entityManager.find(GAEJPATagEntity.class,
+					tagEntity.getKey());
 			updatedTagEntity.setTagName(tagEntity.getTagName());
-			
+			updatedTagEntity.setBooks(tagEntity.getBooks());
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			entityManager.getTransaction().rollback();
+			if(entityManager != null){
+				entityManager.getTransaction().rollback();
+			}
 			throw new EntityPersistenceException(
 					"Updating TagEntity for tagName " + tagEntity.getTagName()
-							+ " and ID " + tagEntity.getId() + " failed", e);
+							+ " and ID " + tagEntity.getKey() + " failed", e);
 		} finally {
 			closeEntityManager();
 		}

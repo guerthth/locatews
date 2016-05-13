@@ -2,7 +2,7 @@ package amtc.gue.ws.books.utils;
 
 import java.util.List;
 
-import amtc.gue.ws.books.persistence.model.BookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.service.inout.Tags;
 
 /**
@@ -24,8 +24,8 @@ public class BookPersistenceDelegatorUtils {
 	 * @return the status message that can be used in the response as String
 	 */
 	public static String buildPersistBookSuccessStatusMessage(
-			List<BookEntity> successfullyAddedBookEntities,
-			List<BookEntity> unSuccessfullyAddedBookEntities) {
+			List<GAEJPABookEntity> successfullyAddedBookEntities,
+			List<GAEJPABookEntity> unSuccessfullyAddedBookEntities) {
 		int numberOfSuccessfullyAddedEntities = (successfullyAddedBookEntities != null) ? successfullyAddedBookEntities
 				.size() : 0;
 		int numberOfUnsuccessfullyAddedEntities = (unSuccessfullyAddedBookEntities != null) ? unSuccessfullyAddedBookEntities
@@ -62,7 +62,7 @@ public class BookPersistenceDelegatorUtils {
 	 * @return the status message that can bed used in the response as String
 	 */
 	public static String buildGetBooksByTagSuccessStatusMessage(
-			Tags searchTags, List<BookEntity> foundBooks) {
+			Tags searchTags, List<GAEJPABookEntity> foundBooks) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
@@ -85,7 +85,7 @@ public class BookPersistenceDelegatorUtils {
 	 * @return the status message that can bed used in the response as String
 	 */
 	public static String buildRemoveBooksSuccessStatusMessage(
-			List<BookEntity> removedBookEntities) {
+			List<GAEJPABookEntity> removedBookEntities) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ErrorConstants.DELETE_BOOK_SUCCESS_MSG);
 		sb.append(" '");

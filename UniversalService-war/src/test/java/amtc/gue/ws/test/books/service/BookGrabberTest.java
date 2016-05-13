@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+import amtc.gue.ws.books.service.BookGrabber;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
 import amtc.gue.ws.books.service.inout.Tags;
@@ -18,8 +21,8 @@ import amtc.gue.ws.books.service.inout.Tags;
  * @author Thomas
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BookGrabberTest {
-
 	private static Books books;
 	private static Book firstBook;
 	private static Book secondBook;
@@ -27,10 +30,14 @@ public class BookGrabberTest {
 	private static List<String> tagList;
 	private static Tags tags;
 
+	private static BookGrabber bookGrabber;
+
 	private static final String searchTag1 = "testtag";
 
 	@BeforeClass
 	public static void oneTimeSetup() {
+
+		bookGrabber = new BookGrabber();
 
 		tagList = new ArrayList<String>();
 		tagList.add(searchTag1);
@@ -64,7 +71,22 @@ public class BookGrabberTest {
 
 	@Test
 	public void testAddBooks() {
-		assertTrue(true);
+		assertNotNull(bookGrabber.addBooks(books));
+	}
+
+	@Test
+	public void testGetBooksByTags() {
+		assertNotNull(bookGrabber.getBooksByTag(tags));
+	}
+
+	@Test
+	public void testRemoveBooks() {
+		assertNotNull(bookGrabber.removeBooks(books));
+	}
+	
+	@Test
+	public void testGetTags(){
+		assertNotNull(bookGrabber.getTags());
 	}
 
 }

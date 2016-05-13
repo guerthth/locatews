@@ -129,7 +129,48 @@
 					configuration, then run the debug client configuration, and then
 					exercise the application. This can be done by using e.g. SOAP-UI
 					and sending requests to the locally runnung webservice. The used
-					port has to be the same as defined in the pom file.</p>
+					port has to be the same as defined in the pom file.
+				</p>
+			</subsection>
+			<subsection name="Concurrent modifications on collections"
+				id="concurrentCollectionModification">
+				<p>
+					When iterating over collections (e.g. Set, ArrayList,..) it
+					sometimes happens that a ConcurrentModificationException occurs.
+					In
+					order to overcome that issue, one has to make the collection
+					syncronized.
+					This can be done by using for example the
+					Collections.synchronizedSet
+					method and pass it the Set that should
+					be synchronized.
+					Besides that, when iterating over the collection,
+					this access should be done using a synchronized blocl that locks
+					the collection object. See also
+					<a
+						href="http://www.avajava.com/tutorials/lessons/how-do-i-synchronize-a-list-or-other-collection-in-java.html">this</a>
+					link for further details.
+				</p>
+			</subsection>
+			<subsection
+				name="Unit Testing datastore transactions including entity relationships"
+				id="datastoreunittesting">
+				<p>
+					Entities can be stored to the Google data store using ORMs like
+					JPA or JDO.
+					The possibility for unit testing data store transactions
+					is a huge
+					advantage of datanucleus.
+					Doing so enables us to test all
+					our database transactions without the
+					need to use productive
+					database.
+					In order to do so, the LocalServiceTestHelper can be used.
+					More specifically this LocalServiceTestHelper has to be created
+					with AlternateHighRepJobPolicy in order to make unit tests work.
+					The implementation can be found in the top level class of the
+					persistence unit test which is JPATest.java.
+				</p>
 			</subsection>
 		</section>
 	</body>

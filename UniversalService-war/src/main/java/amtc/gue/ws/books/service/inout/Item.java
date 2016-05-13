@@ -11,18 +11,18 @@ public class Item {
 
 	// id of the item
 	@XmlElement(name = "id", required = false, nillable = true)
-	private Long id;
+	private String id;
 
 	// textual description of the item
 	@XmlElement(name = "description", required = false, nillable = true)
 	protected String description;
 
 	// Getters and Setters
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	

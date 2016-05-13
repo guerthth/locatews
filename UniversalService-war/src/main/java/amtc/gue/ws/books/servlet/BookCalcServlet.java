@@ -32,6 +32,8 @@ import amtc.gue.ws.books.service.jaxws.AddBooks;
 import amtc.gue.ws.books.service.jaxws.AddBooksResponse;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTag;
 import amtc.gue.ws.books.service.jaxws.GetBooksByTagResponse;
+import amtc.gue.ws.books.service.jaxws.GetTags;
+import amtc.gue.ws.books.service.jaxws.GetTagsResponse;
 import amtc.gue.ws.books.service.jaxws.RemoveBooks;
 import amtc.gue.ws.books.service.jaxws.RemoveBooksResponse;
 
@@ -52,6 +54,7 @@ public class BookCalcServlet extends HttpServlet {
 	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS,
 			"getBooksByTag");
 	public static final QName QNAME_REMOVE_BOOKS = new QName(NS, "removeBooks");
+	public static final QName QNAME_GET_TAGS = new QName(NS, "getTags");
 
 	private static final String INCOMING_SOAP_REQUEST = "Incoming SOAP Request: ";
 	private static final String OUTGOING_SOAP_RESPONSE = "Outgoing SOAP Response: ";
@@ -105,13 +108,11 @@ public class BookCalcServlet extends HttpServlet {
 		Iterator iter = request.getSOAPBody().getChildElements();
 		Object respPojo = null;
 		while (iter.hasNext()) {
-
-			// log.info("Iterating through child elements.");
-
+			log.info("Iterating through child elements.");
 			// find first Element child
 			Object child = iter.next();
 			if (child instanceof SOAPElement) {
-				// log.info("SOAP element found!: " + child);
+				log.info("SOAP element found!: " + child);
 				respPojo = handleSOAPRequestElement((SOAPElement) child);
 				break;
 			}
@@ -132,17 +133,21 @@ public class BookCalcServlet extends HttpServlet {
 
 		QName reqName = reqElem.getElementQName();
 		if (QNAME_ADD_BOOKS.equals(reqName)) {
-			// log.info("Adding books webservice method called.");
+			log.info("Adding books webservice method called.");
 			return handleAddBooks(JAXB.unmarshal(new DOMSource(reqElem),
 					AddBooks.class));
 		} else if (QNAME_GET_BOOKS_BY_TAG.equals(reqName)) {
-			// log.info("getting books by tags webservice method called.");
+			log.info("getting books by tags webservice method called.");
 			return handleGetBooksByTags(JAXB.unmarshal(new DOMSource(reqElem),
 					GetBooksByTag.class));
 		} else if (QNAME_REMOVE_BOOKS.equals(reqName)) {
 			return handleRemoveBooks(JAXB.unmarshal(new DOMSource(reqElem),
 					RemoveBooks.class));
+		} else if (QNAME_GET_TAGS.equals(reqName)) {
+			return handleGetTags(JAXB.unmarshal(new DOMSource(reqElem),
+					GetTags.class));
 		}
+
 		return null;
 	}
 
@@ -191,6 +196,19 @@ public class BookCalcServlet extends HttpServlet {
 	}
 
 	/**
+	 * Method handling a GetTags request
+	 * 
+	 * @param getTagsRequest
+	 *            the GetTags request that should be handled
+	 * @return the GetTags response
+	 */
+	protected GetTagsResponse handleGetTags(GetTags getTagsRequest) {
+		GetTagsResponse getTagsResponse = new GetTagsResponse();
+		getTagsResponse.setReturn(serviceImpl.getTags());
+		return getTagsResponse;
+	}
+
+	/**
 	 * Method logging a soap message
 	 * 
 	 * @param soapMessage
@@ -211,12 +229,11 @@ public class BookCalcServlet extends HttpServlet {
 			}
 			soapMessageStringBuilder.append(bout.toString("UTF-8"));
 		} catch (SOAPException | IOException e) {
-			e.printStackTrace();
 			soapMessageStringBuilder = new StringBuilder();
 			soapMessageStringBuilder
 					.append("Error while processing SOAPMessage");
 		}
-		// log.info(soapMessageStringBuilder.toString());
+		log.info(soapMessageStringBuilder.toString());
 	}
 
 	@Override

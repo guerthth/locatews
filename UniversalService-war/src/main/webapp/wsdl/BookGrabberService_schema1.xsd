@@ -9,6 +9,10 @@
 
   <xs:element name="getBooksByTagResponse" type="tns:getBooksByTagResponse"/>
 
+  <xs:element name="getTags" type="tns:getTags"/>
+
+  <xs:element name="getTagsResponse" type="tns:getTagsResponse"/>
+
   <xs:element name="removeBooks" type="tns:removeBooks"/>
 
   <xs:element name="removeBooksResponse" type="tns:removeBooksResponse"/>
@@ -41,7 +45,7 @@
 
   <xs:complexType name="item">
     <xs:sequence>
-      <xs:element name="id" type="xs:long" nillable="true" minOccurs="0"/>
+      <xs:element name="id" type="xs:string" nillable="true" minOccurs="0"/>
       <xs:element name="description" type="xs:string" nillable="true" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
@@ -79,6 +83,26 @@
       <xs:element name="statusCode" type="xs:int"/>
       <xs:element name="statusMessage" type="xs:string"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTags">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getTagsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:tagServiceResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tagServiceResponse">
+    <xs:complexContent>
+      <xs:extension base="tns:serviceResponse">
+        <xs:sequence>
+          <xs:element name="tags" type="tns:tags" nillable="true" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="getBooksByTag">
