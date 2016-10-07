@@ -231,9 +231,8 @@ public class BookPersistenceDelegatorTest extends DelegatorTest {
 		// Positive Scenario mock for book removal with Id
 		bookDAOImplIdRemoval = EasyMock.createNiceMock(BookDAO.class);
 		EasyMock.expect(
-				bookDAOImplIdRemoval.findSpecificEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andReturn(
-				retrievedBookEntityList);
+				bookDAOImplIdRemoval.findEntityById(EasyMock.isA(String.class)))
+				.andReturn(retrievedBookEntityList.get(0));
 		EasyMock.expect(
 				bookDAOImplIdRemoval.removeEntity(EasyMock
 						.isA(GAEJPABookEntity.class))).andReturn(

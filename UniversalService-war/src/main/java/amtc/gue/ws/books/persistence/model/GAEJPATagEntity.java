@@ -27,7 +27,7 @@ import com.google.appengine.datanucleus.annotations.Unowned;
  *
  */
 @Entity
-@Table(name="tag")
+@Table(name = "tag")
 public class GAEJPATagEntity extends GAEPersistenceEntity {
 
 	/**
@@ -45,7 +45,7 @@ public class GAEJPATagEntity extends GAEPersistenceEntity {
 
 	@Unowned
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-	private Set<GAEJPABookEntity> books = new HashSet<GAEJPABookEntity>();
+	private Set<GAEJPABookEntity> books = new HashSet<>();
 
 	@Override
 	public String getKey() {
@@ -72,19 +72,27 @@ public class GAEJPATagEntity extends GAEPersistenceEntity {
 	public void setBooks(Set<GAEJPABookEntity> books) {
 		this.books.clear();
 		if (books != null) {
+			this.books.clear();
 			for (GAEJPABookEntity book : books) {
 				addToBooks(book);
 			}
 		}
 	}
 
+	/**
+	 * Method adding books to the books Set
+	 * 
+	 * @param book
+	 *            the book that should be added to the books Set
+	 */
 	public void addToBooks(GAEJPABookEntity book) {
-		if(book != null){
+		if (book != null) {
 			books.add(book);
 			book.getTags().add(this);
 		}
 	}
 
+	@Override
 	public String toString() {
 		return EntityMapper.mapTagEntityToJSONString(this);
 	}

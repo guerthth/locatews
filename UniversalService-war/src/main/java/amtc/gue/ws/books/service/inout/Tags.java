@@ -6,19 +6,16 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * JAXB object for the Tags complex type
  * @author Thomas
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name= "tags", propOrder = "tags")
+@XmlAccessorType(XmlAccessType.NONE)
 public class Tags {
 	
-	// list of tags
-	@XmlElement(name = "tag")
+	@XmlElement(name = "tags")
 	private List<String> tags;
 
 	/**
@@ -28,7 +25,7 @@ public class Tags {
 	public List<String> getTags() {
 		
 		if(this.tags == null){
-			this.tags = new ArrayList<String>();
+			this.tags = new ArrayList<>();
 		}	
 		return this.tags;
 	}

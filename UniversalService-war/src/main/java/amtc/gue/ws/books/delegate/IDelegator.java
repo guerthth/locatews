@@ -16,6 +16,6 @@ public interface IDelegator {
 	 * @throws EntityPersistenceException 
 	 * @throws EntityRetrievalException 
 	 */
-	public IDelegatorOutput delegate() throws EntityPersistenceException, EntityRetrievalException;
+	public IDelegatorOutput delegate();
 	
 }

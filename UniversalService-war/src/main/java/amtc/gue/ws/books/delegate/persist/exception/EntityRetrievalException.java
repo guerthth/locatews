@@ -1,5 +1,11 @@
 package amtc.gue.ws.books.delegate.persist.exception;
 
+/**
+ * Exception implementation for entity retrieval problems 
+ * 
+ * @author Thomas
+ *
+ */
 public class EntityRetrievalException extends Exception {
 
 	/**

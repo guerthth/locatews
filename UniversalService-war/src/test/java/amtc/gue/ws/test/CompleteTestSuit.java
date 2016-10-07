@@ -1,4 +1,4 @@
-package amtc.gue.ws.test.books;
+package amtc.gue.ws.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,13 +14,15 @@ import amtc.gue.ws.test.books.utils.EntityMapperTest;
 import amtc.gue.ws.test.books.utils.TagPersistenceDelegatorUtilsTest;
 import amtc.gue.ws.test.books.utils.dao.BookDAOImplUtilsTest;
 import amtc.gue.ws.test.books.utils.dao.TagDAOImplUtilsTest;
+import amtc.gue.ws.test.service.BookServiceTest;
+import amtc.gue.ws.test.service.TagServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({ EntityMapperTest.class, BookDAOTest.class, TagDAOTest.class,
 		BookPersistenceDelegatorTest.class, TagPersistenceDelegatorTest.class,
 		BookGrabberTest.class, BookDAOImplUtilsTest.class,
 		TagDAOImplUtilsTest.class, BookPersistenceDelegatorUtilsTest.class,
-		TagPersistenceDelegatorUtilsTest.class })
+		TagPersistenceDelegatorUtilsTest.class, BookServiceTest.class, TagServiceTest.class })
 public class CompleteTestSuit {
 
 }

@@ -23,6 +23,9 @@
 		<junit.version>4.12</junit.version>
 		<easymock.version>3.3.1</easymock.version>
 		<cobertura.version>2.7</cobertura.version>
+		<hibernate.validator.version>5.2.1.Final</hibernate.validator.version>
+		<!-- newer version than 2.17 seem not work with GAE -->
+		<jersey.version>2.17</jersey.version>
 	</properties>
 
 	<build>

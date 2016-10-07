@@ -56,7 +56,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 																 * GAEJPATagEntity
 																 * .class
 																 */, fetch = FetchType.EAGER)
-	private Set<GAEJPATagEntity> tags = new HashSet<GAEJPATagEntity>();
+	private Set<GAEJPATagEntity> tags = new HashSet<>();
 
 	@Override
 	public String getKey() {
@@ -112,6 +112,15 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 		return tags;
 	}
 
+	/**
+	 * Method that sets the specific tags in the tags Set
+	 * 
+	 * @param tags
+	 *            the tags that should be added to the Set
+	 * @param alsoSetBooks
+	 *            flag that specifies if the book reference in the tags should
+	 *            be set or not. true = also set book reference
+	 */
 	public void setTags(Set<GAEJPATagEntity> tags, boolean alsoSetBooks) {
 		this.tags.clear();
 		if (tags != null) {
@@ -125,19 +134,36 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 		}
 	}
 
+	/**
+	 * Method setting only the tags in the tags Set
+	 * 
+	 * @param tag
+	 *            the tag that should be added to the Set
+	 */
 	public void addToTagsOnly(GAEJPATagEntity tag) {
 		if (tag != null) {
 			tags.add(tag);
 		}
 	}
 
+	/**
+	 * Method setting the tags in the tags set including the corresponding book
+	 * reference
+	 * 
+	 * @param tag
+	 *            the tag that should be added to the Set
+	 */
 	public void addToTagsAndBooks(GAEJPATagEntity tag) {
 		if (tag != null) {
 			tags.add(tag);
+			if (tag.getBooks() == null) {
+				tag.setBooks(new HashSet<GAEJPABookEntity>());
+			}
 			tag.getBooks().add(this);
 		}
 	}
 
+	@Override
 	public String toString() {
 		return EntityMapper.mapBookEntityToJSONString(this);
 	}

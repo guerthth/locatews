@@ -2,6 +2,12 @@ package amtc.gue.ws.books.delegate.persist.output;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
 
+/**
+ * Represents an Outputobject created by PersistenceDelegators
+ * 
+ * @author Thomas
+ *
+ */
 public class PersistenceDelegatorOutput implements IDelegatorOutput {
 
 	/** status code */

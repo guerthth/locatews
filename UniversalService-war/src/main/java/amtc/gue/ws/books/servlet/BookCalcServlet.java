@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -36,14 +37,20 @@ import amtc.gue.ws.books.service.jaxws.GetTags;
 import amtc.gue.ws.books.service.jaxws.GetTagsResponse;
 import amtc.gue.ws.books.service.jaxws.RemoveBooks;
 import amtc.gue.ws.books.service.jaxws.RemoveBooksResponse;
+import amtc.gue.ws.service.exception.ServiceInitializationException;
 
+/**
+ * Servlet that is used for the BookGrabber SOAP Service
+ * 
+ * @author Thomas
+ *
+ */
 public class BookCalcServlet extends HttpServlet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// logger
 	private static final Logger log = Logger.getLogger(BookCalcServlet.class
 			.getName());
 
@@ -80,13 +87,18 @@ public class BookCalcServlet extends HttpServlet {
 			OutputStream out = response.getOutputStream();
 			soapResp.writeTo(out);
 			out.flush();
-		} catch (SOAPException e) {
-			throw new IOException("exception while creating SOAP message", e);
-		} catch (JAXBException e) {
+		} catch (SOAPException | JAXBException e) {
 			throw new IOException("exception while creating SOAP message", e);
 		}
 	}
 
+	/**
+	 * Method getting the Header for a HttpServletRequest
+	 * 
+	 * @param request
+	 *            the request from which the headers should be retrieved
+	 * @return the MimeHeadersof the request
+	 */
 	public MimeHeaders getHeaders(HttpServletRequest request) {
 		MimeHeaders retval = new MimeHeaders();
 		@SuppressWarnings("unchecked")
@@ -232,6 +244,7 @@ public class BookCalcServlet extends HttpServlet {
 			soapMessageStringBuilder = new StringBuilder();
 			soapMessageStringBuilder
 					.append("Error while processing SOAPMessage");
+			log.log(Level.INFO, "Error while processing SOAPMessage", e);
 		}
 		log.info(soapMessageStringBuilder.toString());
 	}
@@ -258,8 +271,6 @@ public class BookCalcServlet extends HttpServlet {
 	 */
 	protected HttpServletResponse addCORSHeaders(HttpServletResponse response) {
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		// response.addHeader("Access-Control-Allow-Headers",
-		// "Content-Type, Authorization, Accept, soapaction");
 		response.addHeader("Access-Control-Allow-Headers",
 				"Content-Type, soapaction");
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -270,7 +281,9 @@ public class BookCalcServlet extends HttpServlet {
 		try {
 			messageFactory = MessageFactory.newInstance();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new ServiceInitializationException(
+					"Error occired while trying to initialize MessageFactory instance",
+					e);
 		}
 	}
 }

@@ -89,7 +89,7 @@ public abstract class DelegatorTest {
 		firstBook.setDescription("Testdescription1");
 		firstBook.setISBN("TestISBN");
 		firstBook.setPrice("100");
-		firstBook.setTags(searchTags);
+		firstBook.setTags(searchTags.getTags());
 		firstBook.setTitle("Testtitle1");
 		bookList.add(firstBook);
 
@@ -99,7 +99,7 @@ public abstract class DelegatorTest {
 		secondBook.setDescription("Testdescription2");
 		secondBook.setISBN("TestISBN");
 		secondBook.setPrice("100");
-		secondBook.setTags(searchTags);
+		secondBook.setTags(searchTags.getTags());
 		secondBook.setTitle("Testtitle2");
 		bookListWithId.add(secondBook);
 
@@ -163,7 +163,7 @@ public abstract class DelegatorTest {
 		retrievedBookEntity.setKey(testKey);
 		retrievedBookEntity.setAuthor("ReturnAuthor");
 		retrievedBookEntity.setDescription("Testdescription");
-		retrievedBookEntity.setTags(null,false);
+		retrievedBookEntity.setTags(null, false);
 
 		retrievedBookEntityList.add(retrievedBookEntity);
 
@@ -171,7 +171,7 @@ public abstract class DelegatorTest {
 		foundIdBookEntity.setKey(testKey);
 		foundIdBookEntity.setAuthor("ReturnAuthor");
 		foundIdBookEntity.setDescription("Testdescription");
-		foundIdBookEntity.setTags(null,false);
+		foundIdBookEntity.setTags(null, false);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public abstract class DelegatorTest {
 		removedBookEntity.setISBN(testId);
 		removedBookEntity.setAuthor("TestAuthor");
 		removedBookEntity.setDescription("Testdescription");
-		removedBookEntity.setTags(null,false);
+		removedBookEntity.setTags(null, false);
 		removedBookEntityList.add(removedBookEntity);
 
 		emptyBookEntityList = new ArrayList<GAEJPABookEntity>();

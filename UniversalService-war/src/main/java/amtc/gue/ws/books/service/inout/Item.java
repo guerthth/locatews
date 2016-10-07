@@ -5,8 +5,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * JAXB Object for Item type
+ * 
+ * @author Thomas
+ *
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"id", "description"})
+@XmlType(propOrder = { "id", "description" })
 public class Item {
 
 	// id of the item
@@ -25,7 +31,7 @@ public class Item {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}

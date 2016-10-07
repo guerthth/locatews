@@ -11,3 +11,5 @@ out
 .settings
 .classpath
 .project
+.sonar/
+sonarqube_check.bat

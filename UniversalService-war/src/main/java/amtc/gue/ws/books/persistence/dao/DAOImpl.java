@@ -34,6 +34,10 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 
 	protected final String ENTITY_SELECTION_QUERY;
 
+	/**
+	 * Constructor
+	 * initializes the ENTITYSELECTIONQUERY
+	 */
 	@SuppressWarnings("rawtypes")
 	public DAOImpl() {
 		// set entityClass to 2nd typeargument of generic superclass
@@ -149,7 +153,6 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 	 */
 	protected void closeEntityManager() {
 		if (this.entityManager != null && this.entityManager.isOpen()) {
-			// this.entityManager.clear();
 			this.entityManager.close();
 		}
 	}

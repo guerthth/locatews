@@ -1,5 +1,11 @@
 package amtc.gue.ws.books.delegate.persist.exception;
 
+/**
+ * Exception implementation for entity removal problems 
+ * 
+ * @author Thomas
+ *
+ */
 public class EntityRemovalException extends Exception {
 
 	/**

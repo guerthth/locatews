@@ -18,6 +18,12 @@ import amtc.gue.ws.books.utils.EntityMapper;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 
+/**
+ * SOAP Webservice implementation
+ * 
+ * @author Thomas
+ *
+ */
 @WebService(endpointInterface = "amtc.gue.ws.books.service.IBookGrabber")
 public class BookGrabber implements IBookGrabber {
 

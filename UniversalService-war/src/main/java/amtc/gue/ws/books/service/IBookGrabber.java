@@ -13,7 +13,7 @@ import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
 import amtc.gue.ws.books.service.inout.output.TagServiceResponse;
 
 /**
- * Webservice interface that can be implemented by several 
+ * SOAP Webservice interface that can be implemented by several 
  * Grabber services
  * @author Thomas
  *

@@ -57,9 +57,9 @@ public abstract class JPATest {
 	protected static final String TAG_NAME_B = "tagNameB";
 	protected static final String TAG_NAME_C = "tagNameC";
 	
-	protected static Tags tagsAB;
-	protected static Tags tagsA;
-	protected static Tags tagsB;
+	protected Tags tagsAB;
+	protected Tags tagsA;
+	protected Tags tagsB;
 
 	static final class ConsistentHighRepPolicy implements HighRepJobPolicy {
 		@Override

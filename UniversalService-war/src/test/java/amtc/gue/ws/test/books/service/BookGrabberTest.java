@@ -52,7 +52,7 @@ public class BookGrabberTest {
 		firstBook.setDescription("Testdescription1");
 		firstBook.setISBN("TestISBN");
 		firstBook.setPrice("100");
-		firstBook.setTags(tags);
+		firstBook.setTags(tags.getTags());
 		firstBook.setTitle("Testtitle1");
 		bookList.add(firstBook);
 
@@ -61,7 +61,7 @@ public class BookGrabberTest {
 		secondBook.setDescription("Testdescription2");
 		secondBook.setISBN("TestISBN");
 		secondBook.setPrice("100");
-		secondBook.setTags(tags);
+		secondBook.setTags(tags.getTags());
 		secondBook.setTitle("Testtitle2");
 		bookList.add(secondBook);
 
@@ -83,9 +83,9 @@ public class BookGrabberTest {
 	public void testRemoveBooks() {
 		assertNotNull(bookGrabber.removeBooks(books));
 	}
-	
+
 	@Test
-	public void testGetTags(){
+	public void testGetTags() {
 		assertNotNull(bookGrabber.getTags());
 	}
 

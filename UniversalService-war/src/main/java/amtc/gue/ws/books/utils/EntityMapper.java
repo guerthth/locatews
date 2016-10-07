@@ -11,7 +11,6 @@ import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Book;
 import amtc.gue.ws.books.service.inout.Books;
-import amtc.gue.ws.books.service.inout.Tags;
 import amtc.gue.ws.books.service.inout.output.BookServiceResponse;
 import amtc.gue.ws.books.service.inout.output.Status;
 import amtc.gue.ws.books.service.inout.output.TagServiceResponse;
@@ -31,12 +30,12 @@ public class EntityMapper {
 	 *            the Tags input object that should be mapped
 	 * @return a collection of TagEntities
 	 */
-	public static Set<GAEJPATagEntity> mapTagsToTagEntityList(Tags tags) {
+	public static Set<GAEJPATagEntity> mapTagsToTagEntityList(List<String> tags) {
 		Set<GAEJPATagEntity> tagEntityList = new HashSet<GAEJPATagEntity>();
 		if (tags != null) {
-			for (String tag : tags.getTags()) {
+			for (String tag : tags) {
 				GAEJPATagEntity tagEntity = new GAEJPATagEntity();
-				tagEntity.setTagName(tag);
+				tagEntity.setTagName(mapTagsToSimplyfiedString(tag));
 				tagEntityList.add(tagEntity);
 			}
 		}
@@ -62,12 +61,12 @@ public class EntityMapper {
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		if(type != PersistenceTypeEnum.ADD){
-			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()),true);
+		if (type != PersistenceTypeEnum.ADD) {
+			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()), true);
 		} else {
-			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()),false);
+			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()), false);
 		}
-		
+
 		bookEntity.setTitle(book.getTitle());
 
 		return bookEntity;
@@ -101,9 +100,8 @@ public class EntityMapper {
 	 *            a collection of TagEntities that should be mapped
 	 * @return a Tags object
 	 */
-	public static Tags mapTagEntityListToTags(
+	public static List<String> mapTagEntityListToTags(
 			Collection<GAEJPATagEntity> tagEntityCollection) {
-		Tags tags = new Tags();
 		List<String> tagList = new ArrayList<String>();
 		if (tagEntityCollection != null) {
 			for (GAEJPATagEntity tagEntity : tagEntityCollection) {
@@ -112,8 +110,7 @@ public class EntityMapper {
 				tagList.add(tag);
 			}
 		}
-		tags.setTags(tagList);
-		return tags;
+		return tagList;
 	}
 
 	/**
@@ -322,10 +319,12 @@ public class EntityMapper {
 			bookServiceResponse = new BookServiceResponse();
 			bookServiceResponse.setStatus(status);
 
-			if (bdOutput.getOutputObject() instanceof Books) {
-				bookServiceResponse.setBook((Books) bdOutput.getOutputObject());
+			if ((bdOutput.getOutputObject() instanceof Books)) {
+				List<Book> bookList = ((Books) bdOutput.getOutputObject())
+						.getBooks();
+				bookServiceResponse.setBooks(bookList);
 			} else {
-				bookServiceResponse.setBook(null);
+				bookServiceResponse.setBooks(null);
 			}
 		}
 
@@ -339,6 +338,7 @@ public class EntityMapper {
 	 *            business output of a business delegator
 	 * @return mapped service response object
 	 */
+	@SuppressWarnings("unchecked")
 	public static TagServiceResponse mapBdOutputToTagServiceResponse(
 			IDelegatorOutput bdOutput) {
 		TagServiceResponse tagServiceResponse = null;
@@ -350,14 +350,30 @@ public class EntityMapper {
 
 			tagServiceResponse = new TagServiceResponse();
 			tagServiceResponse.setStatus(status);
+			
+			Object outputObject = bdOutput.getOutputObject();
 
-			if (bdOutput.getOutputObject() instanceof Tags) {
-				tagServiceResponse.setTags((Tags) bdOutput.getOutputObject());
+			if (outputObject instanceof List<?> && !((List<?>) outputObject).isEmpty()) {
+				if(((List<?>)outputObject).get(0) instanceof String){
+					tagServiceResponse.setTags((List<String>)outputObject);
+				}
 			} else {
 				tagServiceResponse.setTags(null);
 			}
 		}
 
 		return tagServiceResponse;
+	}
+
+	/**
+	 * Method mappiping a String to a simplified version (remove spaces and
+	 * transform to lower case)
+	 * 
+	 * @param currentString
+	 *            the string that should be transformed
+	 * @return string transformed to lowercase and removed spaces
+	 */
+	public static String mapTagsToSimplyfiedString(String currentString) {
+		return currentString.replaceAll("\\s", "").toLowerCase();
 	}
 }

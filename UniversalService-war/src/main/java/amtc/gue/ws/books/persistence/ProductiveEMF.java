@@ -15,11 +15,8 @@ public class ProductiveEMF implements EMF {
 	private static final EntityManagerFactory emfInstance = Persistence
 			.createEntityManagerFactory("gae-jpa");
 
-	/**
-	 * Constructor
-	 */
 	public ProductiveEMF() {
-
+		// default constructor
 	}
 
 	/**

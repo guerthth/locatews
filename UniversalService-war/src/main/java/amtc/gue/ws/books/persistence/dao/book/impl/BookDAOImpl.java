@@ -2,6 +2,7 @@ package amtc.gue.ws.books.persistence.dao.book.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -11,7 +12,9 @@ import amtc.gue.ws.books.persistence.EMF;
 import amtc.gue.ws.books.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
+import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Tags;
+import amtc.gue.ws.books.utils.EntityMapper;
 import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
 
 /**
@@ -27,6 +30,12 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	private final String BASIC_BOOK_SPECIFIC_QUERY = "select be from "
 			+ this.entityClass.getSimpleName() + " be";
 
+	/**
+	 * Constructor initializing entitiymanagerfactory
+	 * 
+	 * @param emfInstance
+	 *            the EMF instance used for EntityManagerFactory initialization
+	 */
 	public BookDAOImpl(EMF emfInstance) {
 		if (emfInstance != null) {
 			this.entityManagerFactory = emfInstance.getEntityManagerFactory();
@@ -39,9 +48,6 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
 			entityManager.getTransaction().begin();
-//			if(bookEntity.getTags() != null){
-//				for
-//			}
 			entityManager.persist(bookEntity);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
@@ -61,12 +67,16 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	@Override
 	public List<GAEJPABookEntity> findSpecificEntity(GAEJPABookEntity bookEntity)
 			throws EntityRetrievalException {
-		List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
+		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
+		Set<GAEJPATagEntity> tagEntities = bookEntity.getTags();
+		Tags tags = new Tags();
+		tags.setTags(EntityMapper.mapTagEntityListToTags(tagEntities));
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager.createQuery(BookDAOImplUtils.buildSpecificBookQuery(
-					BASIC_BOOK_SPECIFIC_QUERY, bookEntity));
-			if (bookEntity.getKey() != null)
+			Query q = entityManager.createQuery(BookDAOImplUtils
+					.buildSpecificBookQuery(BASIC_BOOK_SPECIFIC_QUERY,
+							bookEntity));
+			if (bookEntity.getKey() != null && bookEntity.getKey().length() > 0)
 				q.setParameter("id", bookEntity.getKey());
 			if (bookEntity.getTitle() != null)
 				q.setParameter("title", bookEntity.getTitle());
@@ -86,7 +96,8 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 			closeEntityManager();
 		}
 
-		return foundBooks;
+		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTagsOnly(
+				foundBooks, tags);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -94,10 +105,9 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	public List<GAEJPABookEntity> getBookEntityByTag(Tags tags)
 			throws EntityRetrievalException {
 
-		List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
-		
+		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
+
 		try {
-			foundBooks = new ArrayList<GAEJPABookEntity>();
 
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
@@ -133,7 +143,7 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 			updatedBookEntity.setDescription(entity.getDescription());
 			updatedBookEntity.setISBN(entity.getISBN());
 			updatedBookEntity.setPrice(entity.getPrice());
-			updatedBookEntity.setTags(entity.getTags(),true);
+			updatedBookEntity.setTags(entity.getTags(), true);
 			updatedBookEntity.setTitle(entity.getTitle());
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {

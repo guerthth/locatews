@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
@@ -24,6 +25,13 @@ import amtc.gue.ws.books.utils.ErrorConstants;
 import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 
+/**
+ * Persistence Delegator that
+ * handles all database actions for Book resources
+ * 
+ * @author Thomas
+ *
+ */
 public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 
 	private static final Logger log = Logger
@@ -76,8 +84,8 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 							PersistenceTypeEnum.ADD);
 
 			// list of books
-			List<GAEJPABookEntity> successfullyAddedBookEntities = new ArrayList<GAEJPABookEntity>();
-			List<GAEJPABookEntity> unsuccessfullyAddedBookEntities = new ArrayList<GAEJPABookEntity>();
+			List<GAEJPABookEntity> successfullyAddedBookEntities = new ArrayList<>();
+			List<GAEJPABookEntity> unsuccessfullyAddedBookEntities = new ArrayList<>();
 
 			// add every BookEntity to the DB
 			for (GAEJPABookEntity bookEntity : bookEntityList) {
@@ -95,13 +103,13 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 					bookEntityJSON = EntityMapper
 							.mapBookEntityToJSONString(bookEntity);
 					unsuccessfullyAddedBookEntities.add(bookEntity);
-					log.severe("Error while trying to persist: "
-							+ bookEntityJSON);
+					log.log(Level.SEVERE, "Error while trying to persist: "
+							+ bookEntityJSON, e);
 				}
 			}
 
 			// set delegatorOutput
-			if (successfullyAddedBookEntities.size() > 0) {
+			if (!successfullyAddedBookEntities.isEmpty()) {
 				delegatorOutput.setStatusMessage(BookPersistenceDelegatorUtils
 						.buildPersistBookSuccessStatusMessage(
 								successfullyAddedBookEntities,
@@ -135,31 +143,34 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 		String tagEntityJSON;
 		GAEJPATagEntity persistedTagEntity;
 		bookEntity.getTags().clear();
-		
-		synchronized(tagEntities){
+
+		synchronized (tagEntities) {
 			for (GAEJPATagEntity tagEntity : tagEntities) {
-				tagEntityJSON = EntityMapper.mapTagEntityToJSONString(tagEntity);
+				tagEntityJSON = EntityMapper
+						.mapTagEntityToJSONString(tagEntity);
 				try {
 					tagEntity.getBooks().clear();
 					List<GAEJPATagEntity> foundTagEntities = tagDAOImpl
 							.findSpecificEntity(tagEntity);
-					if (foundTagEntities.size() == 0) {
-						persistedTagEntity = tagDAOImpl.persistEntity(tagEntity);
+					if (foundTagEntities.isEmpty()) {
+						persistedTagEntity = tagDAOImpl
+								.persistEntity(tagEntity);
 					} else {
 						persistedTagEntity = foundTagEntities.get(0);
 						String foundKey = persistedTagEntity.getKey();
-						persistedTagEntity = tagDAOImpl.findEntityById(foundKey);
+						persistedTagEntity = tagDAOImpl
+								.findEntityById(foundKey);
 					}
 					bookEntity.addToTagsAndBooks(persistedTagEntity);
 				} catch (EntityRetrievalException e) {
-					log.severe("Error while trying to retrieve tagEntity: "
-							+ tagEntityJSON);
+					log.log(Level.SEVERE, "Error while trying to retrieve tagEntity: "
+							+ tagEntityJSON, e);
 				} catch (EntityPersistenceException e) {
-					log.severe("Error while trying to persist tagEntity: "
-							+ tagEntityJSON);
+					log.log(Level.SEVERE, "Error while trying to persist tagEntity: "
+							+ tagEntityJSON, e);
 				}
 			}
-		}	
+		}
 	}
 
 	/**
@@ -176,7 +187,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			delegatorOutput
 					.setStatusCode(ErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
 
-			List<GAEJPABookEntity> foundBooks = new ArrayList<GAEJPABookEntity>();
+			List<GAEJPABookEntity> foundBooks = new ArrayList<>();
 			try {
 				foundBooks = daoImpl.getBookEntityByTag(searchTags);
 
@@ -190,11 +201,11 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(EntityMapper
 						.transformBookEntitiesToBooks(foundBooks));
 			} catch (EntityRetrievalException e) {
-				log.severe("Error while trying to retrieve book with tag: '"
-						+ searchTags.getTags().toString() + "'");
 				delegatorOutput
 						.setStatusCode(ErrorConstants.RETRIEVE_BOOK_FAILURE_CODE);
 				delegatorOutput.setOutputObject(null);
+				log.log(Level.SEVERE, "Error while trying to retrieve book with tag: '"
+						+ searchTags.getTags().toString() + "'", e);
 			}
 		} else {
 			setUnrecognizedInputDelegatorOutput();
@@ -209,7 +220,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 
 		// check input object
 		if (persistenceInput.getInputObject() instanceof Books) {
-			List<GAEJPABookEntity> removedBookEntities = new ArrayList<GAEJPABookEntity>();
+			List<GAEJPABookEntity> removedBookEntities = new ArrayList<>();
 			Books booksToRemove = (Books) persistenceInput.getInputObject();
 
 			// initialize delegatoroutput status
@@ -225,10 +236,17 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				String bookEntityJSON = EntityMapper
 						.mapBookEntityToJSONString(bookEntity);
 				try {
-					bookEntitiesToRemove = daoImpl
-							.findSpecificEntity(bookEntity);
+					if (bookEntity.getKey() != null) {
+						bookEntitiesToRemove = new ArrayList<>();
+						bookEntitiesToRemove.add(daoImpl
+								.findEntityById(bookEntity.getKey()));
+					} else {
+						bookEntitiesToRemove = daoImpl
+								.findSpecificEntity(bookEntity);
+					}
+
 					if (bookEntitiesToRemove != null
-							&& bookEntitiesToRemove.size() != 0) {
+							&& !bookEntitiesToRemove.isEmpty()) {
 						for (GAEJPABookEntity bookEntityToRemove : bookEntitiesToRemove) {
 							String bookEntityToRemoveJSON = EntityMapper
 									.mapBookEntityToJSONString(bookEntityToRemove);
@@ -237,23 +255,25 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 										.removeEntity(bookEntityToRemove);
 								log.info("BookEntity " + bookEntityToRemoveJSON
 										+ " was successfully removed");
+								removedBookEntity.setTags(
+										bookEntityToRemove.getTags(), false);
 								removedBookEntities.add(removedBookEntity);
 							} catch (EntityRemovalException e) {
-								log.severe("Error while trying to remove: "
-										+ bookEntityToRemoveJSON);
+								log.log(Level.SEVERE,"Error while trying to remove: "
+										+ bookEntityToRemoveJSON,e);
 							}
 						}
 					} else {
 						log.warning(bookEntityJSON + " was not found.");
 					}
-				} catch (EntityRetrievalException e1) {
-					log.severe("Error while trying to retrieve: "
-							+ bookEntityJSON);
+				} catch (EntityRetrievalException e) {
+					log.log(Level.SEVERE, "Error while trying to retrieve: "
+							+ bookEntityJSON, e);
 				}
 			}
 
 			// set delegator output
-			if (removedBookEntities.size() > 0) {
+			if (!removedBookEntities.isEmpty()) {
 				delegatorOutput
 						.setStatusMessage(BookPersistenceDelegatorUtils
 								.buildRemoveBooksSuccessStatusMessage(removedBookEntities));

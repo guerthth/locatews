@@ -7,6 +7,7 @@ import java.util.List;
 import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.service.inout.Tags;
+import amtc.gue.ws.books.utils.EntityMapper;
 
 /**
  * Utility class for the BookDAOImpl
@@ -38,6 +39,47 @@ public class BookDAOImplUtils {
 						&& book.getTags().size() > 0) {
 					// evaluate how many tags are found in the bookEntity
 					for (GAEJPATagEntity tagEntity : book.getTags()) {
+						if (EntityMapper.mapTagsToSimplyfiedString(
+								tagEntity.getTagName()).equals(
+								EntityMapper.mapTagsToSimplyfiedString(tag))) {
+							foundTags++;
+							break;
+						}
+					}
+				}
+			}
+			// check if all searchtags were found for the book
+			// we have an issue here when trying to delete books possesing ALL
+			// of the tags
+			if (foundTags != searchTags.getTags().size()) {
+				bookIterator.remove();
+			}
+		}
+		return modifiableBookList;
+	}
+
+	/**
+	 * Method that iterates through a list of BookEntities and removes those
+	 * which do not contain all of the specified tags
+	 * 
+	 * @param books
+	 *            the list of BookEntities that should be cleaned up
+	 * @return the list if books containing only those who do possess all the
+	 *         tags
+	 */
+	public static List<GAEJPABookEntity> retrieveBookEntitiesWithSpecificTagsOnly(
+			List<GAEJPABookEntity> books, Tags searchTags) {
+		List<GAEJPABookEntity> modifiableBookList = copyBookList(books);
+
+		for (Iterator<GAEJPABookEntity> bookIterator = modifiableBookList
+				.iterator(); bookIterator.hasNext();) {
+			GAEJPABookEntity book = bookIterator.next();
+			int foundTags = 0;
+			for (String tag : searchTags.getTags()) {
+				if (book != null && book.getTags() != null
+						&& book.getTags().size() > 0) {
+					// evaluate how many tags are found in the bookEntity
+					for (GAEJPATagEntity tagEntity : book.getTags()) {
 						if (tagEntity.getTagName().equals(tag)) {
 							foundTags++;
 							break;
@@ -46,7 +88,10 @@ public class BookDAOImplUtils {
 				}
 			}
 			// check if all searchtags were found for the book
-			if (foundTags != searchTags.getTags().size()) {
+			// we have an issue here when trying to delete books possesing ALL
+			// of the tags
+			if (foundTags != searchTags.getTags().size()
+					|| (book != null && (book.getTags().size() != foundTags))) {
 				bookIterator.remove();
 			}
 		}
@@ -86,7 +131,7 @@ public class BookDAOImplUtils {
 		sb.append(initialBookQuery);
 		int initialLength = sb.length();
 		if (bookEntity != null) {
-			if (bookEntity.getKey() != null) {
+			if (bookEntity.getKey() != null && bookEntity.getKey().length() > 0) {
 				sb.append(" and be.bookId = :id");
 			}
 			if (bookEntity.getTitle() != null) {

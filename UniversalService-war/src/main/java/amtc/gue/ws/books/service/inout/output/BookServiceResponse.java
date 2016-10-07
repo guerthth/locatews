@@ -1,10 +1,13 @@
 package amtc.gue.ws.books.service.inout.output;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import amtc.gue.ws.books.service.inout.Books;
+import amtc.gue.ws.books.service.inout.Book;
 
 /**
  * JAXB object for the BookServiceResponse complex type
@@ -12,19 +15,19 @@ import amtc.gue.ws.books.service.inout.Books;
  * @author Thomas
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class BookServiceResponse extends ServiceResponse {
 
-	@XmlElement(name = "books", nillable = true, required = false)
-	public Books book;
-
+	@XmlElement(name="books")
+	private List<Book> books;
+	
 	// Getters and Setters
-	public Books getBook() {
-		return book;
+	public List<Book> getBooks(){
+		return this.books;
 	}
-
-	public void setBook(Books book) {
-		this.book = book;
+	
+	public void setBooks(List<Book> books){
+		this.books = books;
 	}
-
 }

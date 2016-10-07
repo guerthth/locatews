@@ -1,5 +1,7 @@
 package amtc.gue.ws.books.service.inout;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -11,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Thomas
  *
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "book", propOrder = {"title", "author", "price", "ISBN",
 		"tags" })
 public class Book extends Item {
@@ -34,7 +36,7 @@ public class Book extends Item {
 
 	// tags categorizing the book
 	@XmlElement(name = "tags", required = true, nillable = false)
-	private Tags tags;
+	private List<String> tags;
 	
 	// Getter and Setters
 	public String getTitle() {
@@ -68,13 +70,12 @@ public class Book extends Item {
 	public void setISBN(String iSBN) {
 		ISBN = iSBN;
 	}
-
-	public Tags getTags() {
-		return tags;
+	
+	public List<String> getTags(){
+		return this.tags;
 	}
-
-	public void setTags(Tags tags) {
+	
+	public void setTags(List<String> tags){
 		this.tags = tags;
 	}
-
 }

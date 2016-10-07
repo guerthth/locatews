@@ -76,14 +76,46 @@ public class BookDAOImplUtilsTest extends UtilTest {
 						existingSearchTags).size();
 		assertEquals(0, resultListSize);
 	}
-	
+
+	@Test
+	public void testRetrieveBookEntitiesWithTagsOnlyUsingExistingTags() {
+		int resultListSize = BookDAOImplUtils
+				.retrieveBookEntitiesWithSpecificTagsOnly(bookEntityList,
+						existingSearchTags).size();
+		assertEquals(2, resultListSize);
+	}
+
+	@Test
+	public void testRetrieveBookEntitiesWithTagsOnlyUsingNonExistingTags() {
+		int resultListSize = BookDAOImplUtils
+				.retrieveBookEntitiesWithSpecificTagsOnly(bookEntityList,
+						nonExistingSearchTags).size();
+		assertEquals(0, resultListSize);
+	}
+
+	@Test
+	public void testRetrieveBookEntitiesWithTagsOnlyUsingNullTags() {
+		int resultListSize = BookDAOImplUtils
+				.retrieveBookEntitiesWithSpecificTagsOnly(
+						bookEntityTagNullList, existingSearchTags).size();
+		assertEquals(0, resultListSize);
+	}
+
+	@Test
+	public void testRetrieveBookEntitiesWithTagsOnlyUsingEmptyBookList() {
+		int resultListSize = BookDAOImplUtils
+				.retrieveBookEntitiesWithSpecificTagsOnly(bookEntityNullList,
+						existingSearchTags).size();
+		assertEquals(0, resultListSize);
+	}
+
 	@Test
 	public void testBuildSpecificBookQueryWithNullEntity() {
 		String updatedQuery = BookDAOImplUtils.buildSpecificBookQuery(
 				BASIC_BOOK_SPECIFIC_QUERY, null);
 		assertEquals(BASIC_BOOK_SPECIFIC_QUERY, updatedQuery);
 	}
-	
+
 	@Test
 	public void testBuildSpecificBookQueryNoSpecialCriteria() {
 		String updatedQuery = BookDAOImplUtils.buildSpecificBookQuery(

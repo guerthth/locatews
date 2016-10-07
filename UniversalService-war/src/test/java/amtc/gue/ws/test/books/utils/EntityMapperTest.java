@@ -40,7 +40,7 @@ public class EntityMapperTest extends UtilTest {
 	@Test
 	public void testMapTagsToTagEntityListUsingSimpleTags() {
 		Set<GAEJPATagEntity> listOfTagEntities = EntityMapper
-				.mapTagsToTagEntityList(existingSearchTags);
+				.mapTagsToTagEntityList(existingSearchTags.getTags());
 		assertNotNull(listOfTagEntities);
 		assertEquals(3, listOfTagEntities.size());
 	}
@@ -54,8 +54,7 @@ public class EntityMapperTest extends UtilTest {
 		assertEquals(book1.getId(), bookEntity.getKey());
 		assertEquals(book1.getISBN(), bookEntity.getISBN());
 		assertEquals(book1.getPrice(), bookEntity.getPrice());
-		assertEquals(3, bookEntity.getTags()
-				.size());
+		assertEquals(3, bookEntity.getTags().size());
 		assertEquals(book1.getTitle(), bookEntity.getTitle());
 	}
 
@@ -68,8 +67,7 @@ public class EntityMapperTest extends UtilTest {
 		assertNull(bookEntity.getKey());
 		assertEquals(book1.getISBN(), bookEntity.getISBN());
 		assertEquals(book1.getPrice(), bookEntity.getPrice());
-		assertEquals(3, bookEntity.getTags()
-				.size());
+		assertEquals(3, bookEntity.getTags().size());
 		assertEquals(book1.getTitle(), bookEntity.getTitle());
 	}
 
@@ -77,8 +75,7 @@ public class EntityMapperTest extends UtilTest {
 	public void testMapToBookEntitiyWithNullID() {
 		GAEJPABookEntity bookEntity = EntityMapper.mapBookToEntity(book2,
 				PersistenceTypeEnum.ADD);
-		assertEquals(3, bookEntity.getTags()
-				.size());
+		assertEquals(3, bookEntity.getTags().size());
 	}
 
 	@Test
@@ -108,22 +105,25 @@ public class EntityMapperTest extends UtilTest {
 
 	@Test
 	public void testMapTagEntityListToTagsUsingSimpleList() {
-		Tags tags = EntityMapper.mapTagEntityListToTags(tagEntityList);
+		Tags tags = new Tags();
+		tags.setTags(EntityMapper.mapTagEntityListToTags(tagEntityList));
 		assertNotNull(tags);
 		assertEquals(tagEntityList.size(), tags.getTags().size());
 	}
 
 	@Test
 	public void testMapTagEntityListToTagsUsingListWithNullTags() {
-		Tags tags = EntityMapper
-				.mapTagEntityListToTags(tagEntityListWithNullTags);
+		Tags tags = new Tags();
+		tags.setTags(EntityMapper
+				.mapTagEntityListToTags(tagEntityListWithNullTags));
 		assertNotNull(tags);
 		assertEquals(tagEntityListWithNullTags.size(), tags.getTags().size());
 	}
 
 	@Test
 	public void testMapTagEntityListToTagsUsingNullInput() {
-		Tags tags = EntityMapper.mapTagEntityListToTags(null);
+		Tags tags = new Tags();
+		tags.setTags(EntityMapper.mapTagEntityListToTags(null));
 		assertNotNull(tags);
 		assertEquals(0, tags.getTags().size());
 	}
@@ -137,8 +137,7 @@ public class EntityMapperTest extends UtilTest {
 		assertEquals(bookEntity1.getISBN(), book.getISBN());
 		assertEquals(bookEntity1.getKey(), book.getId());
 		assertEquals(bookEntity1.getPrice(), book.getPrice());
-		assertEquals(bookEntity1.getTags().size(), book.getTags().getTags()
-				.size());
+		assertEquals(bookEntity1.getTags().size(), book.getTags().size());
 		assertEquals(bookEntity1.getTitle(), book.getTitle());
 	}
 
@@ -151,8 +150,7 @@ public class EntityMapperTest extends UtilTest {
 		assertEquals(bookEntity3.getISBN(), book.getISBN());
 		assertEquals(bookEntity3.getKey(), book.getId());
 		assertEquals(bookEntity3.getPrice(), book.getPrice());
-		assertEquals(bookEntity3.getTags().size(), book.getTags().getTags()
-				.size());
+		assertEquals(bookEntity3.getTags().size(), book.getTags().size());
 		assertEquals(bookEntity3.getTitle(), book.getTitle());
 	}
 
@@ -322,37 +320,37 @@ public class EntityMapperTest extends UtilTest {
 	public void testMapBdOutputToBookServiceResponseUsingBooksOutputObject() {
 		BookServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToBookServiceResponse(bookDelegatorOutput);
-		assertNotEquals(null, serviceResponse.getBook());
+		assertNotEquals(null, serviceResponse.getBooks());
 	}
 
 	@Test
 	public void testMapBdOutputToBookServiceResponseUsingUnrecognizedOutputObject() {
 		BookServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToBookServiceResponse(unrecognizedBookDelegatorOutput);
-		assertEquals(null, serviceResponse.getBook());
+		assertEquals(null, serviceResponse.getBooks());
 	}
-	
+
 	@Test
 	public void testMapBdOutputToBookServiceResponseUsingNullInput() {
 		BookServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToBookServiceResponse(null);
 		assertNull(serviceResponse);
 	}
-	
+
 	@Test
 	public void testMapBdOutputToTagServiceResponseUsingTagsDelegatorOutput() {
 		TagServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToTagServiceResponse(tagDelegatorOutput);
-		assertNotEquals(null, serviceResponse.getTags());
+		assertEquals(null, serviceResponse.getTags());
 	}
-	
+
 	@Test
 	public void testMapBdOutputToTagServiceResponseUsingUnrecognizedOutputObject() {
 		TagServiceResponse serviceResponse = EntityMapper
 				.mapBdOutputToTagServiceResponse(unrecognizedTagDelegatorOutput);
 		assertEquals(null, serviceResponse.getTags());
 	}
-	
+
 	@Test
 	public void testMapBdOutputToTagServiceResponseUsingNullInput() {
 		TagServiceResponse serviceResponse = EntityMapper

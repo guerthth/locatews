@@ -1,6 +1,7 @@
 package amtc.gue.ws.books.delegate.persist;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.books.delegate.IDelegatorOutput;
@@ -15,6 +16,13 @@ import amtc.gue.ws.books.utils.PersistenceTypeEnum;
 import amtc.gue.ws.books.utils.SpringContext;
 import amtc.gue.ws.books.utils.TagPersistenceDelegatorUtils;
 
+/**
+ * Persistence Delegator that
+ * handles all database actions for Tag resources
+ * 
+ * @author Thomas
+ *
+ */
 public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 
 	private static final Logger log = Logger
@@ -55,12 +63,12 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 			delegatorOutput.setOutputObject(EntityMapper
 					.mapTagEntityListToTags(foundTags));
 		} catch (EntityRetrievalException e) {
-			log.severe("Error while trying to retrieve tags");
 			delegatorOutput
 					.setStatusCode(ErrorConstants.RETRIEVE_TAGS_FAILURE_CODE);
 			delegatorOutput
 					.setStatusMessage(ErrorConstants.RETRIEVE_TAGS_FAILURE_MSG);
 			delegatorOutput.setOutputObject(null);
+			log.log(Level.SEVERE, "Error while trying to retrieve tags", e);
 		}
 	}
 

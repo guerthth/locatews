@@ -13,12 +13,25 @@ import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
 import amtc.gue.ws.books.utils.dao.TagDAOImplUtils;
 
-public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements TagDAO {
+/**
+ * Tag DAO Implementation Includes methods specifically for tag entities
+ * 
+ * @author Thomas
+ *
+ */
+public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements
+		TagDAO {
 
 	/** Select specific tag query */
 	private final String BASIC_TAG_SPECIFIC_QUERY = "select t from "
 			+ this.entityClass.getSimpleName() + " t";
 
+	/**
+	 * Constructor initializing entitiymanagerfactory
+	 * 
+	 * @param emfInstance
+	 *            the EMF instance used for EntityManagerFactory initialization
+	 */
 	public TagDAOImpl(EMF emfInstance) {
 		if (emfInstance != null) {
 			this.entityManagerFactory = emfInstance.getEntityManagerFactory();
@@ -29,12 +42,11 @@ public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements TagD
 	@Override
 	public List<GAEJPATagEntity> findSpecificEntity(GAEJPATagEntity tagEntity)
 			throws EntityRetrievalException {
-		List<GAEJPATagEntity> foundTags = new ArrayList<GAEJPATagEntity>();
+		List<GAEJPATagEntity> foundTags = new ArrayList<>();
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager
-					.createQuery(TagDAOImplUtils.buildSpecificTagQuery(
-							BASIC_TAG_SPECIFIC_QUERY, tagEntity));
+			Query q = entityManager.createQuery(TagDAOImplUtils
+					.buildSpecificTagQuery(BASIC_TAG_SPECIFIC_QUERY, tagEntity));
 			if (tagEntity.getKey() != null)
 				q.setParameter("id", tagEntity.getKey());
 			if (tagEntity.getTagName() != null)
@@ -63,7 +75,7 @@ public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements TagD
 			updatedTagEntity.setBooks(tagEntity.getBooks());
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
-			if(entityManager != null){
+			if (entityManager != null) {
 				entityManager.getTransaction().rollback();
 			}
 			throw new EntityPersistenceException(

@@ -19,36 +19,36 @@ import amtc.gue.ws.books.utils.ErrorConstants;
 
 public abstract class UtilTest {
 
-	protected static GAEJPABookEntity bookEntity1;
-	protected static GAEJPABookEntity bookEntity2;
-	protected static GAEJPABookEntity bookEntity3;
-	protected static GAEJPABookEntity bookEntity4;
-	protected static GAEJPABookEntity bookEntity5;
+	protected GAEJPABookEntity bookEntity1;
+	protected GAEJPABookEntity bookEntity2;
+	protected GAEJPABookEntity bookEntity3;
+	protected GAEJPABookEntity bookEntity4;
+	protected GAEJPABookEntity bookEntity5;
 
-	protected static List<GAEJPABookEntity> bookEntityList;
-	protected static List<GAEJPABookEntity> bookEntityNullList;
-	protected static List<GAEJPABookEntity> bookEntityTagNullList;
-	protected static List<GAEJPABookEntity> bookEntitySimpleList;
+	protected List<GAEJPABookEntity> bookEntityList;
+	protected List<GAEJPABookEntity> bookEntityNullList;
+	protected List<GAEJPABookEntity> bookEntityTagNullList;
+	protected List<GAEJPABookEntity> bookEntitySimpleList;
 
-	protected static GAEJPATagEntity tagEntity1;
-	protected static GAEJPATagEntity tagEntity2;
-	protected static GAEJPATagEntity tagEntity3;
-	protected static GAEJPATagEntity tagEntity4;
-	protected static GAEJPATagEntity tagEntity5;
-	protected static GAEJPATagEntity tagEntity6;
-	protected static GAEJPATagEntity tagEntity7;
+	protected GAEJPATagEntity tagEntity1;
+	protected GAEJPATagEntity tagEntity2;
+	protected GAEJPATagEntity tagEntity3;
+	protected GAEJPATagEntity tagEntity4;
+	protected GAEJPATagEntity tagEntity5;
+	protected GAEJPATagEntity tagEntity6;
+	protected GAEJPATagEntity tagEntity7;
 
-	protected static List<GAEJPATagEntity> tagEntityList;
-	protected static List<GAEJPATagEntity> tagEntityListWithNullTags;
-	protected static List<GAEJPATagEntity> tagEntitySimpleList;
+	protected List<GAEJPATagEntity> tagEntityList;
+	protected List<GAEJPATagEntity> tagEntityListWithNullTags;
+	protected List<GAEJPATagEntity> tagEntitySimpleList;
 
-	protected static Tags existingSearchTags;
-	protected static Tags nonExistingSearchTags;
+	protected Tags existingSearchTags;
+	protected Tags nonExistingSearchTags;
 
-	protected static Book book1;
-	protected static Book book2;
-	protected static Books simpleBooks;
-	protected static Books emptyBooks;
+	protected Book book1;
+	protected Book book2;
+	protected Books simpleBooks;
+	protected Books emptyBooks;
 
 	protected static final String tagStringA = "tagStringA";
 	protected static final String tagStringB = "tagStringB";
@@ -106,14 +106,14 @@ public abstract class UtilTest {
 	protected IDelegatorOutput tagDelegatorOutput;
 	protected IDelegatorOutput unrecognizedTagDelegatorOutput;
 
-	protected static String EXPECTED_PERSIST_STATUS_ONLY_SUCCESSES;
-	protected static String EXPECTED_PERSIST_STATUS_SUCCESS_AND_FAILS;
-	protected static String EXPECTED_PERSIST_STATUS_ONLY_FAILS;
-	protected static String EXPECTED_TAG_RETRIEVAL_MESSAGE_SIMPLE_RESULT;
-	protected static String EXPECTED_TAG_RETRIEVAL_MESSAGE_EMPTY_RESULT;
-	protected static String EXPECTED_BOOK_REMOVAL_MESSAGE_SIMPLE_RESULT;
-	protected static String EXPECTED_BOOK_REMOVAL_MESSAGE_EMPTY_RESULT;
-	protected static String EXPECTED_TAG_RETRIEVAL_MESSAGE;
+	protected String EXPECTED_PERSIST_STATUS_ONLY_SUCCESSES;
+	protected String EXPECTED_PERSIST_STATUS_SUCCESS_AND_FAILS;
+	protected String EXPECTED_PERSIST_STATUS_ONLY_FAILS;
+	protected String EXPECTED_TAG_RETRIEVAL_MESSAGE_SIMPLE_RESULT;
+	protected String EXPECTED_TAG_RETRIEVAL_MESSAGE_EMPTY_RESULT;
+	protected String EXPECTED_BOOK_REMOVAL_MESSAGE_SIMPLE_RESULT;
+	protected String EXPECTED_BOOK_REMOVAL_MESSAGE_EMPTY_RESULT;
+	protected String EXPECTED_TAG_RETRIEVAL_MESSAGE;
 
 	@BeforeClass
 	public static void oneTimeInitialSetup() {
@@ -233,10 +233,10 @@ public abstract class UtilTest {
 	private void setupBooks() {
 		book1 = new Book();
 		book1.setId(TEST_BOOK_ENTITY_KEY);
-		book1.setTags(existingSearchTags);
+		book1.setTags(existingSearchTags.getTags());
 
 		book2 = new Book();
-		book2.setTags(existingSearchTags);
+		book2.setTags(existingSearchTags.getTags());
 
 		simpleBooks = new Books();
 		simpleBooks.getBooks().add(book1);
