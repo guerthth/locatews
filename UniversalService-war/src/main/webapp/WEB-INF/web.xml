@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 	<!-- REST Configuration using UiversalServiceServlet -->
 
@@ -17,7 +14,9 @@
 		<!-- Register resources and providers under amtc.gue.ws.service -->
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>amtc.gue.ws.service</param-value>
+			<param-value>
+			    amtc.gue.ws
+			</param-value>
 		</init-param>
 		<!-- Enable Tracing support. -->
 		<init-param>
@@ -44,6 +43,7 @@
 		<!-- NEW -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>Jersey REST Service</servlet-name>
 		<url-pattern>/*</url-pattern>
@@ -56,7 +56,7 @@
 	<!-- </servlet> -->
 	<!-- <servlet> -->
 	<!-- <servlet-name>BookCalcServlet</servlet-name> -->
-	<!-- <servlet-class>amtc.gue.ws.books.servlet.BookCalcServlet</servlet-class> -->
+	<!-- <servlet-class>amtc.gue.ws.service.soap.BookCalcServlet</servlet-class> -->
 	<!-- </servlet> -->
 
 	<!-- Mapping for the actual BookCalcWSDL -->
@@ -64,5 +64,4 @@
 	<!-- <servlet-name>BookCalcServlet</servlet-name> -->
 	<!-- <url-pattern>/BookServiceService</url-pattern> -->
 	<!-- </servlet-mapping> -->
-
 </web-app>

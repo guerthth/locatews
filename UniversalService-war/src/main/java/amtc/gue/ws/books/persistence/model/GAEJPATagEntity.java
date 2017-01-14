@@ -15,8 +15,8 @@ import javax.persistence.Table;
 
 import org.datanucleus.api.jpa.annotations.Extension;
 
-import amtc.gue.ws.books.persistence.model.gae.GAEPersistenceEntity;
-import amtc.gue.ws.books.utils.EntityMapper;
+import amtc.gue.ws.base.persistence.model.GAEPersistenceEntity;
+import amtc.gue.ws.books.util.BookServiceEntityMapper;
 
 import com.google.appengine.datanucleus.annotations.Unowned;
 
@@ -66,13 +66,12 @@ public class GAEJPATagEntity extends GAEPersistenceEntity {
 	}
 
 	public Set<GAEJPABookEntity> getBooks() {
-		return books;
+		return this.books;
 	}
 
 	public void setBooks(Set<GAEJPABookEntity> books) {
 		this.books.clear();
 		if (books != null) {
-			this.books.clear();
 			for (GAEJPABookEntity book : books) {
 				addToBooks(book);
 			}
@@ -87,14 +86,14 @@ public class GAEJPATagEntity extends GAEPersistenceEntity {
 	 */
 	public void addToBooks(GAEJPABookEntity book) {
 		if (book != null) {
-			books.add(book);
+			this.books.add(book);
 			book.getTags().add(this);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return EntityMapper.mapTagEntityToJSONString(this);
+		return BookServiceEntityMapper.mapTagEntityToJSONString(this);
 	}
 
 }

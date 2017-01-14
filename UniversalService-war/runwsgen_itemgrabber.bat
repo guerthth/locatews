@@ -1,4 +1,4 @@
-set class=amtc.gue.ws.books.service.BookGrabber
+set class=amtc.gue.ws.service.soap.BookGrabber
 set clpth=./target/UniversalService-war-1.0-SNAPSHOT/WEB-INF/classes
 set resourcedir=./target/UniversalService-war-1.0-SNAPSHOT
 set outsourcedir=./src/main/java

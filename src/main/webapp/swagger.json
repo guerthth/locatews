@@ -1,0 +1,85 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "This is a sample spec for our REST API",
+    "version" : "v1",
+    "title" : "Swagger spec for UniversalService REST API",
+    "contact" : { },
+    "license" : {
+      "name" : "GNU GENERAL PUBLIC LICENSE",
+      "url" : "http://choosealicense.com/licenses/gpl-3.0/"
+    }
+  },
+  "host" : "localhost:8080",
+  "basePath" : "/",
+  "tags" : [ {
+    "name" : "players"
+  } ],
+  "schemes" : [ "http", "https" ],
+  "paths" : {
+    "/players" : {
+      "get" : {
+        "tags" : [ "players" ],
+        "summary" : "Returns all players",
+        "description" : "Returns all players",
+        "operationId" : "getPlayers",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful retrieval of players",
+            "schema" : {
+              "$ref" : "#/definitions/PlayerServiceResponse"
+            }
+          },
+          "500" : {
+            "description" : "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Player" : {
+      "type" : "object",
+      "required" : [ "playerName" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "playerName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PlayerServiceResponse" : {
+      "type" : "object",
+      "required" : [ "players", "status" ],
+      "properties" : {
+        "status" : {
+          "$ref" : "#/definitions/Status"
+        },
+        "players" : {
+          "type" : "array",
+          "position" : 1,
+          "description" : "List of players",
+          "items" : {
+            "$ref" : "#/definitions/Player"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "type" : "object",
+      "required" : [ "statusCode", "statusMessage" ],
+      "properties" : {
+        "statusCode" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "statusMessage" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

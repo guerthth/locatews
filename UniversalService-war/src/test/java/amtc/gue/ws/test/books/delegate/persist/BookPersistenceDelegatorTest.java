@@ -9,17 +9,17 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.books.delegate.IDelegatorOutput;
-import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
-import amtc.gue.ws.books.delegate.persist.exception.EntityRemovalException;
-import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.persistence.dao.DAOs;
+import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.exception.EntityPersistenceException;
+import amtc.gue.ws.base.exception.EntityRemovalException;
+import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
-import amtc.gue.ws.books.utils.ErrorConstants;
-import amtc.gue.ws.test.books.delegate.DelegatorTest;
+import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.test.books.delegate.BookServiceDelegatorTest;
 
 /**
  * Testclass for the BookPersistenceDelegator class
@@ -28,47 +28,43 @@ import amtc.gue.ws.test.books.delegate.DelegatorTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BookPersistenceDelegatorTest extends DelegatorTest {
-
-	private static DAOs validBookDAOImplInput;
-	private static DAOs generalFailBookDAOImplInput;
-	private static DAOs nonExistingDeletionsBookDAOImplInput;
-	private static DAOs retrieveDeletionFailDAOImplInput;
-	private static DAOs idRemovalDAOImplInput;
-	private static DAOs validBookTagDAOImplInput;
-	private static DAOs generalFailBookTagDAOImplInput;
-
-	private static BookDAO bookDAOImpl;
-	private static BookDAO bookDAOImplIdRemoval;
-	private static BookDAO bookDAOImplGeneralFail;
-	private static BookDAO bookDAOImplNonExistingDeletionsFail;
-	private static BookDAO bookDAOImplRetrieveDeletionFail;
-
+public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
+	private static TagDAO tagDAONoTagsImpl;
 	private static TagDAO tagDAOImpl;
+	private static TagDAO tagDAOImplRetrievalFail;
+	private static TagDAO tagDAOImplPersistenceFail;
+	private static BookDAO bookDAOImplNullBooks;
+	private static BookDAO bookDAOImplNoFoundBooks;
+	private static BookDAO bookDAOImpl;
+	private static BookDAO bookDAOImplFail;
+	private static BookDAO bookDAOImplDeletionFail;
+	private static BookDAO bookDAOImplRetrievalFail;
 
 	@BeforeClass
 	public static void intitialSetup() throws EntityPersistenceException,
 			EntityRetrievalException, EntityRemovalException {
 		oneTimeInitialSetup();
 		setUpBookPersistenceDAOMocks();
-		setUpBookPersistenceDAOInputObjects();
 	}
 
 	@AfterClass
 	public static void tearDown() {
+		EasyMock.verify(tagDAONoTagsImpl);
 		EasyMock.verify(tagDAOImpl);
+		EasyMock.verify(tagDAOImplRetrievalFail);
+		EasyMock.verify(tagDAOImplPersistenceFail);
+		EasyMock.verify(bookDAOImplNullBooks);
+		EasyMock.verify(bookDAOImplNoFoundBooks);
 		EasyMock.verify(bookDAOImpl);
-		EasyMock.verify(bookDAOImplIdRemoval);
-		EasyMock.verify(bookDAOImplGeneralFail);
-		EasyMock.verify(bookDAOImplNonExistingDeletionsFail);
-		EasyMock.verify(bookDAOImplRetrieveDeletionFail);
+		EasyMock.verify(bookDAOImplFail);
+		EasyMock.verify(bookDAOImplDeletionFail);
+		EasyMock.verify(bookDAOImplRetrievalFail);
 	}
 
-	@Test
-	public void testDelegateUsingUnrecognizedInput() {
-		// testing delegate method with an unrecognized input type
-		bookPersistenceDelegator.initialize(unrecognizedDelegatorInput,
-				validBookDAOImplInput);
+	@Override
+	public void testDelegateUsingNullInput() {
+		bookPersistenceDelegator.initialize(null);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
 				delegatorOutput.getStatusCode());
@@ -76,78 +72,157 @@ public class BookPersistenceDelegatorTest extends DelegatorTest {
 				delegatorOutput.getStatusMessage());
 	}
 
-	@Test
-	public void testDelegateAddUsingCorrectInput() {
-		bookPersistenceDelegator.initialize(addDelegatorInput,
-				validBookTagDAOImplInput);
+	@Override
+	public void testDelegateUsingUnrecognizedInputType() {
+		bookPersistenceDelegator.initialize(unrecognizedDelegatorInput);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.ADD_BOOK_SUCCESS_CODE,
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
+				delegatorOutput.getStatusCode());
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG,
+				delegatorOutput.getStatusMessage());
+	}
+
+	@Override
+	public void testDelegateAddUsingCorrectInput() {
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setTagDAO(tagDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE,
 				delegatorOutput.getStatusCode());
 		assertTrue(delegatorOutput.getStatusMessage().startsWith(
-				ErrorConstants.ADD_BOOK_SUCCESS_MSG));
-		assertTrue(delegatorOutput.getOutputObject() != null);
+				BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
 	@Test
+	public void testDelegateAddUsingCorrectInputWithUsers() {
+		bookPersistenceDelegator.setCurrentUser(currentUser);
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setTagDAO(tagDAOImpl);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE,
+				delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(
+				BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertNotNull(delegatorOutput.getOutputObject());
+	}
+
+	// additional bookpersistencedelegator specific tests
+	@Test
+	public void testDelegateAddUsingCorrectInputWithNoFoundTags() {
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setTagDAO(tagDAONoTagsImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE,
+				delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(
+				BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertNotNull(delegatorOutput.getOutputObject());
+	}
+
+	@Test
+	public void testDelegateAddUsingCorrectInputAndTagRetrievalFail() {
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setTagDAO(tagDAOImplRetrievalFail);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+	}
+
+	@Test
+	public void testDelegateAddUsingCorrectInputAndTagPersistenceFail() {
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setTagDAO(tagDAOImplPersistenceFail);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+	}
+
+	@Override
 	public void testDelegateAddUsingIncorrectDAOSetup() {
-		bookPersistenceDelegator.initialize(addDelegatorInput,
-				generalFailBookTagDAOImplInput);
+		bookPersistenceDelegator.initialize(addBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplFail);
+		bookPersistenceDelegator.setTagDAO(tagDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.ADD_BOOK_FAILURE_CODE,
+		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE,
 				delegatorOutput.getStatusCode());
 	}
 
-	@Test
-	public void testDelegateUsingInvalidInput() {
-		bookPersistenceDelegator.initialize(invalidAddDelegatorInput,
-				validBookDAOImplInput);
-		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
-				delegatorOutput.getStatusCode());
-	}
-
-	@Test
-	public void testDelegateReadUsingCorrectInput() {
-		bookPersistenceDelegator.initialize(readDelegatorInput,
-				validBookDAOImplInput);
-		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE,
-				delegatorOutput.getStatusCode());
-	}
-
-	@Test
-	public void testDelegateReadUsingIncorrectDAOSetup() {
-		bookPersistenceDelegator.initialize(readDelegatorInput,
-				generalFailBookDAOImplInput);
-		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.RETRIEVE_BOOK_FAILURE_CODE,
-				delegatorOutput.getStatusCode());
-	}
-
-	@Test
-	public void testDelegateReadUsingInvalidInput() {
-		bookPersistenceDelegator.initialize(invalidReadDelegatorInput,
-				validBookDAOImplInput);
+	@Override
+	public void testDelegateAddUsingInvalidInput() {
+		bookPersistenceDelegator.initialize(invalidAddDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
 				delegatorOutput.getStatusCode());
 	}
 
-	@Test
-	public void testDelegateDeleteUsingCorrectInput() {
-		// testing behavior when deletion works
-		bookPersistenceDelegator.initialize(deleteDelegatorInput,
-				validBookDAOImplInput);
+	@Override
+	public void testDelegateDeleteUsingCorrectIdInput() {
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInputWithId);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.DELETE_BOOK_SUCCESS_CODE,
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE,
 				delegatorOutput.getStatusCode());
 	}
 
-	@Test
+	@Override
+	public void testDelegateDeleteUsingNonExistingObjects() {
+		// testing behavior when the objects that should be removed were not
+		// found
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplNoFoundBooks);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG,
+				delegatorOutput.getStatusMessage());
+	}
+
+	@Override
+	public void testDelegateDeleteUsingNullObjects() {
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplNullBooks);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG,
+				delegatorOutput.getStatusMessage());
+	}
+
+	@Override
+	public void testDelegateDeleteUsingIncorrectDAOSetup() {
+		// testing behavior when an exception occurred on entity removal
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplFail);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG,
+				delegatorOutput.getStatusMessage());
+	}
+
+	@Override
 	public void testDelegateDeleteUsingInvalidInput() {
-		// testing behavior when input type object is not of type Books
-		bookPersistenceDelegator.initialize(invalidDeleteDelegatorInput,
-				validBookDAOImplInput);
+		bookPersistenceDelegator.initialize(invalidDeleteDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
 				delegatorOutput.getStatusCode());
@@ -155,163 +230,185 @@ public class BookPersistenceDelegatorTest extends DelegatorTest {
 				delegatorOutput.getStatusMessage());
 	}
 
-	@Test
-	public void testDelegateDeleteDeletionObjectsNotExisting() {
-		// testing behavior when the objects that should be removed were not
-		// found
-		bookPersistenceDelegator.initialize(deleteDelegatorInput,
-				nonExistingDeletionsBookDAOImplInput);
+	@Override
+	public void testDelegateDeleteDeletionFail() {
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInputWithId);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplDeletionFail);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_CODE,
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE,
 				delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_MSG,
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG,
+				delegatorOutput.getStatusMessage());
+	}
+
+	@Override
+	public void testDelegateDeleteRetrievalFail() {
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInputWithId);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplRetrievalFail);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG,
 				delegatorOutput.getStatusMessage());
 	}
 
 	@Test
-	public void testDelegateDeleteObjectDeletionFails() {
-		// testing behavior when an exception already occurred already on entity
-		// retrieval
-		bookPersistenceDelegator.initialize(deleteDelegatorInput,
-				retrieveDeletionFailDAOImplInput);
+	public void testDelegateDeleteWithExistingUsers() {
+		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(currentUser);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_CODE,
+		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE,
 				delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_MSG,
-				delegatorOutput.getStatusMessage());
 	}
 
-	@Test
-	public void testDelegateDeleteGeneralFail() {
-		// testing behavior when an exception occurred on entity removal
-		bookPersistenceDelegator.initialize(deleteDelegatorInput,
-				generalFailBookDAOImplInput);
+	@Override
+	public void testDelegateReadUsingCorrectInput() {
+		bookPersistenceDelegator.initialize(readBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_CODE,
+		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE,
 				delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.DELETE_BOOK_FAILURE_MSG,
-				delegatorOutput.getStatusMessage());
 	}
 
-	@Test
-	public void testDelegateDeleteUsingCorrectIdInput() {
-		bookPersistenceDelegator.initialize(deleteDelegatorInputWithId,
-				idRemovalDAOImplInput);
+	@Override
+	public void testDelegateReadUsingIncorrectDAOSetup() {
+		bookPersistenceDelegator.initialize(readBookDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImplFail);
+		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.DELETE_BOOK_SUCCESS_CODE,
+		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+
+	}
+
+	@Override
+	public void testDelegateReadUsingInvalidInput() {
+		bookPersistenceDelegator.initialize(invalidReadDelegatorInput);
+		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
+		bookPersistenceDelegator.setCurrentUser(null);
+		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE,
 				delegatorOutput.getStatusCode());
 	}
 
 	/**
-	 * Set up the DAO Implementation Mocks
+	 * Method setting up the relevant testing mocks
 	 * 
 	 * @throws EntityPersistenceException
+	 *             Exception occurs when persisting entity fails
 	 * @throws EntityRetrievalException
+	 *             Exception occurs when retrieving entity fails
 	 * @throws EntityRemovalException
+	 *             Exception occurs when removing entity fails
 	 */
 	private static void setUpBookPersistenceDAOMocks()
 			throws EntityPersistenceException, EntityRetrievalException,
 			EntityRemovalException {
-		// Positive Scenario mock
+		// Positive Scenario (all calls return values)
 		bookDAOImpl = EasyMock.createNiceMock(BookDAO.class);
 		EasyMock.expect(
 				bookDAOImpl.persistEntity(EasyMock.isA(GAEJPABookEntity.class)))
 				.andReturn(retrievedBookEntity);
+		EasyMock.expect(
+				bookDAOImpl.findSpecificBookEntityForUser(EasyMock
+						.isA(GAEJPABookEntity.class)))
+				.andReturn(retrievedBookEntityList).times(2);
 		EasyMock.expect(bookDAOImpl.getBookEntityByTag(searchTags)).andReturn(
 				retrievedBookEntityList);
+		EasyMock.expect(bookDAOImpl.findEntityById(EasyMock.isA(String.class)))
+				.andReturn(retrievedBookEntity);
 		EasyMock.expect(
-				bookDAOImpl.findSpecificEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andReturn(
-				retrievedBookEntityList);
+				bookDAOImpl.updateEntity(EasyMock.isA(GAEJPABookEntity.class)))
+				.andReturn(removedBookEntity).times(2);
 		EasyMock.expect(
 				bookDAOImpl.removeEntity(EasyMock.isA(GAEJPABookEntity.class)))
 				.andReturn(removedBookEntity);
 		EasyMock.replay(bookDAOImpl);
 
-		// Positive Scenario mock for book removal with Id
-		bookDAOImplIdRemoval = EasyMock.createNiceMock(BookDAO.class);
+		// Positive Scenario. No books found
+		bookDAOImplNoFoundBooks = EasyMock.createNiceMock(BookDAO.class);
 		EasyMock.expect(
-				bookDAOImplIdRemoval.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(retrievedBookEntityList.get(0));
-		EasyMock.expect(
-				bookDAOImplIdRemoval.removeEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andReturn(
-				removedBookEntity);
-		EasyMock.replay(bookDAOImplIdRemoval);
-
-		// Negative Scenario mock (general scenario)
-		bookDAOImplGeneralFail = EasyMock.createNiceMock(BookDAO.class);
-		EasyMock.expect(
-				bookDAOImplGeneralFail.persistEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andThrow(
-				new EntityPersistenceException());
-		EasyMock.expect(bookDAOImplGeneralFail.getBookEntityByTag(searchTags))
-				.andThrow(new EntityRetrievalException());
-		EasyMock.expect(
-				bookDAOImplGeneralFail.findSpecificEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andReturn(
-				retrievedBookEntityList);
-		EasyMock.expect(
-				bookDAOImplGeneralFail.removeEntity(EasyMock
-						.isA(GAEJPABookEntity.class))).andThrow(
-				new EntityRemovalException());
-		EasyMock.replay(bookDAOImplGeneralFail);
-
-		// Negative scenario mock simulating that entities to be removed are not
-		// existing
-		bookDAOImplNonExistingDeletionsFail = EasyMock
-				.createNiceMock(BookDAO.class);
-		EasyMock.expect(
-				bookDAOImplNonExistingDeletionsFail.findSpecificEntity(EasyMock
+				bookDAOImplNoFoundBooks.findSpecificEntity(EasyMock
 						.isA(GAEJPABookEntity.class))).andReturn(
 				emptyBookEntityList);
-		EasyMock.replay(bookDAOImplNonExistingDeletionsFail);
+		EasyMock.replay(bookDAOImplNoFoundBooks);
 
-		// Negative scenario mock simulation failure on entity removal
-		bookDAOImplRetrieveDeletionFail = EasyMock
-				.createNiceMock(BookDAO.class);
+		// Positive Scenario (null returned after retrieval)
+		bookDAOImplNullBooks = EasyMock.createNiceMock(BookDAO.class);
+		EasyMock.expect(EasyMock.expect(
+				bookDAOImplNullBooks.findSpecificEntity(EasyMock
+						.isA(GAEJPABookEntity.class))).andReturn(null));
+		EasyMock.replay(bookDAOImplNullBooks);
+
+		// negative scenario (all calls throw exceptions)
+		bookDAOImplFail = EasyMock.createNiceMock(BookDAO.class);
+		EasyMock.expect(bookDAOImplFail.getBookEntityByTag(searchTags))
+				.andThrow(new EntityRetrievalException());
 		EasyMock.expect(
-				bookDAOImplRetrieveDeletionFail.findSpecificEntity(EasyMock
+				bookDAOImplFail.persistEntity(EasyMock
 						.isA(GAEJPABookEntity.class))).andThrow(
-				new EntityRetrievalException());
-		EasyMock.replay(bookDAOImplRetrieveDeletionFail);
+				new EntityPersistenceException());
+		EasyMock.replay(bookDAOImplFail);
 
-		// Positive scenario mock for TagDAO
+		// negative scenario mock for BookDAO (removeEntity() call fails)
+		bookDAOImplDeletionFail = EasyMock.createNiceMock(BookDAO.class);
+		EasyMock.expect(
+				bookDAOImplDeletionFail.findEntityById(EasyMock
+						.isA(String.class))).andReturn(retrievedBookEntity);
+		EasyMock.expect(
+				bookDAOImplDeletionFail.removeEntity(EasyMock
+						.isA(GAEJPABookEntity.class))).andThrow(
+				new EntityRemovalException());
+		EasyMock.replay(bookDAOImplDeletionFail);
+
+		// negative scenario mock for BookDAO (getEntitiyById() call fails)
+		bookDAOImplRetrievalFail = EasyMock.createNiceMock(BookDAO.class);
+		EasyMock.expect(
+				bookDAOImplRetrievalFail.findEntityById(EasyMock
+						.isA(String.class))).andThrow(
+				new EntityRetrievalException());
+		EasyMock.replay(bookDAOImplRetrievalFail);
+
+		// Positive scenario mock for TagDAO (tags are found)
 		tagDAOImpl = EasyMock.createNiceMock(TagDAO.class);
 		EasyMock.expect(
 				tagDAOImpl.findSpecificEntity(EasyMock
 						.isA(GAEJPATagEntity.class)))
-				.andReturn(retrievedTagEntityList).times(2);
+				.andReturn(retrievedTagEntityList).times(3);
+		EasyMock.expect(tagDAOImpl.findEntityById(EasyMock.isA(String.class)))
+				.andReturn(retrievedTagEntity);
 		EasyMock.replay(tagDAOImpl);
-	}
 
-	/**
-	 * Set up the DAOs input objects
-	 */
-	private static void setUpBookPersistenceDAOInputObjects() {
-		validBookDAOImplInput = new DAOs();
-		validBookDAOImplInput.setBookDAO(bookDAOImpl);
+		// Positive scenario mock for TagDAO (no tags are found)
+		tagDAONoTagsImpl = EasyMock.createNiceMock(TagDAO.class);
+		EasyMock.expect(
+				tagDAONoTagsImpl.findSpecificEntity(EasyMock
+						.isA(GAEJPATagEntity.class))).andReturn(
+				emptyTagEntityList);
+		EasyMock.replay(tagDAONoTagsImpl);
 
-		validBookTagDAOImplInput = new DAOs();
-		validBookTagDAOImplInput.setBookDAO(bookDAOImpl);
-		validBookTagDAOImplInput.setTagDAO(tagDAOImpl);
+		// Negative scenario mock for TagDAO (findSpecificEntity() call fails)
+		tagDAOImplRetrievalFail = EasyMock.createNiceMock(TagDAO.class);
+		EasyMock.expect(
+				tagDAOImplRetrievalFail.findSpecificEntity(EasyMock
+						.isA(GAEJPATagEntity.class))).andThrow(
+				new EntityRetrievalException());
+		EasyMock.replay(tagDAOImplRetrievalFail);
 
-		generalFailBookDAOImplInput = new DAOs();
-		generalFailBookDAOImplInput.setBookDAO(bookDAOImplGeneralFail);
-
-		generalFailBookTagDAOImplInput = new DAOs();
-		generalFailBookTagDAOImplInput.setBookDAO(bookDAOImplGeneralFail);
-		generalFailBookTagDAOImplInput.setTagDAO(tagDAOImpl);
-
-		nonExistingDeletionsBookDAOImplInput = new DAOs();
-		nonExistingDeletionsBookDAOImplInput
-				.setBookDAO(bookDAOImplNonExistingDeletionsFail);
-
-		retrieveDeletionFailDAOImplInput = new DAOs();
-		retrieveDeletionFailDAOImplInput
-				.setBookDAO(bookDAOImplRetrieveDeletionFail);
-
-		idRemovalDAOImplInput = new DAOs();
-		idRemovalDAOImplInput.setBookDAO(bookDAOImplIdRemoval);
+		// Negative scenario mock for TagDAO (persistEntity() call fails)
+		tagDAOImplPersistenceFail = EasyMock.createNiceMock(TagDAO.class);
+		EasyMock.expect(
+				tagDAOImplPersistenceFail.persistEntity(EasyMock
+						.isA(GAEJPATagEntity.class))).andThrow(
+				new EntityPersistenceException());
+		EasyMock.expect(
+				tagDAOImplPersistenceFail.findSpecificEntity(EasyMock
+						.isA(GAEJPATagEntity.class))).andReturn(
+				emptyTagEntityList);
+		EasyMock.replay(tagDAOImplPersistenceFail);
 	}
 }

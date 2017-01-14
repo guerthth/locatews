@@ -6,16 +6,17 @@ import java.util.Set;
 
 import javax.persistence.Query;
 
-import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
-import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.persistence.EMF;
-import amtc.gue.ws.books.persistence.dao.DAOImpl;
+import amtc.gue.ws.base.exception.EntityPersistenceException;
+import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.inout.User;
+import amtc.gue.ws.base.persistence.EMF;
+import amtc.gue.ws.base.persistence.dao.DAOImpl;
+import amtc.gue.ws.books.inout.Tags;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
-import amtc.gue.ws.books.service.inout.Tags;
-import amtc.gue.ws.books.utils.EntityMapper;
-import amtc.gue.ws.books.utils.dao.BookDAOImplUtils;
+import amtc.gue.ws.books.util.BookServiceEntityMapper;
+import amtc.gue.ws.books.util.dao.BookDAOImplUtils;
 
 /**
  * Book DAO Implementation Includes methods specifically for bookentities
@@ -27,8 +28,8 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		BookDAO {
 
 	/** Select queries */
-	private final String BASIC_BOOK_SPECIFIC_QUERY = "select be from "
-			+ this.entityClass.getSimpleName() + " be";
+	private final String BOOK_SPECIFIC_USER_QUERY = ENTITY_SELECTION_QUERY
+			+ " join e.users user where user.userId = :user";
 
 	/**
 	 * Constructor initializing entitiymanagerfactory
@@ -36,31 +37,11 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	 * @param emfInstance
 	 *            the EMF instance used for EntityManagerFactory initialization
 	 */
-	public BookDAOImpl(EMF emfInstance) {
+	public BookDAOImpl(EMF emfInstance, User user) {
 		if (emfInstance != null) {
 			this.entityManagerFactory = emfInstance.getEntityManagerFactory();
 		}
-	}
-
-	@Override
-	public GAEJPABookEntity persistEntity(GAEJPABookEntity bookEntity)
-			throws EntityPersistenceException {
-		try {
-			entityManager = entityManagerFactory.createEntityManager();
-			entityManager.getTransaction().begin();
-			entityManager.persist(bookEntity);
-			entityManager.getTransaction().commit();
-		} catch (Exception e) {
-			if (entityManager != null) {
-				entityManager.getTransaction().rollback();
-			}
-			throw new EntityPersistenceException("Persisting "
-					+ entityClass.getName() + " failed. ", e);
-
-		} finally {
-			closeEntityManager();
-		}
-		return bookEntity;
+		this.currentUser = user;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,12 +51,14 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
 		Set<GAEJPATagEntity> tagEntities = bookEntity.getTags();
 		Tags tags = new Tags();
-		tags.setTags(EntityMapper.mapTagEntityListToTags(tagEntities));
+		tags.setTags(BookServiceEntityMapper
+				.mapTagEntityListToTags(tagEntities));
+
 		try {
 			entityManager = entityManagerFactory.createEntityManager();
-			Query q = entityManager.createQuery(BookDAOImplUtils
-					.buildSpecificBookQuery(BASIC_BOOK_SPECIFIC_QUERY,
-							bookEntity));
+			Query q = entityManager
+					.createQuery(BookDAOImplUtils.buildSpecificBookQuery(
+							ENTITY_SELECTION_QUERY, bookEntity));
 			if (bookEntity.getKey() != null && bookEntity.getKey().length() > 0)
 				q.setParameter("id", bookEntity.getKey());
 			if (bookEntity.getTitle() != null)
@@ -98,6 +81,7 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 
 		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTagsOnly(
 				foundBooks, tags);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -124,7 +108,8 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		} finally {
 			closeEntityManager();
 		}
-
+		if (currentUser != null)
+			System.out.println(currentUser.getId());
 		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(
 				foundBooks, tags);
 	}
@@ -145,6 +130,7 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 			updatedBookEntity.setPrice(entity.getPrice());
 			updatedBookEntity.setTags(entity.getTags(), true);
 			updatedBookEntity.setTitle(entity.getTitle());
+			updatedBookEntity.setUsers(entity.getUsers(), true);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
 			if (entityManager != null) {
@@ -156,7 +142,87 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		} finally {
 			closeEntityManager();
 		}
-
+		if (currentUser != null)
+			System.out.println(currentUser.getId());
 		return updatedBookEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GAEJPABookEntity> findAllBookEntitiesForUser()
+			throws EntityRetrievalException {
+		List<GAEJPABookEntity> bookEntitiesForUser;
+		try {
+			// set entitymanager
+			entityManager = entityManagerFactory.createEntityManager();
+			Query q = entityManager.createQuery(BOOK_SPECIFIC_USER_QUERY);
+			if (this.currentUser != null) {
+				q.setParameter("user", this.currentUser.getId());
+			} else {
+				q.setParameter("user", "");
+			}
+			bookEntitiesForUser = q.getResultList();
+		} catch (Exception e) {
+			if (entityManager != null
+					&& entityManager.getTransaction().isActive()) {
+				entityManager.getTransaction().rollback();
+			}
+			throw new EntityRetrievalException("Retrieval of all existing "
+					+ entityClass.getName() + " objects for user '"
+					+ this.currentUser + "' failed.", e);
+		} finally {
+			closeEntityManager();
+		}
+
+		return bookEntitiesForUser;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GAEJPABookEntity> findSpecificBookEntityForUser(
+			GAEJPABookEntity bookEntity) throws EntityRetrievalException {
+		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
+		Set<GAEJPATagEntity> tagEntities = bookEntity.getTags();
+
+		try {
+			entityManager = entityManagerFactory.createEntityManager();
+			Query q = entityManager.createQuery(BookDAOImplUtils
+					.buildSpecificBookQuery(BOOK_SPECIFIC_USER_QUERY,
+							bookEntity));
+			if (bookEntity.getKey() != null && bookEntity.getKey().length() > 0)
+				q.setParameter("id", bookEntity.getKey());
+			if (bookEntity.getTitle() != null)
+				q.setParameter("title", bookEntity.getTitle());
+			if (bookEntity.getAuthor() != null)
+				q.setParameter("author", bookEntity.getAuthor());
+			if (bookEntity.getPrice() != null)
+				q.setParameter("price", bookEntity.getPrice());
+			if (bookEntity.getISBN() != null)
+				q.setParameter("ISBN", bookEntity.getISBN());
+			if (bookEntity.getDescription() != null)
+				q.setParameter("description", bookEntity.getDescription());
+			if (this.currentUser != null) {
+				q.setParameter("user", this.currentUser.getId());
+			} else {
+				q.setParameter("user", "");
+			}
+			foundBooks = q.getResultList();
+		} catch (Exception e) {
+			throw new EntityRetrievalException(
+					"Retrieval of specific BookEntity for user '"
+							+ this.currentUser + "'failed.", e);
+		} finally {
+			closeEntityManager();
+		}
+
+		if (tagEntities != null && !tagEntities.isEmpty()) {
+			Tags tags = new Tags();
+			tags.setTags(BookServiceEntityMapper
+					.mapTagEntityListToTags(tagEntities));
+			return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTagsOnly(
+					foundBooks, tags);
+		} else {
+			return foundBooks;
+		}
 	}
 }

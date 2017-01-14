@@ -2,7 +2,7 @@
 <handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
 	<handler-chain>
 		<handler>
-			<handler-class>amtc.gue.ws.books.service.handler.SOAPRequestResponseLogHandler
+			<handler-class>amtc.gue.ws.service.soap.SOAPRequestResponseLogHandler
 			</handler-class>
 		</handler>
 	</handler-chain>

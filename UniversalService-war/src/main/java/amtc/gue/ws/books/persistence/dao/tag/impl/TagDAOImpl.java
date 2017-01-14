@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import amtc.gue.ws.books.delegate.persist.exception.EntityPersistenceException;
-import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.persistence.EMF;
-import amtc.gue.ws.books.persistence.dao.DAOImpl;
+import amtc.gue.ws.base.exception.EntityPersistenceException;
+import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.persistence.EMF;
+import amtc.gue.ws.base.persistence.dao.DAOImpl;
 import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
-import amtc.gue.ws.books.utils.dao.TagDAOImplUtils;
+import amtc.gue.ws.books.util.dao.TagDAOImplUtils;
 
 /**
  * Tag DAO Implementation Includes methods specifically for tag entities
@@ -27,7 +27,7 @@ public class TagDAOImpl extends DAOImpl<GAEJPATagEntity, String> implements
 			+ this.entityClass.getSimpleName() + " t";
 
 	/**
-	 * Constructor initializing entitiymanagerfactory
+	 * Constructor initializing entitymanagerfactory
 	 * 
 	 * @param emfInstance
 	 *            the EMF instance used for EntityManagerFactory initialization

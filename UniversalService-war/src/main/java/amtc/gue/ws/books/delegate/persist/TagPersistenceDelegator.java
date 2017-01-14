@@ -4,21 +4,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.books.delegate.IDelegatorOutput;
-import amtc.gue.ws.books.delegate.persist.exception.EntityRetrievalException;
-import amtc.gue.ws.books.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.books.delegate.persist.output.PersistenceDelegatorOutput;
-import amtc.gue.ws.books.persistence.dao.DAOs;
+import amtc.gue.ws.base.delegate.IDelegatorInput;
+import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.util.SpringContext;
+import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
+import amtc.gue.ws.books.persistence.dao.tag.impl.TagDAOImpl;
 import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
-import amtc.gue.ws.books.utils.EntityMapper;
-import amtc.gue.ws.books.utils.ErrorConstants;
-import amtc.gue.ws.books.utils.PersistenceTypeEnum;
-import amtc.gue.ws.books.utils.SpringContext;
-import amtc.gue.ws.books.utils.TagPersistenceDelegatorUtils;
+import amtc.gue.ws.books.util.BookServiceEntityMapper;
+import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.TagPersistenceDelegatorUtils;
 
 /**
- * Persistence Delegator that
- * handles all database actions for Tag resources
+ * Persistence Delegator that handles all database actions for Tag resources
  * 
  * @author Thomas
  *
@@ -28,48 +26,57 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 	private static final Logger log = Logger
 			.getLogger(TagPersistenceDelegator.class.getName());
 
+	/** DAOImplementations used by the delegator */
+	private TagDAO tagDAOImpl;
+
 	@Override
-	public void initialize(PersistenceDelegatorInput input,
-			DAOs daoImplementations) {
-		persistenceInput = input;
-		tagDAOImpl = daoImplementations.getTagDAO();
+	public void initialize(IDelegatorInput input) {
+		super.initialize(input);
+		tagDAOImpl = (TagDAOImpl) SpringContext.context.getBean("tagDAOImpl");
 	}
 
 	@Override
-	public IDelegatorOutput delegate() {
-		delegatorOutput = (PersistenceDelegatorOutput) SpringContext.context
-				.getBean("persistenceDelegatorOutput");
-		if (persistenceInput.getType().equals(PersistenceTypeEnum.READ)) {
-			retrieveTags();
-		} else {
-			setUnrecognizedInputDelegatorOutput();
-		}
-		return delegatorOutput;
+	protected void persistEntities() {
+		// not implemented
+		setUnrecognizedInputDelegatorOutput();
 	}
 
-	/**
-	 * Retrieve all tagentities
-	 */
-	private void retrieveTags() {
-		log.info("READ all tags action triggered");
+	@Override
+	protected void removeEntities() {
+		// not implemented
+		setUnrecognizedInputDelegatorOutput();
+	}
+
+	@Override
+	protected void retrieveEntities() {
+		log.info("READ Tag action triggered");
 
 		delegatorOutput
-				.setStatusCode(ErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE);
+				.setStatusCode(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE);
 
 		try {
 			List<GAEJPATagEntity> foundTags = tagDAOImpl.findAllEntities();
 			delegatorOutput.setStatusMessage(TagPersistenceDelegatorUtils
 					.buildRetrieveTagsSuccessStatusMessage(foundTags));
-			delegatorOutput.setOutputObject(EntityMapper
+			delegatorOutput.setOutputObject(BookServiceEntityMapper
 					.mapTagEntityListToTags(foundTags));
 		} catch (EntityRetrievalException e) {
 			delegatorOutput
-					.setStatusCode(ErrorConstants.RETRIEVE_TAGS_FAILURE_CODE);
+					.setStatusCode(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_CODE);
 			delegatorOutput
-					.setStatusMessage(ErrorConstants.RETRIEVE_TAGS_FAILURE_MSG);
+					.setStatusMessage(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_MSG);
 			delegatorOutput.setOutputObject(null);
 			log.log(Level.SEVERE, "Error while trying to retrieve tags", e);
 		}
 	}
-
+	
+	/**
+	 * Setter for the used tagDAOImpl
+	 * 
+	 * @param tagDAOImpl
+	 *            the TagDAOImpl object
+	 */
+	public void setTagDAO(TagDAO tagDAOImpl) {
+		this.tagDAOImpl = tagDAOImpl;
+	}
 }

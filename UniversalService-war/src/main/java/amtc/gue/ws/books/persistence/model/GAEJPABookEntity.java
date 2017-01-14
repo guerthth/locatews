@@ -15,8 +15,9 @@ import javax.persistence.Table;
 
 import org.datanucleus.api.jpa.annotations.Extension;
 
-import amtc.gue.ws.books.persistence.model.gae.GAEPersistenceEntity;
-import amtc.gue.ws.books.utils.EntityMapper;
+import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.GAEPersistenceEntity;
+import amtc.gue.ws.books.util.BookServiceEntityMapper;
 
 import com.google.appengine.datanucleus.annotations.Unowned;
 
@@ -29,7 +30,6 @@ import com.google.appengine.datanucleus.annotations.Unowned;
 @Entity
 @Table(name = "book")
 public class GAEJPABookEntity extends GAEPersistenceEntity {
-
 	/**
 	 * 
 	 */
@@ -49,18 +49,16 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	private String ISBN;
 	@Column(name = "description")
 	private String description;
-
 	@Unowned
-	@ManyToMany(mappedBy = "books", cascade = CascadeType.MERGE/*
-																 * ,targetEntity=
-																 * GAEJPATagEntity
-																 * .class
-																 */, fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "books", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<GAEJPATagEntity> tags = new HashSet<>();
+	@Unowned
+	@ManyToMany(mappedBy = "books", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+	private Set<GAEJPAUserEntity> users = new HashSet<>();
 
 	@Override
 	public String getKey() {
-		return bookId;
+		return this.bookId;
 	}
 
 	@Override
@@ -109,7 +107,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	}
 
 	public Set<GAEJPATagEntity> getTags() {
-		return tags;
+		return this.tags;
 	}
 
 	/**
@@ -142,7 +140,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	 */
 	public void addToTagsOnly(GAEJPATagEntity tag) {
 		if (tag != null) {
-			tags.add(tag);
+			this.tags.add(tag);
 		}
 	}
 
@@ -155,7 +153,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	 */
 	public void addToTagsAndBooks(GAEJPATagEntity tag) {
 		if (tag != null) {
-			tags.add(tag);
+			this.tags.add(tag);
 			if (tag.getBooks() == null) {
 				tag.setBooks(new HashSet<GAEJPABookEntity>());
 			}
@@ -163,8 +161,78 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 		}
 	}
 
+	public Set<GAEJPAUserEntity> getUsers() {
+		return this.users;
+	}
+
+	/**
+	 * Method that sets the specific users in the users Set
+	 * 
+	 * @param users
+	 *            the users that should be added to the Set
+	 * @param alsoSetBooks
+	 *            flag that specifies if the book reference in the users Set
+	 *            should be set or not. true = also set book reference
+	 */
+	public void setUsers(Set<GAEJPAUserEntity> users, boolean alsoSetBooks) {
+		this.users.clear();
+		if (users != null) {
+			for (GAEJPAUserEntity user : users) {
+				if (alsoSetBooks) {
+					addToUsersAndBooks(user);
+				} else {
+					addToUsersOnly(user);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Method setting the users in the users set including the corresponding
+	 * book reference
+	 * 
+	 * @param user
+	 *            the user that should be added to the Set
+	 */
+	public void addToUsersAndBooks(GAEJPAUserEntity user) {
+		if (user != null) {
+			this.users.add(user);
+			if (user.getBooks() == null) {
+				user.setBooks(new HashSet<GAEJPABookEntity>(), true);
+			}
+			user.getBooks().add(this);
+		}
+	}
+
+	/**
+	 * Method setting only the users in the users Set
+	 * 
+	 * @param user
+	 *            the user that should be added to the Set
+	 */
+	public void addToUsersOnly(GAEJPAUserEntity user) {
+		if (user != null) {
+			this.users.add(user);
+		}
+	}
+
+	/**
+	 * Method removing a user from the bookentity
+	 * 
+	 * @param user
+	 *            the userEntity that should be removed
+	 */
+	public void removeUser(GAEJPAUserEntity user) {
+		for (GAEJPAUserEntity existingUser : this.users) {
+			if (existingUser.getKey().equals(user.getKey())) {
+				this.users.remove(existingUser);
+			}
+		}
+		user.removeBook(this);
+	}
+
 	@Override
 	public String toString() {
-		return EntityMapper.mapBookEntityToJSONString(this);
+		return BookServiceEntityMapper.mapBookEntityToJSONString(this);
 	}
 }
