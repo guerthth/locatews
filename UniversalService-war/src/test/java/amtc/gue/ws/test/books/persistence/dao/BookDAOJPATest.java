@@ -95,7 +95,7 @@ public class BookDAOJPATest extends BookServiceJPATest {
 	@Test
 	public void testAddBookEntityWithTagsAndUsersWithUser()
 			throws EntityPersistenceException, EntityRetrievalException {
-		assertEquals(0, bookEntityDAO.findAllBookEntitiesForUser().size());
+		assertEquals(0, bookEntityDAO.getBookEntityForUserByTag(null).size());
 		tagEntityDAO.persistEntity(tagEntity1);
 		bookEntity1.addToTagsAndBooks(tagEntity1);
 		userEntityDAO.persistEntity(userEntity1);
@@ -105,7 +105,7 @@ public class BookDAOJPATest extends BookServiceJPATest {
 		assertNull(bookEntity1.getKey());
 		bookEntityDAO.persistEntity(bookEntity1);
 		assertNotNull(bookEntity1.getKey());
-		assertEquals(1, bookEntityDAO.findAllBookEntitiesForUser().size());
+		assertEquals(1, bookEntityDAO.getBookEntityForUserByTag(null).size());
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class BookDAOJPATest extends BookServiceJPATest {
 	@Test(expected = EntityRetrievalException.class)
 	public void testGetAllBookEntitiesForUserUsingNullUser()
 			throws EntityRetrievalException {
-		bookEntityDAONullUser.findAllBookEntitiesForUser();
+		bookEntityDAONullUser.getBookEntityForUserByTag(tagsAB);
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class BookDAOJPATest extends BookServiceJPATest {
 	@Test(expected = EntityRetrievalException.class)
 	public void testGetAllBookEntitiesForUserUsingInvalidEM()
 			throws EntityRetrievalException {
-		failureBookEntityDAO.findAllBookEntitiesForUser();
+		failureBookEntityDAO.getBookEntityForUserByTag(tagsAB);
 	}
 
 	@Override
@@ -299,7 +299,7 @@ public class BookDAOJPATest extends BookServiceJPATest {
 		// persist one userEntity possessing two bookEntities
 		bookEntityDAO.persistEntity(bookEntity1);
 		bookEntityDAO.persistEntity(bookEntity2);
-		
+
 		userEntity1.addToBooksAndUsers(bookEntity1);
 		userEntity1.addToBooksAndUsers(bookEntity2);
 		userEntityDAO.persistEntity(userEntity1);
@@ -317,8 +317,8 @@ public class BookDAOJPATest extends BookServiceJPATest {
 		assertEquals(1, foundBookB.getUsers().size());
 
 		// check number of books for user
-		assertEquals(2, bookEntityDAO.findAllBookEntitiesForUser().size());
-		
+		assertEquals(2, bookEntityDAO.getBookEntityForUserByTag(null).size());
+
 		// remove the user from one book
 		foundBookA.removeUser(foundUser);
 		bookEntityDAO.mergeEntity(foundBookA);
@@ -333,9 +333,9 @@ public class BookDAOJPATest extends BookServiceJPATest {
 		assertEquals(2, foundBooks.size());
 		foundBookA = foundBooks.get(0);
 		assertEquals(0, foundBookA.getUsers().size());
-		
+
 		// check number of books for user after updating the relationship
-		assertEquals(1, bookEntityDAO.findAllBookEntitiesForUser().size());
+		assertEquals(1, bookEntityDAO.getBookEntityForUserByTag(null).size());
 	}
 
 	@Override

@@ -9,10 +9,11 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.persistence.dao.user.UserDAO;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.books.persistence.dao.book.BookDAO;
 import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
@@ -39,6 +40,7 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 	private static BookDAO bookDAOImplFail;
 	private static BookDAO bookDAOImplDeletionFail;
 	private static BookDAO bookDAOImplRetrievalFail;
+	private static UserDAO userDAOImpl;
 
 	@BeforeClass
 	public static void intitialSetup() throws EntityPersistenceException,
@@ -59,6 +61,7 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 		EasyMock.verify(bookDAOImplFail);
 		EasyMock.verify(bookDAOImplDeletionFail);
 		EasyMock.verify(bookDAOImplRetrievalFail);
+		EasyMock.verify(userDAOImpl);
 	}
 
 	@Override
@@ -97,12 +100,14 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
+	// additional bookpersistencedelegator specific tests
 	@Test
 	public void testDelegateAddUsingCorrectInputWithUsers() {
 		bookPersistenceDelegator.setCurrentUser(currentUser);
 		bookPersistenceDelegator.initialize(addBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
 		bookPersistenceDelegator.setTagDAO(tagDAOImpl);
+		bookPersistenceDelegator.setUserDAO(userDAOImpl);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE,
 				delegatorOutput.getStatusCode());
@@ -111,7 +116,6 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
-	// additional bookpersistencedelegator specific tests
 	@Test
 	public void testDelegateAddUsingCorrectInputWithNoFoundTags() {
 		bookPersistenceDelegator.initialize(addBookDelegatorInput);
@@ -256,6 +260,7 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 
 	@Test
 	public void testDelegateDeleteWithExistingUsers() {
+		currentUserEntity.setBooks(null, false);
 		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookDAOImpl);
 		bookPersistenceDelegator.setCurrentUser(currentUser);
@@ -410,5 +415,9 @@ public class BookPersistenceDelegatorTest extends BookServiceDelegatorTest {
 						.isA(GAEJPATagEntity.class))).andReturn(
 				emptyTagEntityList);
 		EasyMock.replay(tagDAOImplPersistenceFail);
+
+		// Positive scenario mock for UserDAO
+		userDAOImpl = EasyMock.createNiceMock(UserDAO.class);
+		EasyMock.replay(userDAOImpl);
 	}
 }

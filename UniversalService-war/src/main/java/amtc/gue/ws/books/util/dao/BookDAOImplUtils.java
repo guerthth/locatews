@@ -95,10 +95,7 @@ public class BookDAOImplUtils {
 						}
 					}
 				}
-				// TODO: check if all searchtags were found for the book
-				// we have an issue here when trying to delete books possesing
-				// ALL
-				// of the tags
+
 				if (foundTags != searchTags.getTags().size()
 						|| (book != null && (book.getTags().size() != foundTags))) {
 					bookIterator.remove();

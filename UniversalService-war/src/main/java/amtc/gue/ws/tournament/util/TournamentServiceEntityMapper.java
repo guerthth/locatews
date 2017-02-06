@@ -3,8 +3,8 @@ package amtc.gue.ws.tournament.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.StatusMapper;
 import amtc.gue.ws.tournament.inout.Player;
 import amtc.gue.ws.tournament.inout.Players;
@@ -31,9 +31,9 @@ public class TournamentServiceEntityMapper {
 	 * @return the mapped GAEJPAPlayerEntity
 	 */
 	public static GAEJPAPlayerEntity mapPlayerToEntity(Player player,
-			PersistenceTypeEnum type) {
+			DelegatorTypeEnum type) {
 		GAEJPAPlayerEntity playerEntity = new GAEJPAPlayerEntity();
-		if (player.getId() != null && type != PersistenceTypeEnum.ADD)
+		if (player.getId() != null && type != DelegatorTypeEnum.ADD)
 			playerEntity.setKey(player.getId());
 		playerEntity.setPlayerName(player.getPlayerName());
 		return playerEntity;
@@ -49,7 +49,7 @@ public class TournamentServiceEntityMapper {
 	 * @return the mapped list of GAEJPAPlayerEntities
 	 */
 	public static List<GAEJPAPlayerEntity> transformPlayersToPlayerEntities(
-			Players players, PersistenceTypeEnum type) {
+			Players players, DelegatorTypeEnum type) {
 		List<GAEJPAPlayerEntity> playerEntityList = new ArrayList<GAEJPAPlayerEntity>();
 		if (players != null) {
 			for (Player player : players.getPlayers()) {

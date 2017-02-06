@@ -13,8 +13,8 @@ import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
  */
 public class UserPersistenceDelegatorUtils {
 	/**
-	 * Method building the String status message for successful removal of
-	 * User entities
+	 * Method building the String status message for successful removal of User
+	 * entities
 	 * 
 	 * @param successfullyAddedUserEntities
 	 *            a list of successfully added UserEntities
@@ -77,18 +77,39 @@ public class UserPersistenceDelegatorUtils {
 	 *            the users that were found
 	 * @return the status message that can be used in the response as String
 	 */
-	public static String buildGetUsersByRoleSuccessStatusMessage(
-			Roles roles, List<GAEJPAUserEntity> foundUsers) {
+	public static String buildGetUsersByRoleSuccessStatusMessage(Roles roles,
+			List<GAEJPAUserEntity> foundUsers) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(ErrorConstants.RETRIEVE_USER_SUCCESS_MSG);
+		sb.append(ErrorConstants.RETRIEVE_USER_FOR_ROLES_SUCCESS_MSG);
 		sb.append(" '");
-		sb.append(roles.getRoles().toString());
+		sb.append((roles != null && roles.getRoles() != null) ? roles
+				.getRoles().toString() : "[]");
 		sb.append("': '");
 		sb.append(UserServiceEntityMapper
 				.mapUserEntityListToConsolidatedJSONString(foundUsers));
 		sb.append("'. ");
 		sb.append((foundUsers != null) ? foundUsers.size() : "0");
 		sb.append(" Entities were found");
+		return sb.toString();
+	}
+
+	/**
+	 * Method building the String status message for successful retrieval of a
+	 * specific UserEntity from the datastore
+	 * 
+	 * @param foundUser
+	 *            the user that was found
+	 * @return the created status message
+	 */
+	public static String buildGetUsersByIdSuccessStatusMessage(String userName,
+			GAEJPAUserEntity foundUser) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ErrorConstants.RETRIEVE_USER_BY_ID_SUCCESS_MSG);
+		sb.append(" '");
+		sb.append(userName);
+		sb.append("': '");
+		sb.append(UserServiceEntityMapper.mapUserEntityToJSONString(foundUser));
+		sb.append("'.");
 		return sb.toString();
 	}
 }

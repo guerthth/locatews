@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.junit.Before;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.books.inout.Book;
 import amtc.gue.ws.books.inout.Books;
@@ -268,14 +268,14 @@ public abstract class BookServiceUtilTest {
 	 * Method inititializing some DelegatorOutputs
 	 */
 	private void setupBdOutputs() {
-		bookDelegatorOutput = new PersistenceDelegatorOutput();
+		bookDelegatorOutput = new DelegatorOutput();
 		bookDelegatorOutput.setOutputObject(simpleBooks);
-		unrecognizedBookDelegatorOutput = new PersistenceDelegatorOutput();
+		unrecognizedBookDelegatorOutput = new DelegatorOutput();
 		unrecognizedBookDelegatorOutput.setOutputObject(null);
 
-		tagDelegatorOutput = new PersistenceDelegatorOutput();
+		tagDelegatorOutput = new DelegatorOutput();
 		tagDelegatorOutput.setOutputObject(existingSearchTags);
-		unrecognizedTagDelegatorOutput = new PersistenceDelegatorOutput();
+		unrecognizedTagDelegatorOutput = new DelegatorOutput();
 		unrecognizedTagDelegatorOutput.setOutputObject(null);
 	}
 

@@ -4,8 +4,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.delegate.input.DelegatorInput;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 
 /**
  * Abstract Class holding all methods that should be used for testing
@@ -17,11 +17,11 @@ import amtc.gue.ws.base.util.PersistenceTypeEnum;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public abstract class BasePersistenceDelegatorTest {
 
-	protected static PersistenceDelegatorInput unrecognizedDelegatorInput;
-	protected static PersistenceDelegatorInput nullDelegatorInput;
-	protected static PersistenceDelegatorInput invalidAddDelegatorInput;
-	protected static PersistenceDelegatorInput invalidDeleteDelegatorInput;
-	protected static PersistenceDelegatorInput invalidReadDelegatorInput;
+	protected static DelegatorInput unrecognizedDelegatorInput;
+	protected static DelegatorInput nullDelegatorInput;
+	protected static DelegatorInput invalidAddDelegatorInput;
+	protected static DelegatorInput invalidDeleteDelegatorInput;
+	protected static DelegatorInput invalidReadDelegatorInput;
 	protected static final String TESTKEY = "testKey";
 
 	/**
@@ -137,23 +137,23 @@ public abstract class BasePersistenceDelegatorTest {
 		nullDelegatorInput = null;
 
 		// DelegatorInput with invalid Add input
-		invalidAddDelegatorInput = new PersistenceDelegatorInput();
+		invalidAddDelegatorInput = new DelegatorInput();
 		invalidAddDelegatorInput.setInputObject(null);
-		invalidAddDelegatorInput.setType(PersistenceTypeEnum.ADD);
+		invalidAddDelegatorInput.setType(DelegatorTypeEnum.ADD);
 
 		// DelegatorInput with invalid Delete input
-		invalidDeleteDelegatorInput = new PersistenceDelegatorInput();
+		invalidDeleteDelegatorInput = new DelegatorInput();
 		invalidDeleteDelegatorInput.setInputObject(null);
-		invalidDeleteDelegatorInput.setType(PersistenceTypeEnum.DELETE);
+		invalidDeleteDelegatorInput.setType(DelegatorTypeEnum.DELETE);
 
 		// DelegatorInput with invalid Read input
-		invalidReadDelegatorInput = new PersistenceDelegatorInput();
+		invalidReadDelegatorInput = new DelegatorInput();
 		invalidReadDelegatorInput.setInputObject(null);
-		invalidReadDelegatorInput.setType(PersistenceTypeEnum.READ);
+		invalidReadDelegatorInput.setType(DelegatorTypeEnum.READ);
 
 		// DelegatorInput with unrecognized input type
-		unrecognizedDelegatorInput = new PersistenceDelegatorInput();
+		unrecognizedDelegatorInput = new DelegatorInput();
 		unrecognizedDelegatorInput.setInputObject(null);
-		unrecognizedDelegatorInput.setType(PersistenceTypeEnum.UNRECOGNIZED);
+		unrecognizedDelegatorInput.setType(DelegatorTypeEnum.MAIL);
 	}
 }

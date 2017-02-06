@@ -16,9 +16,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.inout.Book;
@@ -49,8 +49,7 @@ public class BookService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public BookServiceResponse addBooks(Books items) {
 		// set up the pesistence delegator
-		bookDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.ADD, items);
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, items);
 
 		// call BookPersistenceDelegators delegate method to handle persist
 		IDelegatorOutput bpdOutput = bookDelegator.delegate();
@@ -72,8 +71,7 @@ public class BookService {
 		}
 
 		// set up the pesistence delegator
-		bookDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.READ, tags);
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, tags);
 
 		// call BookPersistenceDelegators delegate method to handle retrieval of
 		// existing books
@@ -97,8 +95,8 @@ public class BookService {
 		bookToRemove.setId(id);
 		booksToRemove.setBooks(bookListToRemove);
 
-		bookDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.DELETE, booksToRemove);
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
+				booksToRemove);
 
 		// call BookPersistenceDelegators delegate method to handle removal of
 		// existing books

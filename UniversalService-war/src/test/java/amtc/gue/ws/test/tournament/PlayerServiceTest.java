@@ -17,9 +17,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
 import amtc.gue.ws.tournament.PlayerService;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.inout.Players;
@@ -92,7 +92,7 @@ public class PlayerServiceTest extends JerseyTest {
 
 	// Helper Methods
 	private static void setUpDelegatorOutputs() {
-		delegatorOutput = new PersistenceDelegatorOutput();
+		delegatorOutput = new DelegatorOutput();
 	}
 
 	private static void setUpDelegatorMocks() {

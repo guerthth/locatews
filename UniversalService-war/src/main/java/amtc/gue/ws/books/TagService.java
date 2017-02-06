@@ -8,9 +8,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
 import amtc.gue.ws.books.response.TagServiceResponse;
@@ -37,8 +37,7 @@ public class TagService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public TagServiceResponse getTags() {
 		// set up the pesistence delegator
-		tagDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.READ, null);
+		tagDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, null);
 
 		// call TagPersistenceDelegators delegate method to handle retrieval of
 		// existing tags

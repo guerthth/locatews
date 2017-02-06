@@ -56,4 +56,12 @@ public class UserPersistenceDelegatorUtilTest extends UserServiceUtilTest {
 						userEntityList);
 		assertEquals(EXPECTED_USER_RETRIEVAL_MESSAGE_SIMPLE_RESULT, message);
 	}
+
+	@Test
+	public void testBuildRetrieveUsersByIdSuccessStatusMessage() {
+		String message = UserPersistenceDelegatorUtils
+				.buildGetUsersByIdSuccessStatusMessage(userEntity1.getKey(),
+						userEntity1);
+		assertEquals(EXPECTED_USER_RETRIEVAL_BY_ID_MESSAGE_RESULT, message);
+	}
 }

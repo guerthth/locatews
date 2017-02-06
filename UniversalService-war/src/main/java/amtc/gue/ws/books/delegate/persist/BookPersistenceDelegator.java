@@ -8,12 +8,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegatorInput;
+import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.base.util.UserServiceEntityMapper;
 import amtc.gue.ws.books.inout.Books;
@@ -54,16 +55,15 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 	@Override
 	protected void persistEntities() {
 		log.info("ADD Book action triggered");
-		if (persistenceInput.getInputObject() instanceof Books) {
-			Books books = (Books) persistenceInput.getInputObject();
+		if (delegatorInput.getInputObject() instanceof Books) {
+			Books books = (Books) delegatorInput.getInputObject();
 			// initialize delegatoroutput status
 			delegatorOutput
 					.setStatusCode(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE);
 
 			// transform inputobject to bookentities bookentities
 			List<GAEJPABookEntity> bookEntityList = BookServiceEntityMapper
-					.transformBooksToBookEntities(books,
-							PersistenceTypeEnum.ADD);
+					.transformBooksToBookEntities(books, DelegatorTypeEnum.ADD);
 
 			// list of books
 			List<GAEJPABookEntity> successfullyAddedBookEntities = new ArrayList<>();
@@ -132,7 +132,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 
@@ -141,9 +141,9 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 		log.info("DELETE Book action triggered");
 
 		// check input object
-		if (persistenceInput.getInputObject() instanceof Books) {
+		if (delegatorInput.getInputObject() instanceof Books) {
 			List<GAEJPABookEntity> removedBookEntities = new ArrayList<>();
-			Books booksToRemove = (Books) persistenceInput.getInputObject();
+			Books booksToRemove = (Books) delegatorInput.getInputObject();
 
 			// initialize delegatoroutput status
 			delegatorOutput
@@ -152,7 +152,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			// transform inputobject to bookentities bookentities and remove
 			List<GAEJPABookEntity> bookEntities = BookServiceEntityMapper
 					.transformBooksToBookEntities(booksToRemove,
-							PersistenceTypeEnum.DELETE);
+							DelegatorTypeEnum.DELETE);
 			for (GAEJPABookEntity bookEntity : bookEntities) {
 				List<GAEJPABookEntity> bookEntitiesToRemove;
 				String bookEntityJSON = BookServiceEntityMapper
@@ -186,14 +186,14 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 									bookEntityToRemove
 											.removeUser(UserServiceEntityMapper
 													.mapUserToEntity(
-															this.currentUser,
-															PersistenceTypeEnum.DELETE));
+															currentUser,
+															DelegatorTypeEnum.DELETE));
 									removedBookEntity = bookDAOImpl
 											.updateEntity(bookEntityToRemove);
 									log.info("BookEntity "
 											+ bookEntityToRemoveJSON
 											+ " was successfully removed for user "
-											+ this.currentUser.getId());
+											+ currentUser.getId());
 								} else {
 									removedBookEntity = bookDAOImpl
 											.removeEntity(bookEntityToRemove);
@@ -235,7 +235,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 
@@ -243,9 +243,9 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void retrieveEntities() {
 		log.info("READ Book by tag action triggered");
 		// determine dao action to be called by input object type
-		if (persistenceInput.getInputObject() instanceof Tags) {
+		if (delegatorInput.getInputObject() instanceof Tags) {
 
-			Tags searchTags = (Tags) persistenceInput.getInputObject();
+			Tags searchTags = (Tags) delegatorInput.getInputObject();
 
 			// initialize delegatoroutput status
 			delegatorOutput
@@ -253,14 +253,16 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 
 			List<GAEJPABookEntity> foundBooks = new ArrayList<>();
 			try {
-				foundBooks = bookDAOImpl.getBookEntityByTag(searchTags);
-
+				if (userExists()) {
+					foundBooks = bookDAOImpl.getBookEntityByTag(searchTags);
+				} else {
+					foundBooks = bookDAOImpl.getBookEntityByTag(searchTags);
+				}
+				// set delegator output
 				String statusMessage = BookPersistenceDelegatorUtils
 						.buildGetBooksByTagSuccessStatusMessage(searchTags,
 								foundBooks);
 				log.info(statusMessage);
-
-				// set delegator output
 				delegatorOutput.setStatusMessage(statusMessage);
 				delegatorOutput.setOutputObject(BookServiceEntityMapper
 						.transformBookEntitiesToBooks(foundBooks));
@@ -275,7 +277,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 								+ searchTags.getTags().toString() + "'", e);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 
@@ -295,14 +297,13 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 		GAEJPABookEntity bookEntityCopy = BookPersistenceDelegatorUtils
 				.copyBookEntity(bookEntity);
 		List<GAEJPABookEntity> persistedBookEntities = null;
+		GAEJPAUserEntity currentUserEntity = null;
 
 		// if a specific user is accessing the service
 		// try retrieving the bookEntity for the user
 		if (userExists()) {
-			bookEntity
-					.addToUsersAndBooks(UserServiceEntityMapper
-							.mapUserToEntity(this.currentUser,
-									PersistenceTypeEnum.ADD));
+			currentUserEntity = userDAOImpl.findEntityById(currentUser.getId());
+			bookEntity.addToUsersAndBooks(currentUserEntity);
 			persistedBookEntities = bookDAOImpl
 					.findSpecificBookEntityForUser(bookEntityCopy);
 		}
@@ -315,8 +316,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			if (userExists() && persistedBookEntities != null
 					&& persistedBookEntities.size() == 1) {
 				persistedBookEntities.get(0).addToUsersAndBooks(
-						UserServiceEntityMapper.mapUserToEntity(
-								this.currentUser, PersistenceTypeEnum.ADD));
+						currentUserEntity);
 			}
 		}
 
@@ -331,18 +331,6 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			bookEntity.setKey(null);
 			return bookEntity;
 		}
-	}
-
-	/**
-	 * Method checking if the current request is done by a specific user or not
-	 * 
-	 * @return true if user is existing, false if not
-	 */
-	private boolean userExists() {
-		if (this.currentUser != null && this.currentUser.getId() != null) {
-			return true;
-		} else
-			return false;
 	}
 
 	/**
@@ -373,10 +361,10 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				tagEntityJSON = BookServiceEntityMapper
 						.mapTagEntityToJSONString(tagEntity);
 				try {
-					tagEntity.getBooks().clear();
 					List<GAEJPATagEntity> foundTagEntities = tagDAOImpl
 							.findSpecificEntity(tagEntity);
 					if (foundTagEntities.isEmpty()) {
+						tagEntity.getBooks().clear();
 						persistedTagEntity = tagDAOImpl
 								.persistEntity(tagEntity);
 					} else {

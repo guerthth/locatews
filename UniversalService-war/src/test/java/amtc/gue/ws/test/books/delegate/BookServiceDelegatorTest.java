@@ -3,9 +3,10 @@ package amtc.gue.ws.test.books.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput;
+import amtc.gue.ws.base.delegate.input.DelegatorInput;
 import amtc.gue.ws.base.inout.User;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
 import amtc.gue.ws.books.inout.Book;
@@ -30,15 +31,15 @@ public abstract class BookServiceDelegatorTest extends
 	protected static BookPersistenceDelegator bookPersistenceDelegator;
 	protected static TagPersistenceDelegator tagPersistenceDelegator;
 
-	protected static PersistenceDelegatorInput addBookDelegatorInput;
-	protected static PersistenceDelegatorInput deleteBookDelegatorInput;
-	protected static PersistenceDelegatorInput readBookDelegatorInput;
-	protected static PersistenceDelegatorInput deleteBookDelegatorInputWithId;
-	protected static PersistenceDelegatorInput addTagDelegatorInput;
-	protected static PersistenceDelegatorInput deleteTagDelegatorInput;
-	protected static PersistenceDelegatorInput nullDeleteTagDelegatorInput;
-	protected static PersistenceDelegatorInput readTagDelegatorInput;
-	protected static PersistenceDelegatorInput nullReadTagDelegatorInput;
+	protected static DelegatorInput addBookDelegatorInput;
+	protected static DelegatorInput deleteBookDelegatorInput;
+	protected static DelegatorInput readBookDelegatorInput;
+	protected static DelegatorInput deleteBookDelegatorInputWithId;
+	protected static DelegatorInput addTagDelegatorInput;
+	protected static DelegatorInput deleteTagDelegatorInput;
+	protected static DelegatorInput nullDeleteTagDelegatorInput;
+	protected static DelegatorInput readTagDelegatorInput;
+	protected static DelegatorInput nullReadTagDelegatorInput;
 
 	protected static GAEJPABookEntity removedBookEntity;
 
@@ -67,6 +68,7 @@ public abstract class BookServiceDelegatorTest extends
 	protected static Books booksWithId;
 
 	protected static User currentUser;
+	protected static GAEJPAUserEntity currentUserEntity;
 	protected static final String TESTUSERNAME = "testUserName";
 
 	/**
@@ -76,6 +78,7 @@ public abstract class BookServiceDelegatorTest extends
 		setupUser();
 		setupTags();
 		setupBooks();
+		setUpUserEntities();
 		setUpTagEntities();
 		setUpBookEntities();
 		setUpBaseDelegatorInputs();
@@ -139,48 +142,56 @@ public abstract class BookServiceDelegatorTest extends
 	 */
 	private static void setUpBookDelegatorInputs() {
 		// DelegatorInput for book bookentity adding
-		addBookDelegatorInput = new PersistenceDelegatorInput();
+		addBookDelegatorInput = new DelegatorInput();
 		addBookDelegatorInput.setInputObject(books);
-		addBookDelegatorInput.setType(PersistenceTypeEnum.ADD);
+		addBookDelegatorInput.setType(DelegatorTypeEnum.ADD);
 
 		// DelegatorInput for bookentity deletion
-		deleteBookDelegatorInput = new PersistenceDelegatorInput();
+		deleteBookDelegatorInput = new DelegatorInput();
 		deleteBookDelegatorInput.setInputObject(books);
-		deleteBookDelegatorInput.setType(PersistenceTypeEnum.DELETE);
+		deleteBookDelegatorInput.setType(DelegatorTypeEnum.DELETE);
 
 		// DelegatorInput for bookentity deletion with ID book input type
-		deleteBookDelegatorInputWithId = new PersistenceDelegatorInput();
+		deleteBookDelegatorInputWithId = new DelegatorInput();
 		deleteBookDelegatorInputWithId.setInputObject(booksWithId);
-		deleteBookDelegatorInputWithId.setType(PersistenceTypeEnum.DELETE);
+		deleteBookDelegatorInputWithId.setType(DelegatorTypeEnum.DELETE);
 
 		// DelegatorInput for bookentity read
-		readBookDelegatorInput = new PersistenceDelegatorInput();
+		readBookDelegatorInput = new DelegatorInput();
 		readBookDelegatorInput.setInputObject(searchTags);
-		readBookDelegatorInput.setType(PersistenceTypeEnum.READ);
+		readBookDelegatorInput.setType(DelegatorTypeEnum.READ);
 
 		// DelegatorInput for tagentity add
-		addTagDelegatorInput = new PersistenceDelegatorInput();
+		addTagDelegatorInput = new DelegatorInput();
 		addTagDelegatorInput.setInputObject(searchTags);
-		addTagDelegatorInput.setType(PersistenceTypeEnum.ADD);
+		addTagDelegatorInput.setType(DelegatorTypeEnum.ADD);
 
 		// DelegatorInput for tagentity delete
-		deleteTagDelegatorInput = new PersistenceDelegatorInput();
+		deleteTagDelegatorInput = new DelegatorInput();
 		deleteTagDelegatorInput.setInputObject(searchTags);
-		deleteTagDelegatorInput.setType(PersistenceTypeEnum.DELETE);
+		deleteTagDelegatorInput.setType(DelegatorTypeEnum.DELETE);
 
-		nullDeleteTagDelegatorInput = new PersistenceDelegatorInput();
+		nullDeleteTagDelegatorInput = new DelegatorInput();
 		nullDeleteTagDelegatorInput.setInputObject(null);
-		nullDeleteTagDelegatorInput.setType(PersistenceTypeEnum.DELETE);
+		nullDeleteTagDelegatorInput.setType(DelegatorTypeEnum.DELETE);
 
 		// DelegatorInputs for tagentity read
-		readTagDelegatorInput = new PersistenceDelegatorInput();
+		readTagDelegatorInput = new DelegatorInput();
 		readTagDelegatorInput.setInputObject(searchTags);
-		readTagDelegatorInput.setType(PersistenceTypeEnum.READ);
+		readTagDelegatorInput.setType(DelegatorTypeEnum.READ);
 
-		nullReadTagDelegatorInput = new PersistenceDelegatorInput();
+		nullReadTagDelegatorInput = new DelegatorInput();
 		nullReadTagDelegatorInput.setInputObject(null);
-		nullReadTagDelegatorInput.setType(PersistenceTypeEnum.READ);
+		nullReadTagDelegatorInput.setType(DelegatorTypeEnum.READ);
 
+	}
+
+	/**
+	 * Set up UserEntities
+	 */
+	private static void setUpUserEntities() {
+		currentUserEntity = new GAEJPAUserEntity();
+		currentUserEntity.setKey(TESTUSERNAME);
 	}
 
 	/**

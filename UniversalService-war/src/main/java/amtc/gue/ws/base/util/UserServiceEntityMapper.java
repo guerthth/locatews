@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
@@ -32,17 +32,23 @@ public class UserServiceEntityMapper {
 	 * @return the mapped GAEJPAUserEntity
 	 */
 	public static GAEJPAUserEntity mapUserToEntity(User user,
-			PersistenceTypeEnum type) {
+			DelegatorTypeEnum type) {
 		GAEJPAUserEntity userEntity = new GAEJPAUserEntity();
 		if (user.getId() != null)
 			userEntity.setKey(user.getId());
-		userEntity.setPassword(user.getPassword());
-		if (type != PersistenceTypeEnum.ADD) {
+		userEntity.setPassword(EncryptionMapper.encryptStringMD5(user
+				.getPassword()));
+		if (user.getEmail() != null) {
+			userEntity.setEmail(user.getEmail());
+		} else {
+			userEntity.setEmail("");
+		}
+		if (type != DelegatorTypeEnum.ADD) {
 			userEntity
 					.setRoles(mapRolesToRoleEntityList(user.getRoles()), true);
 		} else {
-			userEntity
-					.setRoles(mapRolesToRoleEntityList(user.getRoles()), false);
+			userEntity.setRoles(mapRolesToRoleEntityList(user.getRoles()),
+					false);
 		}
 		return userEntity;
 	}
@@ -57,7 +63,7 @@ public class UserServiceEntityMapper {
 	 * @return the mapped list of GAEJPAUserEntities
 	 */
 	public static List<GAEJPAUserEntity> transformUsersToUserEntities(
-			Users users, PersistenceTypeEnum type) {
+			Users users, DelegatorTypeEnum type) {
 		List<GAEJPAUserEntity> userEntityList = new ArrayList<GAEJPAUserEntity>();
 		if (users != null) {
 			for (User user : users.getUsers()) {
@@ -79,6 +85,7 @@ public class UserServiceEntityMapper {
 		if (userEntity != null) {
 			user.setId(userEntity.getKey());
 			user.setPassword(userEntity.getPassword());
+			user.setEmail(userEntity.getEmail());
 			user.setRoles(mapRoleEntityListToRoles(userEntity.getRoles()));
 		}
 		return user;
@@ -142,7 +149,7 @@ public class UserServiceEntityMapper {
 		}
 		return roleList;
 	}
-	
+
 	/**
 	 * Method mapping a GAEJPAUserEntity to a JSON String
 	 * 
@@ -162,6 +169,10 @@ public class UserServiceEntityMapper {
 			String password = userEntity.getPassword() != null ? userEntity
 					.getPassword() + ", " : "null, ";
 			sb.append(password);
+			sb.append("email: ");
+			String email = userEntity.getEmail() != null ? userEntity
+					.getEmail() + ", " : "null, ";
+			sb.append(email);
 			sb.append("userroles: ");
 			sb.append("[");
 			if (userEntity.getRoles() != null) {

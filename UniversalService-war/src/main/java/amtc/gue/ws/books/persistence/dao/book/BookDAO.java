@@ -33,7 +33,7 @@ public interface BookDAO extends DAO<GAEJPABookEntity, String> {
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve entities
 	 */
-	List<GAEJPABookEntity> findAllBookEntitiesForUser()
+	List<GAEJPABookEntity> getBookEntityForUserByTag(Tags tags)
 			throws EntityRetrievalException;
 
 	/**

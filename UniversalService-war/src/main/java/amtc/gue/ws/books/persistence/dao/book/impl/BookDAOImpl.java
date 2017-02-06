@@ -37,11 +37,11 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	 * @param emfInstance
 	 *            the EMF instance used for EntityManagerFactory initialization
 	 */
-	public BookDAOImpl(EMF emfInstance, User user) {
+	public BookDAOImpl(EMF emfInstance, User currentUser) {
 		if (emfInstance != null) {
-			this.entityManagerFactory = emfInstance.getEntityManagerFactory();
+			entityManagerFactory = emfInstance.getEntityManagerFactory();
 		}
-		this.currentUser = user;
+		this.currentUser = currentUser;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,6 +50,7 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 			throws EntityRetrievalException {
 		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
 		Set<GAEJPATagEntity> tagEntities = bookEntity.getTags();
+
 		Tags tags = new Tags();
 		tags.setTags(BookServiceEntityMapper
 				.mapTagEntityListToTags(tagEntities));
@@ -88,19 +89,14 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 	@Override
 	public List<GAEJPABookEntity> getBookEntityByTag(Tags tags)
 			throws EntityRetrievalException {
-
 		List<GAEJPABookEntity> foundBooks = new ArrayList<>();
-
 		try {
-
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
-
 			// read bookentites from DB that possess specific tags
 			Query q = entityManager.createQuery(ENTITY_SELECTION_QUERY,
 					GAEJPABookEntity.class);
 			foundBooks = q.getResultList();
-
 		} catch (Exception e) {
 			throw new EntityRetrievalException(
 					"Retrieval of BookEntity for tags: "
@@ -108,8 +104,6 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(
 				foundBooks, tags);
 	}
@@ -142,26 +136,25 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return updatedBookEntity;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<GAEJPABookEntity> findAllBookEntitiesForUser()
+	public List<GAEJPABookEntity> getBookEntityForUserByTag(Tags tags)
 			throws EntityRetrievalException {
-		List<GAEJPABookEntity> bookEntitiesForUser;
+		List<GAEJPABookEntity> foundBooksForUser = new ArrayList<>();
 		try {
 			// set entitymanager
 			entityManager = entityManagerFactory.createEntityManager();
 			Query q = entityManager.createQuery(BOOK_SPECIFIC_USER_QUERY);
-			if (this.currentUser != null) {
-				q.setParameter("user", this.currentUser.getId());
+			if (currentUser != null) {
+				q.setParameter("user", currentUser.getId());
 			} else {
 				q.setParameter("user", "");
 			}
-			bookEntitiesForUser = q.getResultList();
+
+			foundBooksForUser = q.getResultList();
 		} catch (Exception e) {
 			if (entityManager != null
 					&& entityManager.getTransaction().isActive()) {
@@ -169,12 +162,13 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 			}
 			throw new EntityRetrievalException("Retrieval of all existing "
 					+ entityClass.getName() + " objects for user '"
-					+ this.currentUser + "' failed.", e);
+					+ currentUser + "' failed.", e);
 		} finally {
 			closeEntityManager();
 		}
 
-		return bookEntitiesForUser;
+		return BookDAOImplUtils.retrieveBookEntitiesWithSpecificTags(
+				foundBooksForUser, tags);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -201,16 +195,16 @@ public class BookDAOImpl extends DAOImpl<GAEJPABookEntity, String> implements
 				q.setParameter("ISBN", bookEntity.getISBN());
 			if (bookEntity.getDescription() != null)
 				q.setParameter("description", bookEntity.getDescription());
-			if (this.currentUser != null) {
-				q.setParameter("user", this.currentUser.getId());
+			if (currentUser != null) {
+				q.setParameter("user", currentUser.getId());
 			} else {
 				q.setParameter("user", "");
 			}
 			foundBooks = q.getResultList();
 		} catch (Exception e) {
 			throw new EntityRetrievalException(
-					"Retrieval of specific BookEntity for user '"
-							+ this.currentUser + "'failed.", e);
+					"Retrieval of specific BookEntity for user '" + currentUser
+							+ "'failed.", e);
 		} finally {
 			closeEntityManager();
 		}

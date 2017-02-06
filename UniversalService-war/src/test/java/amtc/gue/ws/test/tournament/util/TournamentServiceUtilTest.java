@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.tournament.inout.Player;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
@@ -99,9 +99,9 @@ public abstract class TournamentServiceUtilTest {
 	 * Method initializing some DelegatorOutputs
 	 */
 	private void setUpBdOutputs() {
-		playerDelegatorOutput = new PersistenceDelegatorOutput();
+		playerDelegatorOutput = new DelegatorOutput();
 		playerDelegatorOutput.setOutputObject(simplePlayers);
-		unrecognizedPlayerDelegatorOutput = new PersistenceDelegatorOutput();
+		unrecognizedPlayerDelegatorOutput = new DelegatorOutput();
 		unrecognizedPlayerDelegatorOutput.setOutputObject(null);
 	}
 

@@ -8,7 +8,7 @@
 	<bean id="emf" class="amtc.gue.ws.base.persistence.ProductiveEMF">
 	</bean>
 
-	<!-- User -->
+	<!-- logged in GAEJPAUserEntity User -->
 	<bean id="user" class="amtc.gue.ws.base.inout.User"></bean>
 
 	<!-- BookPersistenceDelegator -->
@@ -32,14 +32,16 @@
 		class="amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator">
 	</bean>
 
-	<!-- PersistenceDelegatorInput -->
-	<bean id="persistenceDelegatorInput"
-		class="amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput">
+	<!-- UserMaileDelegator -->
+	<bean id="userMailDelegator" class="amtc.gue.ws.base.delegate.mail.UserMailDelegator">
+	</bean>
+
+	<!-- DelegatorInput -->
+	<bean id="delegatorInput" class="amtc.gue.ws.base.delegate.input.DelegatorInput">
 	</bean>
 
 	<!-- PersistenceDelegatorOutput -->
-	<bean id="persistenceDelegatorOutput"
-		class="amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput">
+	<bean id="delegatorOutput" class="amtc.gue.ws.base.delegate.output.DelegatorOutput">
 	</bean>
 
 	<!-- BookEntityDAOImpl -->

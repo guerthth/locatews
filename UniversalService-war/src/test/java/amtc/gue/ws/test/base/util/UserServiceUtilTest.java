@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
@@ -39,6 +39,7 @@ public class UserServiceUtilTest {
 	protected String EXPECTED_NULL_INPUT_USER_PERSISTENCE_MESSAGE_RESULT;
 	protected String EXPECTED_USER_REMOVAL_MESSAGE_SIMPLE_RESULT;
 	protected String EXPECTED_USER_RETRIEVAL_MESSAGE_SIMPLE_RESULT;
+	protected String EXPECTED_USER_RETRIEVAL_BY_ID_MESSAGE_RESULT;
 
 	protected GAEJPAUserEntity userEntity1;
 	protected GAEJPAUserEntity userEntity2;
@@ -100,6 +101,7 @@ public class UserServiceUtilTest {
 		sb.append("{");
 		sb.append("id: null, ");
 		sb.append("password: null, ");
+		sb.append("email: null, ");
 		sb.append("userroles: [null, roleA], ");
 		sb.append("books: []");
 		sb.append("}");
@@ -109,12 +111,14 @@ public class UserServiceUtilTest {
 		sb.append("{");
 		sb.append("id: null, ");
 		sb.append("password: null, ");
+		sb.append("email: null, ");
 		sb.append("userroles: [roleA], ");
 		sb.append("books: []");
 		sb.append("}").append(", ");
 		sb.append("{");
 		sb.append("id: testUserUsername, ");
 		sb.append("password: ").append(TEST_USER_PASSWORD).append(", ");
+		sb.append("email: null, ");
 		sb.append("userroles: [], ");
 		sb.append("books: []");
 		sb.append("}");
@@ -123,10 +127,10 @@ public class UserServiceUtilTest {
 
 		// COMPLEX_USER_ENTITY_JSON
 		sb.setLength(0);
-		sb.append("{id: null, password: null, userroles: [null, roleA], books: []}");
+		sb.append("{id: null, password: null, email: null, userroles: [null, roleA], books: []}");
 		COMPLEX_USER_ENTITY_JSON = sb.toString();
 		sb.setLength(0);
-		sb.append("{id: null, password: null, userroles: [roleA, null], books: []}");
+		sb.append("{id: null, password: null, email: null, userroles: [roleA, null], books: []}");
 		COMPLEX_USER_ENTITY_JSON_V2 = sb.toString();
 
 		// ROLE_ENTITY_JSON
@@ -217,9 +221,9 @@ public class UserServiceUtilTest {
 	 * Method initializing some DelegatorOutputs
 	 */
 	private void setUpBdOutputs() {
-		userDelegatorOutput = new PersistenceDelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
 		userDelegatorOutput.setOutputObject(simpleUsers);
-		unrecognizedUserDelegatorOutput = new PersistenceDelegatorOutput();
+		unrecognizedUserDelegatorOutput = new DelegatorOutput();
 		unrecognizedUserDelegatorOutput.setOutputObject(null);
 	}
 
@@ -277,7 +281,7 @@ public class UserServiceUtilTest {
 
 		// EXPECTED_USER_RETRIEVAL_MESSAGE_SIMPLE_RESULT
 		sb.setLength(0);
-		sb.append(ErrorConstants.RETRIEVE_USER_SUCCESS_MSG)
+		sb.append(ErrorConstants.RETRIEVE_USER_FOR_ROLES_SUCCESS_MSG)
 				.append(" '")
 				.append(existingRoles.getRoles().toString())
 				.append("':")
@@ -287,5 +291,15 @@ public class UserServiceUtilTest {
 				.append("'. ").append(userEntityList.size())
 				.append(" Entities were found");
 		EXPECTED_USER_RETRIEVAL_MESSAGE_SIMPLE_RESULT = sb.toString();
+
+		// EXPECTED_USER_RETRIEVAL_BY_ID_MESSAGE_RESULT
+		sb.setLength(0);
+		sb.append(ErrorConstants.RETRIEVE_USER_BY_ID_SUCCESS_MSG)
+				.append(" '")
+				.append(userEntity1.getKey())
+				.append("': '")
+				.append(UserServiceEntityMapper
+						.mapUserEntityToJSONString(userEntity1)).append("'.");
+		EXPECTED_USER_RETRIEVAL_BY_ID_MESSAGE_RESULT = sb.toString();
 	}
 }

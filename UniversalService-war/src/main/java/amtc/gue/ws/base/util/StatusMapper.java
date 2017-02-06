@@ -1,6 +1,6 @@
 package amtc.gue.ws.base.util;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.inout.Status;
 
 /**

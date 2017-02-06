@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.StatusMapper;
 import amtc.gue.ws.books.inout.Book;
 import amtc.gue.ws.books.inout.Books;
@@ -34,16 +34,16 @@ public class BookServiceEntityMapper {
 	 * @return mapped BookEntity
 	 */
 	public static GAEJPABookEntity mapBookToEntity(Book book,
-			PersistenceTypeEnum type) {
+			DelegatorTypeEnum type) {
 
 		GAEJPABookEntity bookEntity = new GAEJPABookEntity();
-		if (book.getId() != null && type != PersistenceTypeEnum.ADD)
+		if (book.getId() != null && type != DelegatorTypeEnum.ADD)
 			bookEntity.setKey(book.getId());
 		bookEntity.setAuthor(book.getAuthor());
 		bookEntity.setDescription(book.getDescription());
 		bookEntity.setISBN(book.getISBN());
 		bookEntity.setPrice(book.getPrice());
-		if (type != PersistenceTypeEnum.ADD) {
+		if (type != DelegatorTypeEnum.ADD) {
 			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()), true);
 		} else {
 			bookEntity.setTags(mapTagsToTagEntityList(book.getTags()), false);
@@ -64,7 +64,7 @@ public class BookServiceEntityMapper {
 	 * @return list of BookEntity objects that should be persisted
 	 */
 	public static List<GAEJPABookEntity> transformBooksToBookEntities(
-			Books books, PersistenceTypeEnum type) {
+			Books books, DelegatorTypeEnum type) {
 
 		List<GAEJPABookEntity> bookEntityList = new ArrayList<GAEJPABookEntity>();
 		if (books != null) {

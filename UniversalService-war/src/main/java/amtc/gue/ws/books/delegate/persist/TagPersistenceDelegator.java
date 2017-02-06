@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegatorInput;
+import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.util.SpringContext;
@@ -38,13 +38,13 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 	@Override
 	protected void persistEntities() {
 		// not implemented
-		setUnrecognizedInputDelegatorOutput();
+		setUnrecognizedDelegatorOutput();
 	}
 
 	@Override
 	protected void removeEntities() {
 		// not implemented
-		setUnrecognizedInputDelegatorOutput();
+		setUnrecognizedDelegatorOutput();
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 			log.log(Level.SEVERE, "Error while trying to retrieve tags", e);
 		}
 	}
-	
+
 	/**
 	 * Setter for the used tagDAOImpl
 	 * 

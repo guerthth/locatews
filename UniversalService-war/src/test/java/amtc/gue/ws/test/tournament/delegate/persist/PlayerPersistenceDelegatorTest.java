@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;

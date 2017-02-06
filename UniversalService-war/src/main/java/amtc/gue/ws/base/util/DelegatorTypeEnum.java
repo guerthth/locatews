@@ -1,12 +1,12 @@
 package amtc.gue.ws.base.util;
 
 /**
- * enumeration for the existing persistence types
+ * enumeration for the existing delegator types
  * 
  * @author Thomas
  *
  */
-public enum PersistenceTypeEnum {
+public enum DelegatorTypeEnum {
 	
 	/** add */
 	ADD,
@@ -19,6 +19,9 @@ public enum PersistenceTypeEnum {
 	
 	/** read */
 	READ,
+	
+	/** sending mails */
+	MAIL,
 	
 	/** unrecognized */
 	UNRECOGNIZED

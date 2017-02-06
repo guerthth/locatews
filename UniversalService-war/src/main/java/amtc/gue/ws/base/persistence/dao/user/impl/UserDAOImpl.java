@@ -60,6 +60,9 @@ public class UserDAOImpl extends DAOImpl<GAEJPAUserEntity, String> implements
 				q.setParameter("id", userEntity.getKey());
 			if (userEntity.getPassword() != null)
 				q.setParameter("password", userEntity.getPassword());
+			if (userEntity.getEmail() != null) {
+				q.setParameter("email", userEntity.getEmail());
+			}
 			foundUsers = q.getResultList();
 		} catch (Exception e) {
 			throw new EntityRetrievalException(
@@ -81,6 +84,7 @@ public class UserDAOImpl extends DAOImpl<GAEJPAUserEntity, String> implements
 			updatedUserEntity = entityManager.find(GAEJPAUserEntity.class,
 					userEntity.getKey());
 			updatedUserEntity.setPassword(userEntity.getPassword());
+			updatedUserEntity.setEmail(userEntity.getEmail());
 			updatedUserEntity.setRoles(userEntity.getRoles(), true);
 			updatedUserEntity.setBooks(userEntity.getBooks(), true);
 			entityManager.getTransaction().commit();

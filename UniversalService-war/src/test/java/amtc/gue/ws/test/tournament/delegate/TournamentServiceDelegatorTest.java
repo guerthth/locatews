@@ -3,8 +3,8 @@ package amtc.gue.ws.test.tournament.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.delegate.input.DelegatorInput;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.test.base.delegate.persist.BasePersistenceDelegatorTest;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.inout.Player;
@@ -29,10 +29,10 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 	
 	protected static PlayerPersistenceDelegator playerPersistenceDelegator;
 
-	protected static PersistenceDelegatorInput addPlayerDelegatorInput;
-	protected static PersistenceDelegatorInput deletePlayerDelegatorInput;
-	protected static PersistenceDelegatorInput deletePlayerDelegatorInputWithId;
-	protected static PersistenceDelegatorInput readPlayerDelegatorInput;
+	protected static DelegatorInput addPlayerDelegatorInput;
+	protected static DelegatorInput deletePlayerDelegatorInput;
+	protected static DelegatorInput deletePlayerDelegatorInputWithId;
+	protected static DelegatorInput readPlayerDelegatorInput;
 
 	protected static List<Player> playerList;
 	protected static List<Player> playerListWithId;
@@ -107,24 +107,24 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 	 */
 	private static void setUpPlayerDelegatorInputs() {
 		// DelegatorInput for player entity adding
-		addPlayerDelegatorInput = new PersistenceDelegatorInput();
+		addPlayerDelegatorInput = new DelegatorInput();
 		addPlayerDelegatorInput.setInputObject(players);
-		addPlayerDelegatorInput.setType(PersistenceTypeEnum.ADD);
+		addPlayerDelegatorInput.setType(DelegatorTypeEnum.ADD);
 		
 		// DelegatorInput for player entity deletion
-		deletePlayerDelegatorInput = new PersistenceDelegatorInput();
+		deletePlayerDelegatorInput = new DelegatorInput();
 		deletePlayerDelegatorInput.setInputObject(players);
-		deletePlayerDelegatorInput.setType(PersistenceTypeEnum.DELETE);
+		deletePlayerDelegatorInput.setType(DelegatorTypeEnum.DELETE);
 		
 		// DelegatorInput for player entity deletion with ID player
-		deletePlayerDelegatorInputWithId = new PersistenceDelegatorInput();
+		deletePlayerDelegatorInputWithId = new DelegatorInput();
 		deletePlayerDelegatorInputWithId.setInputObject(playersWithId);
-		deletePlayerDelegatorInputWithId.setType(PersistenceTypeEnum.DELETE);
+		deletePlayerDelegatorInputWithId.setType(DelegatorTypeEnum.DELETE);
 		
 		// DelegatorInput for player entity read
-		readPlayerDelegatorInput = new PersistenceDelegatorInput();
+		readPlayerDelegatorInput = new DelegatorInput();
 		readPlayerDelegatorInput.setInputObject(null);
-		readPlayerDelegatorInput.setType(PersistenceTypeEnum.READ);
+		readPlayerDelegatorInput.setType(DelegatorTypeEnum.READ);
 	}
 
 	/**

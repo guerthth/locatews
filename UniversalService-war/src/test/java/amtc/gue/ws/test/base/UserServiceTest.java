@@ -19,10 +19,12 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.base.UserService;
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.mail.AbstractMailDelegator;
+import amtc.gue.ws.base.delegate.mail.UserMailDelegator;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.response.UserServiceResponse;
 
@@ -34,12 +36,15 @@ import amtc.gue.ws.base.response.UserServiceResponse;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserServiceTest extends JerseyTest {
-	private static IDelegatorOutput delegatorOutput;
+	private static IDelegatorOutput userDelegatorOutput;
+	private static IDelegatorOutput mailDelegatorOutput;
 	private static AbstractPersistenceDelegator userDelegator;
+	private static AbstractMailDelegator mailDelegator;
 
 	@Override
 	protected Application configure() {
-		return new ResourceConfig().register(new UserService(userDelegator));
+		return new ResourceConfig().register(new UserService(userDelegator,
+				mailDelegator));
 	}
 
 	@BeforeClass
@@ -51,6 +56,7 @@ public class UserServiceTest extends JerseyTest {
 	@AfterClass
 	public static void checkMocks() {
 		EasyMock.verify(userDelegator);
+		EasyMock.verify(mailDelegator);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -70,9 +76,9 @@ public class UserServiceTest extends JerseyTest {
 	public void testGetUsers() {
 		final UserServiceResponse resp = target("/users").request().get(
 				UserServiceResponse.class);
-		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus()
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus()
 				.getStatusMessage());
-		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus()
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus()
 				.getStatusCode());
 	}
 
@@ -90,15 +96,27 @@ public class UserServiceTest extends JerseyTest {
 		assertNotNull(resp);
 	}
 
+	@Test
+	public void testSendUserPasswordMail() {
+		final UserServiceResponse resp = target("/users/1/password").request()
+				.get(UserServiceResponse.class);
+		assertNotNull(resp);
+	}
+
 	// Helper methods
 	private static void setUpDelegatorOutputs() {
-		delegatorOutput = new PersistenceDelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
+		mailDelegatorOutput = new DelegatorOutput();
 	}
 
 	private static void setUpDelegatorMocks() {
 		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
-		EasyMock.expect(userDelegator.delegate()).andReturn(delegatorOutput)
-				.times(3);
+		EasyMock.expect(userDelegator.delegate())
+				.andReturn(userDelegatorOutput).times(3);
 		EasyMock.replay(userDelegator);
+		mailDelegator = EasyMock.createNiceMock(UserMailDelegator.class);
+		EasyMock.expect(mailDelegator.delegate())
+				.andReturn(mailDelegatorOutput);
+		EasyMock.replay(mailDelegator);
 	}
 }

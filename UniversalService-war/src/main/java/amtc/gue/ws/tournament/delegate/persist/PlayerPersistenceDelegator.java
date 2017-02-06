@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegatorInput;
+import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.persistence.dao.player.PlayerDAO;
@@ -43,13 +43,13 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 	@Override
 	protected void persistEntities() {
 		log.info("ADD Player action triggered");
-		if (persistenceInput.getInputObject() instanceof Players) {
-			Players players = (Players) persistenceInput.getInputObject();
+		if (delegatorInput.getInputObject() instanceof Players) {
+			Players players = (Players) delegatorInput.getInputObject();
 			delegatorOutput
 					.setStatusCode(TournamentServiceErrorConstants.ADD_PLAYER_SUCCESS_CODE);
 			List<GAEJPAPlayerEntity> playerEntityList = TournamentServiceEntityMapper
 					.transformPlayersToPlayerEntities(players,
-							PersistenceTypeEnum.ADD);
+							DelegatorTypeEnum.ADD);
 			List<GAEJPAPlayerEntity> successfullyAddedPlayerEntities = new ArrayList<>();
 			List<GAEJPAPlayerEntity> unsuccessfullyAddedPlayerEntities = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 
@@ -99,17 +99,16 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void removeEntities() {
 		log.info("DELETE Player action triggered");
 
-		if (persistenceInput.getInputObject() instanceof Players) {
+		if (delegatorInput.getInputObject() instanceof Players) {
 			List<GAEJPAPlayerEntity> removedPlayerEntities = new ArrayList<>();
-			Players playersToRemove = (Players) persistenceInput
-					.getInputObject();
+			Players playersToRemove = (Players) delegatorInput.getInputObject();
 
 			delegatorOutput
 					.setStatusCode(TournamentServiceErrorConstants.DELETE_PLAYER_SUCCESS_CODE);
 			// transform input object to playerentities and remove
 			List<GAEJPAPlayerEntity> playerEntities = TournamentServiceEntityMapper
 					.transformPlayersToPlayerEntities(playersToRemove,
-							PersistenceTypeEnum.DELETE);
+							DelegatorTypeEnum.DELETE);
 			for (GAEJPAPlayerEntity playerEntity : playerEntities) {
 				List<GAEJPAPlayerEntity> playerEntitiesToRemove;
 				String playerEntityJSON = TournamentServiceEntityMapper
@@ -168,7 +167,7 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 

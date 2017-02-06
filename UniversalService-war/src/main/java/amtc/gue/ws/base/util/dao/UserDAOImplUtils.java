@@ -144,6 +144,9 @@ public class UserDAOImplUtils {
 			if (userEntity.getPassword() != null) {
 				sb.append(" and u.password = :password");
 			}
+			if(userEntity.getEmail() != null){
+				sb.append(" and u.email = :email");
+			}
 		}
 		int newLength = sb.length();
 		if (initialLength != newLength) {

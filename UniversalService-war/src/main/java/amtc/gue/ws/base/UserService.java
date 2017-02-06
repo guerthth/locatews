@@ -14,14 +14,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.AbstractDelegator;
+import amtc.gue.ws.base.delegate.mail.AbstractMailDelegator;
+import amtc.gue.ws.base.delegate.mail.UserMailDelegator;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.response.UserServiceResponse;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.base.util.UserServiceEntityMapper;
 
@@ -31,14 +34,19 @@ public class UserService {
 	protected static final Logger log = Logger.getLogger(UserService.class
 			.getName());
 	private AbstractPersistenceDelegator userDelegator;
+	private AbstractDelegator mailDelegator;
 
 	public UserService() {
-		this.userDelegator = (UserPersistenceDelegator) SpringContext.context
+		userDelegator = (UserPersistenceDelegator) SpringContext.context
 				.getBean("userPersistenceDelegator");
+		mailDelegator = (UserMailDelegator) SpringContext.context
+				.getBean("userMailDelegator");
 	}
 
-	public UserService(AbstractPersistenceDelegator delegator) {
-		this.userDelegator = delegator;
+	public UserService(AbstractPersistenceDelegator userDelegator,
+			AbstractMailDelegator mailDelegator) {
+		this.userDelegator = userDelegator;
+		this.mailDelegator = mailDelegator;
 	}
 
 	@PermitAll
@@ -46,11 +54,10 @@ public class UserService {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	public UserServiceResponse addUsers(Users users) {
-		userDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.ADD, users);
-		IDelegatorOutput bpdOutput = userDelegator.delegate();
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, users);
+		IDelegatorOutput dOutput = userDelegator.delegate();
 		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(bpdOutput);
+				.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
 	@PermitAll
@@ -58,11 +65,11 @@ public class UserService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public UserServiceResponse getUsers() {
 		Roles roles = new Roles();
-		userDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.READ, roles);
-		IDelegatorOutput bpdOutput = userDelegator.delegate();
+		userDelegator
+				.buildAndInitializeDelegator(DelegatorTypeEnum.READ, roles);
+		IDelegatorOutput dOutput = userDelegator.delegate();
 		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(bpdOutput);
+				.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
 	@PermitAll
@@ -77,11 +84,21 @@ public class UserService {
 		userToRemove.setId(id);
 		usersToRemove.setUsers(userListToRemove);
 
-		userDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.DELETE, usersToRemove);
-		IDelegatorOutput bpdOutput = userDelegator.delegate();
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
+				usersToRemove);
+		IDelegatorOutput dOutput = userDelegator.delegate();
 		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(bpdOutput);
+				.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
+	@PermitAll
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/{id}/password")
+	public UserServiceResponse sendUserPasswordMail(@PathParam("id") String id) {
+		mailDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.MAIL, id);
+		IDelegatorOutput dOutput = mailDelegator.delegate();
+		return UserServiceEntityMapper
+				.mapBdOutputToUserServiceResponse(dOutput);
+	}
 }

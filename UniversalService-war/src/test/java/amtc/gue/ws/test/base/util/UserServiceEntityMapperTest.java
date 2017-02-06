@@ -12,7 +12,7 @@ import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.response.UserServiceResponse;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.UserServiceEntityMapper;
 
 /**
@@ -28,15 +28,16 @@ public class UserServiceEntityMapperTest extends UserServiceUtilTest {
 	public void testMapUserToEntityForDeleteType() {
 		user1.setId(TEST_USER_ENTITY_KEY);
 		GAEJPAUserEntity userEntity = UserServiceEntityMapper.mapUserToEntity(
-				user1, PersistenceTypeEnum.DELETE);
+				user1, DelegatorTypeEnum.DELETE);
 		assertEquals(user1.getId(), userEntity.getKey());
-		assertEquals(user1.getPassword(), userEntity.getPassword());
+		assertEquals("", userEntity.getPassword());
+		assertEquals("", userEntity.getEmail());
 	}
 
 	@Test
 	public void testMapUserToEntityForAddType() {
 		GAEJPAUserEntity userEntity = UserServiceEntityMapper.mapUserToEntity(
-				user1, PersistenceTypeEnum.ADD);
+				user1, DelegatorTypeEnum.ADD);
 		assertNull(userEntity.getKey());
 	}
 
@@ -44,7 +45,7 @@ public class UserServiceEntityMapperTest extends UserServiceUtilTest {
 	public void testMapUserToEntityForUpdateType() {
 		user1.setId(TEST_USER_ENTITY_KEY);
 		GAEJPAUserEntity userEntity = UserServiceEntityMapper.mapUserToEntity(
-				user1, PersistenceTypeEnum.UPDATE);
+				user1, DelegatorTypeEnum.UPDATE);
 		assertEquals(user1.getId(), userEntity.getKey());
 	}
 
@@ -52,16 +53,17 @@ public class UserServiceEntityMapperTest extends UserServiceUtilTest {
 	public void testMapUserToEntityForAddTypeUsingId() {
 		user1.setId(TEST_USER_ENTITY_KEY);
 		GAEJPAUserEntity userEntity = UserServiceEntityMapper.mapUserToEntity(
-				user1, PersistenceTypeEnum.ADD);
+				user1, DelegatorTypeEnum.ADD);
 		assertNotNull(userEntity.getKey());
-		assertEquals(user1.getPassword(), userEntity.getPassword());
+		assertEquals("", userEntity.getPassword());
+		assertEquals("", userEntity.getEmail());
 	}
 
 	@Test
 	public void testTransformUsersToUserEntitiesUsingSimpleUsers() {
 		List<GAEJPAUserEntity> userEntityList = UserServiceEntityMapper
 				.transformUsersToUserEntities(simpleUsers,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertNotNull(userEntityList);
 		assertEquals(2, userEntityList.size());
 	}
@@ -70,7 +72,7 @@ public class UserServiceEntityMapperTest extends UserServiceUtilTest {
 	public void testTransformUsersToUserEntitiesUsingEmptyUsers() {
 		List<GAEJPAUserEntity> userEntityList = UserServiceEntityMapper
 				.transformUsersToUserEntities(emptyUsers,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertNotNull(userEntityList);
 		assertEquals(0, userEntityList.size());
 	}
@@ -78,7 +80,7 @@ public class UserServiceEntityMapperTest extends UserServiceUtilTest {
 	@Test
 	public void testTransformUsersToUserEntitiesUsingNullUsers() {
 		List<GAEJPAUserEntity> userEntityList = UserServiceEntityMapper
-				.transformUsersToUserEntities(null, PersistenceTypeEnum.ADD);
+				.transformUsersToUserEntities(null, DelegatorTypeEnum.ADD);
 		assertNotNull(userEntityList);
 		assertEquals(0, userEntityList.size());
 	}

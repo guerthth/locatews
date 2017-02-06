@@ -11,7 +11,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
@@ -264,6 +264,24 @@ public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
 				delegatorOutput.getStatusCode());
 	}
 
+	@Test
+	public void testDelegateReadUsingSearchById() {
+		userPersistenceDelegator.initialize(readUserByIdDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userDAOImpl);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE,
+				delegatorOutput.getStatusCode());
+	}
+
+	@Test
+	public void testDelegateReadUsingSearchByIdRetrievalFail() {
+		userPersistenceDelegator.initialize(readUserByIdDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userDAOImplFail);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE,
+				delegatorOutput.getStatusCode());
+	}
+
 	/**
 	 * Method setting up DAO mocks
 	 * 
@@ -285,7 +303,7 @@ public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
 		EasyMock.expect(userDAOImpl.getUserEntitiesByRoles(roles)).andReturn(
 				retrievedUserEntityList);
 		EasyMock.expect(userDAOImpl.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(retrievedUserEntity);
+				.andReturn(retrievedUserEntity).times(2);
 		EasyMock.expect(
 				userDAOImpl.removeEntity(EasyMock.isA(GAEJPAUserEntity.class)))
 				.andReturn(removedUserEntity);
@@ -316,6 +334,9 @@ public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
 				userDAOImplFail.getUserEntitiesByRoles(EasyMock
 						.isA(Roles.class))).andThrow(
 				new EntityRetrievalException());
+		EasyMock.expect(
+				userDAOImplFail.findEntityById(EasyMock.isA(String.class)))
+				.andThrow(new EntityRetrievalException());
 		EasyMock.replay(userDAOImplFail);
 
 		// negative scenario mock for UserDAO (removeEntity() call fails)
@@ -364,7 +385,7 @@ public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
 						.isA(GAEJPARoleEntity.class))).andReturn(
 				emptyRoleEntityList);
 		EasyMock.replay(roleDAOImplPersistenceFail);
-		
+
 		// positive scenario mock for RoleDAO (roles are found)
 		roleDAOImpl = EasyMock.createNiceMock(RoleDAO.class);
 		EasyMock.expect(

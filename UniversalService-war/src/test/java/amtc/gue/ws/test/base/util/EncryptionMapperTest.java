@@ -14,8 +14,6 @@ import amtc.gue.ws.base.util.EncryptionMapper;
  */
 public class EncryptionMapperTest {
 	private static String stringToEncrypt = "passwordToEncrypt";
-	private static String test = "thGU%1987";
-
 
 	@Test
 	public void testEncryptStringMD5() {
@@ -24,21 +22,14 @@ public class EncryptionMapperTest {
 		assertNotNull(encryptedString);
 		assertFalse(stringToEncrypt.equals(encryptedString));
 	}
-	
+
 	@Test
-	public void testEncryptStringMD5HashingTwice(){
+	public void testEncryptStringMD5HashingTwice() {
 		String firstEncryptedString = EncryptionMapper
 				.encryptStringMD5(stringToEncrypt);
 		String secondEncryptedString = EncryptionMapper
 				.encryptStringMD5(stringToEncrypt);
 		assertNotNull(firstEncryptedString);
 		assertTrue(firstEncryptedString.equals(secondEncryptedString));
-	}
-	
-	@Test
-	public void testGood(){
-		String firstEncryptedString = EncryptionMapper
-				.encryptStringMD5(test);
-		assertNotNull(firstEncryptedString);
 	}
 }

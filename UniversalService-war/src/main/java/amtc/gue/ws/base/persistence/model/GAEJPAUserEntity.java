@@ -35,6 +35,9 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 	private String userId;
 	@Column(name = "password")
 	private String password;
+	@Column(name = "email")
+	private String email;
+
 	@Unowned
 	@ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<GAEJPARoleEntity> roles = new HashSet<>();
@@ -58,6 +61,14 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Set<GAEJPARoleEntity> getRoles() {

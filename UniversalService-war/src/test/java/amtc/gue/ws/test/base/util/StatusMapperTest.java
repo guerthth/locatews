@@ -7,8 +7,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.inout.Status;
 import amtc.gue.ws.base.util.StatusMapper;
 
@@ -35,7 +35,7 @@ public class StatusMapperTest {
 
 	@Test
 	public void testbuildStatusForDelegatorOutputUsingSimpleInput() {
-		bdOutput = new PersistenceDelegatorOutput();
+		bdOutput = new DelegatorOutput();
 		Status createdStatus = StatusMapper
 				.buildStatusForDelegatorOutput(bdOutput);
 		assertNotNull(createdStatus);

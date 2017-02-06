@@ -36,12 +36,17 @@ public class EncryptionMapper {
 	 * @return encrypted string
 	 */
 	public static String encryptStringMD5(String stringToEncrypt) {
-		String encryptedString = null;
-		digesterMD5.update(stringToEncrypt.getBytes());
-		byte[] bytes = digesterMD5.digest();
 		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < bytes.length; i++){
-			sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+		String encryptedString = null;
+
+		if (stringToEncrypt != null) {
+			digesterMD5.update(stringToEncrypt.getBytes());
+			byte[] bytes = digesterMD5.digest();
+
+			for (int i = 0; i < bytes.length; i++) {
+				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16)
+						.substring(1));
+			}
 		}
 		encryptedString = sb.toString();
 

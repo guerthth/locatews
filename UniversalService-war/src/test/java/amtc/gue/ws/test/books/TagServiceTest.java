@@ -14,9 +14,9 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
 import amtc.gue.ws.books.TagService;
 import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
 import amtc.gue.ws.books.response.TagServiceResponse;
@@ -66,7 +66,7 @@ public class TagServiceTest extends JerseyTest {
 
 	// Helper Methods
 	private static void setUpDelegatorOutputs() {
-		delegatorOutput = new PersistenceDelegatorOutput();
+		delegatorOutput = new DelegatorOutput();
 	}
 
 	private static void setUpDelegatorMocks() {

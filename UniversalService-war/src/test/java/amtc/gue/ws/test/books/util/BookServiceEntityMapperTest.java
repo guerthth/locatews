@@ -10,7 +10,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.books.inout.Book;
 import amtc.gue.ws.books.inout.Books;
 import amtc.gue.ws.books.inout.Tags;
@@ -48,7 +48,7 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	@Test
 	public void testMapToBookEntityForDeleteType() {
 		GAEJPABookEntity bookEntity = BookServiceEntityMapper.mapBookToEntity(
-				book1, PersistenceTypeEnum.DELETE);
+				book1, DelegatorTypeEnum.DELETE);
 		assertEquals(book1.getAuthor(), bookEntity.getAuthor());
 		assertEquals(book1.getDescription(), bookEntity.getDescription());
 		assertEquals(book1.getId(), bookEntity.getKey());
@@ -61,7 +61,7 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	@Test
 	public void testMapToBookEntityForAddType() {
 		GAEJPABookEntity bookEntity = BookServiceEntityMapper.mapBookToEntity(
-				book1, PersistenceTypeEnum.ADD);
+				book1, DelegatorTypeEnum.ADD);
 		assertEquals(book1.getAuthor(), bookEntity.getAuthor());
 		assertEquals(book1.getDescription(), bookEntity.getDescription());
 		assertNull(bookEntity.getKey());
@@ -74,7 +74,7 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	@Test
 	public void testMapToBookEntityWithNullID() {
 		GAEJPABookEntity bookEntity = BookServiceEntityMapper.mapBookToEntity(
-				book2, PersistenceTypeEnum.ADD);
+				book2, DelegatorTypeEnum.ADD);
 		assertEquals(3, bookEntity.getTags().size());
 	}
 
@@ -82,7 +82,7 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	public void testTransformBooksToEntitesUsingSimpleBooks() {
 		List<GAEJPABookEntity> bookEntityList = BookServiceEntityMapper
 				.transformBooksToBookEntities(simpleBooks,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertNotNull(bookEntityList);
 		assertEquals(2, bookEntityList.size());
 	}
@@ -91,14 +91,14 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	public void testTransformBooksToEntitiesUsingEmptyBooks() {
 		List<GAEJPABookEntity> bookEntityList = BookServiceEntityMapper
 				.transformBooksToBookEntities(emptyBooks,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertEquals(0, bookEntityList.size());
 	}
 
 	@Test
 	public void testTransformBooksToEntitiesUsingNullBooks() {
 		List<GAEJPABookEntity> bookEntityList = BookServiceEntityMapper
-				.transformBooksToBookEntities(null, PersistenceTypeEnum.ADD);
+				.transformBooksToBookEntities(null, DelegatorTypeEnum.ADD);
 		assertNotNull(bookEntityList);
 		assertEquals(0, bookEntityList.size());
 	}

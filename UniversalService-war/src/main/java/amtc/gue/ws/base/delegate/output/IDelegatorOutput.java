@@ -1,4 +1,4 @@
-package amtc.gue.ws.base.delegate;
+package amtc.gue.ws.base.delegate.output;
 
 /**
  * Delegator Output Object interface

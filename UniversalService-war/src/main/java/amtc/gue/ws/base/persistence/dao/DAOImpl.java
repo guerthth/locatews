@@ -45,8 +45,8 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		ParameterizedType genericSuperclass = (ParameterizedType) getClass()
 				.getGenericSuperclass();
 		entityClass = (Class) genericSuperclass.getActualTypeArguments()[0];
-		ENTITY_SELECTION_QUERY = "select e from " + this.entityClass.getSimpleName()
-				+ " e";
+		ENTITY_SELECTION_QUERY = "select e from "
+				+ this.entityClass.getSimpleName() + " e";
 	}
 
 	@Override
@@ -69,8 +69,6 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return entity;
 	}
 
@@ -93,8 +91,6 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return entities;
 	}
 
@@ -113,8 +109,6 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return foundEntity;
 	}
 
@@ -144,13 +138,11 @@ public abstract class DAOImpl<E extends GAEPersistenceEntity, K> implements
 		} finally {
 			closeEntityManager();
 		}
-		if (currentUser != null)
-			System.out.println(currentUser.getId());
 		return entityToRemove;
 	}
-	
+
 	@Override
-	public E mergeEntity(E entity){
+	public E mergeEntity(E entity) {
 		entityManager = entityManagerFactory.createEntityManager();
 		entityManager.merge(entity);
 		closeEntityManager();

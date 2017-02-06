@@ -2,14 +2,10 @@ package amtc.gue.ws.base.delegate.persist;
 
 import java.util.logging.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegator;
-import amtc.gue.ws.base.delegate.IDelegatorInput;
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
-import amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.base.delegate.persist.output.PersistenceDelegatorOutput;
-import amtc.gue.ws.base.inout.User;
-import amtc.gue.ws.base.util.ErrorConstants;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.delegate.AbstractDelegator;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 
 /**
@@ -18,61 +14,28 @@ import amtc.gue.ws.base.util.SpringContext;
  * @author Thomas
  *
  */
-public abstract class AbstractPersistenceDelegator implements IDelegator {
+public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
 	protected static final Logger log = Logger
 			.getLogger(AbstractPersistenceDelegator.class.getName());
-	protected IDelegatorOutput delegatorOutput;
-	protected PersistenceDelegatorInput persistenceInput;
-	protected User currentUser;
-
-	/**
-	 * Method setting up the respective delegator
-	 * 
-	 * @param type
-	 *            the input type
-	 * @param inputObject
-	 *            the input object
-	 */
-	public void buildAndInitializePersistenceDelegator(
-			PersistenceTypeEnum type, Object inputObject) {
-		// setup input object and DAO implementations
-		persistenceInput = (PersistenceDelegatorInput) SpringContext.context
-				.getBean("persistenceDelegatorInput");
-
-		persistenceInput.setType(type);
-		persistenceInput.setInputObject(inputObject);
-
-		// intialize PersistenceDelegator
-		initialize(persistenceInput);
-	}
-
-	@Override
-	public void initialize(IDelegatorInput input) {
-		if (input instanceof PersistenceDelegatorInput) {
-			persistenceInput = (PersistenceDelegatorInput) input;
-		} else {
-			persistenceInput = null;
-		}
-	}
 
 	@Override
 	public IDelegatorOutput delegate() {
-		delegatorOutput = (PersistenceDelegatorOutput) SpringContext.context
-				.getBean("persistenceDelegatorOutput");
-		if (persistenceInput != null) {
-			if (persistenceInput.getType().equals(PersistenceTypeEnum.ADD)) {
+		delegatorOutput = (DelegatorOutput) SpringContext.context
+				.getBean("delegatorOutput");
+		if (delegatorInput != null) {
+			if (delegatorInput.getType().equals(DelegatorTypeEnum.ADD)) {
 				persistEntities();
-			} else if (persistenceInput.getType().equals(
-					PersistenceTypeEnum.DELETE)) {
+			} else if (delegatorInput.getType().equals(
+					DelegatorTypeEnum.DELETE)) {
 				removeEntities();
-			} else if (persistenceInput.getType().equals(
-					PersistenceTypeEnum.READ)) {
+			} else if (delegatorInput.getType()
+					.equals(DelegatorTypeEnum.READ)) {
 				retrieveEntities();
 			} else {
-				setUnrecognizedInputDelegatorOutput();
+				setUnrecognizedDelegatorOutput();
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 
 		return delegatorOutput;
@@ -92,21 +55,4 @@ public abstract class AbstractPersistenceDelegator implements IDelegator {
 	 * Method retrieving entities from the DB
 	 */
 	protected abstract void retrieveEntities();
-
-	@Override
-	public void setUnrecognizedInputDelegatorOutput() {
-		log.severe(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
-		delegatorOutput
-				.setStatusCode(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE);
-		delegatorOutput
-				.setStatusMessage(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
-	}
-	
-	/**
-	 * Setter for the current user
-	 */
-	public void setCurrentUser(User currentUser){
-		this.currentUser = currentUser;
-	}
-
 }

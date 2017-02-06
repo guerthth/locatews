@@ -4,10 +4,10 @@ import java.util.logging.Logger;
 
 import javax.jws.WebService;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.input.DelegatorInput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.delegate.persist.input.PersistenceDelegatorInput;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
@@ -36,12 +36,12 @@ public class BookGrabber implements IBookGrabber {
 	private final AbstractPersistenceDelegator tpd = (TagPersistenceDelegator) SpringContext.context
 			.getBean("tagPersistenceDelegator");
 
-	private PersistenceDelegatorInput input;
+	private DelegatorInput input;
 
 	@Override
 	public BookServiceResponse addBooks(Books items) {
 		// set up the pesistence delegator
-		buildAndInitializePersistenceDelegator(bpd, PersistenceTypeEnum.ADD,
+		buildAndInitializePersistenceDelegator(bpd, DelegatorTypeEnum.ADD,
 				items);
 
 		// call BookPersistenceDelegators delegate method to handle persist
@@ -55,7 +55,7 @@ public class BookGrabber implements IBookGrabber {
 	@Override
 	public BookServiceResponse getBooksByTag(Tags tags) {
 		// set up the pesistence delegator
-		buildAndInitializePersistenceDelegator(bpd, PersistenceTypeEnum.READ,
+		buildAndInitializePersistenceDelegator(bpd, DelegatorTypeEnum.READ,
 				tags);
 
 		// call BookPersistenceDelegators delegate method to handle retrieval of
@@ -70,7 +70,7 @@ public class BookGrabber implements IBookGrabber {
 	@Override
 	public BookServiceResponse removeBooks(Books booksToRemove) {
 		// set up the pesistence delegator
-		buildAndInitializePersistenceDelegator(bpd, PersistenceTypeEnum.DELETE,
+		buildAndInitializePersistenceDelegator(bpd, DelegatorTypeEnum.DELETE,
 				booksToRemove);
 
 		// call BookPersistenceDelegators delegate method to handle removal of
@@ -85,7 +85,7 @@ public class BookGrabber implements IBookGrabber {
 	@Override
 	public TagServiceResponse getTags() {
 		// set up the pesistence delegator
-		buildAndInitializePersistenceDelegator(tpd, PersistenceTypeEnum.READ,
+		buildAndInitializePersistenceDelegator(tpd, DelegatorTypeEnum.READ,
 				null);
 
 		// call TagPersistenceDelegators delegate method to handle retrieval of
@@ -108,11 +108,11 @@ public class BookGrabber implements IBookGrabber {
 	 *            the input object
 	 */
 	private void buildAndInitializePersistenceDelegator(
-			AbstractPersistenceDelegator apd, PersistenceTypeEnum type,
+			AbstractPersistenceDelegator apd, DelegatorTypeEnum type,
 			Object inputObject) {
 		// setup input object and DAO implementations
-		input = (PersistenceDelegatorInput) SpringContext.context
-				.getBean("persistenceDelegatorInput");
+		input = (DelegatorInput) SpringContext.context
+				.getBean("delegatorInput");
 
 		input.setType(type);
 		input.setInputObject(inputObject);

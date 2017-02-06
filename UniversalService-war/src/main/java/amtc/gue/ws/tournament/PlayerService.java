@@ -20,9 +20,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.inout.Player;
@@ -53,8 +53,8 @@ public class PlayerService {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	public PlayerServiceResponse addPlayers(Players players) {
-		playerDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.ADD, players);
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD,
+				players);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
 		return TournamentServiceEntityMapper
 				.mapBdOutputToPlayerServiceResponse(bdOutput);
@@ -68,8 +68,8 @@ public class PlayerService {
 			@ApiResponse(code = 200, message = "Successful retrieval of players", response = PlayerServiceResponse.class),
 			@ApiResponse(code = 500, message = "Internal server error") })
 	public PlayerServiceResponse getPlayers() {
-		playerDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.READ, null);
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ,
+				null);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
 		return TournamentServiceEntityMapper
 				.mapBdOutputToPlayerServiceResponse(bdOutput);
@@ -86,8 +86,8 @@ public class PlayerService {
 		List<Player> playerListToRemove = new ArrayList<>();
 		playerListToRemove.add(playerToRemove);
 		playersToRemove.setPlayers(playerListToRemove);
-		playerDelegator.buildAndInitializePersistenceDelegator(
-				PersistenceTypeEnum.DELETE, playersToRemove);
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
+				playersToRemove);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
 		return TournamentServiceEntityMapper
 				.mapBdOutputToPlayerServiceResponse(bdOutput);

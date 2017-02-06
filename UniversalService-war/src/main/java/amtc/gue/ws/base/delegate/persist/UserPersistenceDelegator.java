@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import amtc.gue.ws.base.delegate.IDelegatorInput;
+import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
@@ -19,13 +19,13 @@ import amtc.gue.ws.base.persistence.dao.user.UserDAO;
 import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
 import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.util.ErrorConstants;
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.base.util.UserPersistenceDelegatorUtils;
 import amtc.gue.ws.base.util.UserServiceEntityMapper;
 
 /**
- * Persistence Delegator that handles al database actions for User resources
+ * Persistence Delegator that handles all database actions for User resources
  * 
  * @author Thomas
  *
@@ -36,25 +36,22 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 			.getLogger(UserPersistenceDelegator.class.getName());
 
 	/** DAOImplementations used by the delegator */
-	private UserDAO userDAOImpl;
 	private RoleDAO roleDAOImpl;
 
 	@Override
 	public void initialize(IDelegatorInput input) {
 		super.initialize(input);
-		userDAOImpl = (UserDAO) SpringContext.context.getBean("userDAOImpl");
 		roleDAOImpl = (RoleDAO) SpringContext.context.getBean("roleDAOImpl");
 	}
 
 	@Override
-	protected void persistEntities() {
+	public void persistEntities() {
 		log.info("ADD User action triggered");
-		if (persistenceInput.getInputObject() instanceof Users) {
-			Users users = (Users) persistenceInput.getInputObject();
+		if (delegatorInput.getInputObject() instanceof Users) {
+			Users users = (Users) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ErrorConstants.ADD_USER_SUCCESS_CODE);
 			List<GAEJPAUserEntity> userEntityList = UserServiceEntityMapper
-					.transformUsersToUserEntities(users,
-							PersistenceTypeEnum.ADD);
+					.transformUsersToUserEntities(users, DelegatorTypeEnum.ADD);
 			List<GAEJPAUserEntity> successfullyAddedUserEntities = new ArrayList<>();
 			List<GAEJPAUserEntity> unsuccessfullyAddedUserEntities = new ArrayList<>();
 
@@ -95,7 +92,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 
 	}
@@ -104,16 +101,16 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void removeEntities() {
 		log.info("DELETE User action triggered");
 
-		if (persistenceInput.getInputObject() instanceof Users) {
+		if (delegatorInput.getInputObject() instanceof Users) {
 			List<GAEJPAUserEntity> removedUserEntities = new ArrayList<>();
-			Users usersToRemove = (Users) persistenceInput.getInputObject();
+			Users usersToRemove = (Users) delegatorInput.getInputObject();
 			delegatorOutput
 					.setStatusCode(ErrorConstants.DELETE_USER_SUCCESS_CODE);
 
 			// transform input object to userentities and remove
 			List<GAEJPAUserEntity> userEntities = UserServiceEntityMapper
 					.transformUsersToUserEntities(usersToRemove,
-							PersistenceTypeEnum.DELETE);
+							DelegatorTypeEnum.DELETE);
 			for (GAEJPAUserEntity userEntity : userEntities) {
 				List<GAEJPAUserEntity> userEntitiesToRemove;
 				String userEntityJSON = UserServiceEntityMapper
@@ -175,42 +172,82 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
 		}
 	}
 
 	@Override
 	protected void retrieveEntities() {
-		log.info("READ User by role action triggered");
-
-		if (persistenceInput.getInputObject() instanceof Roles) {
-			Roles roles = (Roles) persistenceInput.getInputObject();
-			delegatorOutput
-					.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-			List<GAEJPAUserEntity> foundUsers = new ArrayList<>();
-			try {
-				foundUsers = userDAOImpl.getUserEntitiesByRoles(roles);
-				String statusMessage = UserPersistenceDelegatorUtils
-						.buildGetUsersByRoleSuccessStatusMessage(roles,
-								foundUsers);
-				log.info(statusMessage);
-
-				// set delegator output
-				delegatorOutput.setStatusMessage(statusMessage);
-				delegatorOutput.setOutputObject(UserServiceEntityMapper
-						.transformUserEntitiesToUsers(foundUsers));
-			} catch (EntityRetrievalException e) {
-				delegatorOutput
-						.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
-				delegatorOutput
-						.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-				delegatorOutput.setOutputObject(null);
-				log.log(Level.SEVERE,
-						"Error while trying to retrieve users with role: '"
-								+ roles.getRoles().toString() + "'", e);
-			}
+		if (delegatorInput.getInputObject() instanceof Roles) {
+			retrieveUsersByRoles((Roles) delegatorInput.getInputObject());
+		} else if (delegatorInput.getInputObject() instanceof String) {
+			retrieveUserByUsername((String) delegatorInput.getInputObject());
 		} else {
-			setUnrecognizedInputDelegatorOutput();
+			setUnrecognizedDelegatorOutput();
+		}
+	}
+
+	/**
+	 * Method retrieving all users from the database possess at least one
+	 * element of a specified role set
+	 * 
+	 * @param roles
+	 *            the set of roles.
+	 */
+	private void retrieveUsersByRoles(Roles roles) {
+		delegatorOutput
+				.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
+		List<GAEJPAUserEntity> foundUsers = new ArrayList<>();
+		try {
+			foundUsers = userDAOImpl.getUserEntitiesByRoles(roles);
+			String statusMessage = UserPersistenceDelegatorUtils
+					.buildGetUsersByRoleSuccessStatusMessage(roles, foundUsers);
+			log.info(statusMessage);
+			delegatorOutput.setStatusMessage(statusMessage);
+			delegatorOutput.setOutputObject(UserServiceEntityMapper
+					.transformUserEntitiesToUsers(foundUsers));
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE,
+					"Error while trying to retrieve users with role: '"
+							+ roles.getRoles().toString() + "'", e);
+			delegatorOutput
+					.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
+			delegatorOutput
+					.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
+			delegatorOutput.setOutputObject(UserServiceEntityMapper
+					.transformUserEntitiesToUsers(foundUsers));
+		}
+	}
+
+	/**
+	 * Method retrieving a userEntity from the database by userName
+	 * 
+	 * @param userName
+	 *            the userName that is searched for
+	 */
+	private void retrieveUserByUsername(String userName) {
+		log.info("READ User by userName action triggered");
+		delegatorOutput
+				.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
+		GAEJPAUserEntity foundUser = null;
+		try {
+			foundUser = userDAOImpl.findEntityById(userName);
+			String statusMessage = UserPersistenceDelegatorUtils
+					.buildGetUsersByIdSuccessStatusMessage(userName, foundUser);
+			log.info(statusMessage);
+			delegatorOutput.setStatusMessage(statusMessage);
+			delegatorOutput.setOutputObject(UserServiceEntityMapper
+					.mapUserEntityToUser(foundUser));
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE,
+					"Error while trying to retrieve users with userName: '"
+							+ userName + "'", e);
+			delegatorOutput
+					.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
+			delegatorOutput
+					.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
+			delegatorOutput.setOutputObject(UserServiceEntityMapper
+					.mapUserEntityToUser(foundUser));
 		}
 	}
 

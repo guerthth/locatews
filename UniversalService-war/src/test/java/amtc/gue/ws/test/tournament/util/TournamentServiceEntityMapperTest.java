@@ -8,7 +8,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.base.util.PersistenceTypeEnum;
+import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.tournament.inout.Player;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
@@ -29,7 +29,7 @@ public class TournamentServiceEntityMapperTest extends
 	public void testMapPlayerToEntityForDeleteType() {
 		player1.setId(TEST_PLAYER_ENTITY_KEY);
 		GAEJPAPlayerEntity playerEntity = TournamentServiceEntityMapper
-				.mapPlayerToEntity(player1, PersistenceTypeEnum.DELETE);
+				.mapPlayerToEntity(player1, DelegatorTypeEnum.DELETE);
 		assertEquals(player1.getId(), playerEntity.getKey());
 		assertEquals(player1.getPlayerName(), playerEntity.getPlayerName());
 	}
@@ -37,7 +37,7 @@ public class TournamentServiceEntityMapperTest extends
 	@Test
 	public void testMapPlayerToEntityForAddType() {
 		GAEJPAPlayerEntity playerEntity = TournamentServiceEntityMapper
-				.mapPlayerToEntity(player1, PersistenceTypeEnum.ADD);
+				.mapPlayerToEntity(player1, DelegatorTypeEnum.ADD);
 		assertNull(playerEntity.getKey());
 		assertEquals(player1.getPlayerName(), playerEntity.getPlayerName());
 	}
@@ -46,7 +46,7 @@ public class TournamentServiceEntityMapperTest extends
 	public void testMapPlayerToEntityForUpdateType() {
 		player1.setId(TEST_PLAYER_ENTITY_KEY);
 		GAEJPAPlayerEntity playerEntity = TournamentServiceEntityMapper
-				.mapPlayerToEntity(player1, PersistenceTypeEnum.UPDATE);
+				.mapPlayerToEntity(player1, DelegatorTypeEnum.UPDATE);
 		assertEquals(player1.getId(), playerEntity.getKey());
 		assertEquals(player1.getPlayerName(), playerEntity.getPlayerName());
 	}
@@ -55,7 +55,7 @@ public class TournamentServiceEntityMapperTest extends
 	public void testMapPlayerToEntityForAddTypeUsingId() {
 		player1.setId(TEST_PLAYER_ENTITY_KEY);
 		GAEJPAPlayerEntity playerEntity = TournamentServiceEntityMapper
-				.mapPlayerToEntity(player1, PersistenceTypeEnum.ADD);
+				.mapPlayerToEntity(player1, DelegatorTypeEnum.ADD);
 		assertNull(playerEntity.getKey());
 		assertEquals(player1.getPlayerName(), playerEntity.getPlayerName());
 	}
@@ -64,7 +64,7 @@ public class TournamentServiceEntityMapperTest extends
 	public void testTransformPlayersToPlayerEntitiesUsingSimplePlayers() {
 		List<GAEJPAPlayerEntity> playerEntityList = TournamentServiceEntityMapper
 				.transformPlayersToPlayerEntities(simplePlayers,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertNotNull(playerEntityList);
 		assertEquals(2, playerEntityList.size());
 	}
@@ -73,7 +73,7 @@ public class TournamentServiceEntityMapperTest extends
 	public void testTransformPlayersToPlayerEntitiesUsingEmptyPlayers() {
 		List<GAEJPAPlayerEntity> playerEntityList = TournamentServiceEntityMapper
 				.transformPlayersToPlayerEntities(emptyPlayers,
-						PersistenceTypeEnum.ADD);
+						DelegatorTypeEnum.ADD);
 		assertNotNull(playerEntityList);
 		assertEquals(0, playerEntityList.size());
 	}
@@ -81,7 +81,7 @@ public class TournamentServiceEntityMapperTest extends
 	@Test
 	public void testTransformPlayersToPlayerEntitiesUsingNullPlayers() {
 		List<GAEJPAPlayerEntity> playerEntityList = TournamentServiceEntityMapper
-				.transformPlayersToPlayerEntities(null, PersistenceTypeEnum.ADD);
+				.transformPlayersToPlayerEntities(null, DelegatorTypeEnum.ADD);
 		assertNotNull(playerEntityList);
 		assertEquals(0, playerEntityList.size());
 	}
