@@ -17,16 +17,16 @@ import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
  * @author Thomas
  *
  */
-public abstract class TournamentServiceDelegatorTest extends BasePersistenceDelegatorTest{
+public abstract class TournamentServiceDelegatorTest extends BasePersistenceDelegatorTest {
 
 	protected static final String TESTPLAYERNAME = "testPlayerName";
-	
+
 	protected static GAEJPAPlayerEntity retrievedPlayerEntity;
 	protected static GAEJPAPlayerEntity removedPlayerEntity;
-	
+
 	protected static List<GAEJPAPlayerEntity> emptyPlayerEntityList;
 	protected static List<GAEJPAPlayerEntity> removedPlayerEntityList;
-	
+
 	protected static PlayerPersistenceDelegator playerPersistenceDelegator;
 
 	protected static DelegatorInput addPlayerDelegatorInput;
@@ -36,11 +36,11 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 
 	protected static List<Player> playerList;
 	protected static List<Player> playerListWithId;
-	
+
 	protected static Player firstPlayer;
 	protected static Player secondPlayer;
 	protected static Player thirdPlayer;
-	
+
 	protected static Players players;
 	protected static Players playersWithId;
 
@@ -51,7 +51,7 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 	protected static void oneTimeInitialSetup() {
 		setUpPlayers();
 		setUpPlayerEntities();
-		setUpBaseDelegatorInputs();
+		setUpPersistenceDelegatorInputs();
 		setUpPlayerDelegatorInputs();
 		setUpPlayerPersistenceDelegators();
 	}
@@ -72,14 +72,14 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 
 		players = new Players();
 		players.setPlayers(playerList);
-		
+
 		playerListWithId = new ArrayList<>();
-		
+
 		thirdPlayer = new Player();
 		thirdPlayer.setId(TESTKEY);
 		thirdPlayer.setPlayerName(TESTPLAYERNAME);
 		playerListWithId.add(thirdPlayer);
-		
+
 		playersWithId = new Players();
 		playersWithId.setPlayers(playerListWithId);
 	}
@@ -89,15 +89,15 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 	 */
 	private static void setUpPlayerEntities() {
 		emptyPlayerEntityList = new ArrayList<>();
-		
+
 		retrievedPlayerEntity = new GAEJPAPlayerEntity();
 		retrievedPlayerEntity.setKey(TESTKEY);
 		retrievedPlayerEntity.setPlayerName(TESTPLAYERNAME);
-		
+
 		removedPlayerEntity = new GAEJPAPlayerEntity();
 		removedPlayerEntity.setKey(TESTKEY);
 		removedPlayerEntity.setPlayerName(TESTPLAYERNAME);
-		
+
 		removedPlayerEntityList = new ArrayList<>();
 		removedPlayerEntityList.add(removedPlayerEntity);
 	}
@@ -110,17 +110,17 @@ public abstract class TournamentServiceDelegatorTest extends BasePersistenceDele
 		addPlayerDelegatorInput = new DelegatorInput();
 		addPlayerDelegatorInput.setInputObject(players);
 		addPlayerDelegatorInput.setType(DelegatorTypeEnum.ADD);
-		
+
 		// DelegatorInput for player entity deletion
 		deletePlayerDelegatorInput = new DelegatorInput();
 		deletePlayerDelegatorInput.setInputObject(players);
 		deletePlayerDelegatorInput.setType(DelegatorTypeEnum.DELETE);
-		
+
 		// DelegatorInput for player entity deletion with ID player
 		deletePlayerDelegatorInputWithId = new DelegatorInput();
 		deletePlayerDelegatorInputWithId.setInputObject(playersWithId);
 		deletePlayerDelegatorInputWithId.setType(DelegatorTypeEnum.DELETE);
-		
+
 		// DelegatorInput for player entity read
 		readPlayerDelegatorInput = new DelegatorInput();
 		readPlayerDelegatorInput.setInputObject(null);

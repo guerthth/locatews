@@ -6,6 +6,7 @@ import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.base.delegate.input.DelegatorInput;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
+import amtc.gue.ws.test.base.delegate.ServiceDelegatorTest;
 
 /**
  * Abstract Class holding all methods that should be used for testing
@@ -15,26 +16,11 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class BasePersistenceDelegatorTest {
+public abstract class BasePersistenceDelegatorTest extends ServiceDelegatorTest {
 
-	protected static DelegatorInput unrecognizedDelegatorInput;
-	protected static DelegatorInput nullDelegatorInput;
 	protected static DelegatorInput invalidAddDelegatorInput;
 	protected static DelegatorInput invalidDeleteDelegatorInput;
 	protected static DelegatorInput invalidReadDelegatorInput;
-	protected static final String TESTKEY = "testKey";
-
-	/**
-	 * Testing persistence delegator functionality with null input type
-	 */
-	@Test
-	public abstract void testDelegateUsingNullInput();
-
-	/**
-	 * Testing persistence delegator functionality with unrecognized input type
-	 */
-	@Test
-	public abstract void testDelegateUsingUnrecognizedInputType();
 
 	/**
 	 * Testing persistence delegator ADD functionality using correct input
@@ -92,7 +78,7 @@ public abstract class BasePersistenceDelegatorTest {
 	 */
 	@Test
 	public abstract void testDelegateDeleteDeletionFail();
-	
+
 	/**
 	 * Testing persistence delegator DELETE functionality using correct input
 	 * values (Negative Scenario. Exception on entity retrieval)
@@ -132,9 +118,8 @@ public abstract class BasePersistenceDelegatorTest {
 	 * Method setting up delegator inputs used by all persistence delegator
 	 * testclasses
 	 */
-	protected static void setUpBaseDelegatorInputs() {
-		// DelegatorInput with null input
-		nullDelegatorInput = null;
+	protected static void setUpPersistenceDelegatorInputs() {
+		setupBaseDelegatorInputs();
 
 		// DelegatorInput with invalid Add input
 		invalidAddDelegatorInput = new DelegatorInput();
@@ -150,10 +135,5 @@ public abstract class BasePersistenceDelegatorTest {
 		invalidReadDelegatorInput = new DelegatorInput();
 		invalidReadDelegatorInput.setInputObject(null);
 		invalidReadDelegatorInput.setType(DelegatorTypeEnum.READ);
-
-		// DelegatorInput with unrecognized input type
-		unrecognizedDelegatorInput = new DelegatorInput();
-		unrecognizedDelegatorInput.setInputObject(null);
-		unrecognizedDelegatorInput.setType(DelegatorTypeEnum.MAIL);
 	}
 }

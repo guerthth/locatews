@@ -81,7 +81,7 @@ public abstract class BookServiceDelegatorTest extends
 		setUpUserEntities();
 		setUpTagEntities();
 		setUpBookEntities();
-		setUpBaseDelegatorInputs();
+		setUpPersistenceDelegatorInputs();
 		setUpBookDelegatorInputs();
 		setUpBookPersistenceDelegators();
 	}

@@ -32,9 +32,12 @@
 		class="amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator">
 	</bean>
 
-	<!-- UserMaileDelegator -->
+	<!-- UserMailDelegator -->
 	<bean id="userMailDelegator" class="amtc.gue.ws.base.delegate.mail.UserMailDelegator">
 	</bean>
+
+	<!-- GithubAPIDelegator -->
+	<bean id="githubAPIDelegator" class="amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator"></bean>
 
 	<!-- DelegatorInput -->
 	<bean id="delegatorInput" class="amtc.gue.ws.base.delegate.input.DelegatorInput">

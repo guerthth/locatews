@@ -222,21 +222,21 @@ public class UserServiceEntityMapper {
 	}
 
 	/**
-	 * Method mapping a delegatoroutput to a UserResponse
+	 * Method mapping a delegatorOutput to a UserResponse
 	 * 
-	 * @param bdOutput
-	 *            delegatoroutput that should be included in the response
+	 * @param dOutput
+	 *            delegatoroOutput that should be included in the response
 	 * @return mapped UserServiceReponse
 	 */
 	public static UserServiceResponse mapBdOutputToUserServiceResponse(
-			IDelegatorOutput bdOutput) {
+			IDelegatorOutput dOutput) {
 		UserServiceResponse userServiceResponse = null;
-		if (bdOutput != null) {
+		if (dOutput != null) {
 			userServiceResponse = new UserServiceResponse();
 			userServiceResponse.setStatus(StatusMapper
-					.buildStatusForDelegatorOutput(bdOutput));
-			if (bdOutput.getOutputObject() instanceof Users) {
-				List<User> userList = ((Users) bdOutput.getOutputObject())
+					.buildStatusForDelegatorOutput(dOutput));
+			if (dOutput.getOutputObject() instanceof Users) {
+				List<User> userList = ((Users) dOutput.getOutputObject())
 						.getUsers();
 				userServiceResponse.setUsers(userList);
 			} else {

@@ -19,8 +19,7 @@ import amtc.gue.ws.base.util.SpringContext;
  */
 public abstract class AbstractDelegator {
 
-	protected static final Logger log = Logger
-			.getLogger(AbstractDelegator.class.getName());
+	protected static final Logger log = Logger.getLogger(AbstractDelegator.class.getName());
 	protected IDelegatorInput delegatorInput;
 	protected IDelegatorOutput delegatorOutput;
 	protected User currentUser;
@@ -57,10 +56,8 @@ public abstract class AbstractDelegator {
 	 *            the input object used in the delegator
 	 * @return the created IDelegatorOutput
 	 */
-	public void buildAndInitializeDelegator(DelegatorTypeEnum type,
-			Object inputObject) {
-		delegatorInput = (DelegatorInput) SpringContext.context
-				.getBean("delegatorInput");
+	public void buildAndInitializeDelegator(DelegatorTypeEnum type, Object inputObject) {
+		delegatorInput = (DelegatorInput) SpringContext.context.getBean("delegatorInput");
 		delegatorInput.setType(type);
 		delegatorInput.setInputObject(inputObject);
 		initialize(delegatorInput);
@@ -71,10 +68,8 @@ public abstract class AbstractDelegator {
 	 */
 	public void setUnrecognizedDelegatorOutput() {
 		log.severe(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
-		delegatorOutput
-				.setStatusCode(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE);
-		delegatorOutput
-				.setStatusMessage(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
+		delegatorOutput.setStatusCode(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE);
+		delegatorOutput.setStatusMessage(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG);
 	}
 
 	/**

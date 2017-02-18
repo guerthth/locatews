@@ -21,7 +21,6 @@ import amtc.gue.ws.base.persistence.dao.user.UserDAO;
 import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
 import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.util.ErrorConstants;
-import amtc.gue.ws.test.base.delegate.UserServiceDelegatorTest;
 import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
 
 /**
@@ -31,7 +30,7 @@ import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
+public class UserPersistenceDelegatorTest extends BasePersistenceDelegatorTest {
 	private static UserDAO userDAOImpl;
 	private static UserDAO userDAOImplFail;
 	private static UserDAO userDAOImplNoFoundUsers;
@@ -46,6 +45,7 @@ public class UserPersistenceDelegatorTest extends UserServiceDelegatorTest {
 	@BeforeClass
 	public static void initialSetup() throws EntityPersistenceException,
 			EntityRetrievalException, EntityRemovalException {
+		setUpPersistenceDelegatorInputs();
 		oneTimeInitialSetup();
 		setUpUserPersistenceDAOMocks();
 	}

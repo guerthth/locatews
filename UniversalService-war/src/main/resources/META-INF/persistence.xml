@@ -12,6 +12,7 @@
 		<class>amtc.gue.ws.books.persistence.model.GAEJPATagEntity</class>
 		<class>amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity</class>
 		<class>amtc.gue.ws.base.persistence.model.GAEJPAUserEntity</class>
+		<class>amtc.gue.ws.base.persistence.model.GAEJPARoleEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<!-- <property name="datanucleus.NontransactionalRead" value="true" /> -->

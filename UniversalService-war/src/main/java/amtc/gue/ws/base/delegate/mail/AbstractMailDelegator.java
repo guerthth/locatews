@@ -17,8 +17,7 @@ public abstract class AbstractMailDelegator extends AbstractDelegator {
 
 	@Override
 	public IDelegatorOutput delegate() {
-		delegatorOutput = (DelegatorOutput) SpringContext.context
-				.getBean("delegatorOutput");
+		delegatorOutput = (DelegatorOutput) SpringContext.context.getBean("delegatorOutput");
 		if (delegatorInput != null) {
 			if (delegatorInput.getType().equals(DelegatorTypeEnum.MAIL)
 					&& delegatorInput.getInputObject() instanceof String) {
@@ -35,8 +34,11 @@ public abstract class AbstractMailDelegator extends AbstractDelegator {
 
 	/**
 	 * Method sending an email to persisted email address for user
+	 * 
+	 * @param emailAddress
+	 *            the address the mail is sent to
 	 */
-	protected abstract void sendMailTo(String email);
+	protected abstract void sendMailTo(String emailAddress);
 
 	/**
 	 * Method setting the delegator output due to mail sending failure
@@ -46,7 +48,6 @@ public abstract class AbstractMailDelegator extends AbstractDelegator {
 	 */
 	protected void setMailSendFailDelegatorOutput(String userName) {
 		delegatorOutput.setStatusCode(ErrorConstants.SEND_MAIL_FAILURE_CODE);
-		delegatorOutput.setStatusMessage(ErrorConstants.SEND_MAIL_FAILURE_MSG
-				+ " '" + userName + "'");
+		delegatorOutput.setStatusMessage(ErrorConstants.SEND_MAIL_FAILURE_MSG + " '" + userName + "'");
 	}
 }

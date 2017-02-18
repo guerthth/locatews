@@ -15,21 +15,17 @@ import amtc.gue.ws.base.util.SpringContext;
  *
  */
 public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
-	protected static final Logger log = Logger
-			.getLogger(AbstractPersistenceDelegator.class.getName());
+	protected static final Logger log = Logger.getLogger(AbstractPersistenceDelegator.class.getName());
 
 	@Override
 	public IDelegatorOutput delegate() {
-		delegatorOutput = (DelegatorOutput) SpringContext.context
-				.getBean("delegatorOutput");
+		delegatorOutput = (DelegatorOutput) SpringContext.context.getBean("delegatorOutput");
 		if (delegatorInput != null) {
 			if (delegatorInput.getType().equals(DelegatorTypeEnum.ADD)) {
 				persistEntities();
-			} else if (delegatorInput.getType().equals(
-					DelegatorTypeEnum.DELETE)) {
+			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.DELETE)) {
 				removeEntities();
-			} else if (delegatorInput.getType()
-					.equals(DelegatorTypeEnum.READ)) {
+			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.READ)) {
 				retrieveEntities();
 			} else {
 				setUnrecognizedDelegatorOutput();

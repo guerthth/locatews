@@ -14,7 +14,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import amtc.gue.ws.base.delegate.AbstractDelegator;
 import amtc.gue.ws.base.delegate.mail.AbstractMailDelegator;
 import amtc.gue.ws.base.delegate.mail.UserMailDelegator;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
@@ -34,7 +33,7 @@ public class UserService {
 	protected static final Logger log = Logger.getLogger(UserService.class
 			.getName());
 	private AbstractPersistenceDelegator userDelegator;
-	private AbstractDelegator mailDelegator;
+	private AbstractMailDelegator mailDelegator;
 
 	public UserService() {
 		userDelegator = (UserPersistenceDelegator) SpringContext.context

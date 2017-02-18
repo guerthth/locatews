@@ -18,7 +18,7 @@ import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.util.ErrorConstants;
 
 /**
- * Mail Delegator that
+ * Mail Delegator that sends emails to specific users
  * 
  * @author Thomas
  *
