@@ -70,7 +70,7 @@ public class GAEJPATagEntity extends GAEPersistenceEntity {
 	}
 
 	public void setBooks(Set<GAEJPABookEntity> books) {
-		this.books.clear();
+		clearSet(this.books);
 		if (books != null) {
 			for (GAEJPABookEntity book : books) {
 				addToBooks(book);

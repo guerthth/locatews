@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Your Password</title>
+</head>
+<body>
+	<button type="submit" onclick="UserAction()">Search</button>
+	<script type="text/javascript">
+		function UserAction(){
+			console.log('TEST');
+			$.ajax({
+				//url:'https://theuniversalwebservice.appspot.com/users/thom/password',
+				datatype:'json',
+				url:'http://localhost:8080/users/{userId}/password',
+				data: '',
+				//contentType:'application/json; charset=utf-8',
+				type:'PUT',
+				success: function(data) {
+					alert('a');
+					alert(data.status);
+					alert(data.status.statusCode);
+					alert(data.status.statusMessage);
+				},
+				error: function(data){
+					alert('b');
+					alert(data);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

@@ -14,7 +14,7 @@ import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.response.UserServiceResponse;
 
 /**
- * Class responsible for mapping of UserService related objects Use Case
+ * Class responsible for mapping of UserService related objects. Use Case
  * examples: - building up UserServiceResponse objects - mapping objects from
  * one type to another - creating JSON Strings for specific objects
  * 
@@ -47,8 +47,11 @@ public class UserServiceEntityMapper {
 			userEntity
 					.setRoles(mapRolesToRoleEntityList(user.getRoles()), true);
 		} else {
+			// TODO Check
+			// userEntity.setRoles(mapRolesToRoleEntityList(user.getRoles()),
+			// false);
 			userEntity.setRoles(mapRolesToRoleEntityList(user.getRoles()),
-					false);
+					true);
 		}
 		return userEntity;
 	}

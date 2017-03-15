@@ -120,7 +120,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	 *            be set or not. true = also set book reference
 	 */
 	public void setTags(Set<GAEJPATagEntity> tags, boolean alsoSetBooks) {
-		this.tags.clear();
+		clearSet(this.tags);
 		if (tags != null) {
 			for (GAEJPATagEntity tag : tags) {
 				if (alsoSetBooks) {
@@ -175,7 +175,7 @@ public class GAEJPABookEntity extends GAEPersistenceEntity {
 	 *            should be set or not. true = also set book reference
 	 */
 	public void setUsers(Set<GAEJPAUserEntity> users, boolean alsoSetBooks) {
-		this.users.clear();
+		clearSet(this.users);
 		if (users != null) {
 			for (GAEJPAUserEntity user : users) {
 				if (alsoSetBooks) {

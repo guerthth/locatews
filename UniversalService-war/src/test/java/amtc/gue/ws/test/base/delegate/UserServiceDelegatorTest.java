@@ -3,16 +3,12 @@ package amtc.gue.ws.test.base.delegate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import amtc.gue.ws.base.delegate.input.DelegatorInput;
-import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
 import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
-import amtc.gue.ws.base.util.DelegatorTypeEnum;
+import amtc.gue.ws.test.base.delegate.persist.BasePersistenceDelegatorTest;
 
 /**
  * Super Testclass for all Service Delegator Testcases
@@ -20,12 +16,8 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
  * @author Thomas
  *
  */
-public abstract class ServiceDelegatorTest {
+public abstract class UserServiceDelegatorTest extends BasePersistenceDelegatorTest {
 
-	protected static DelegatorInput unrecognizedDelegatorInput;
-	protected static DelegatorInput nullDelegatorInput;
-
-	protected static final String TESTKEY = "testKey";
 	protected static final String TESTUSERNAME = "testUserName";
 	protected static final String TESTUSERPASSWORD = "testUserPassword";
 	protected static final String ROLE_A = "roleA";
@@ -40,15 +32,6 @@ public abstract class ServiceDelegatorTest {
 
 	protected static List<GAEJPARoleEntity> emptyRoleEntityList;
 	protected static List<GAEJPARoleEntity> retrievedRoleEntityList;
-
-	protected static UserPersistenceDelegator userPersistenceDelegator;
-
-	protected static DelegatorInput addUserDelegatorInput;
-	protected static DelegatorInput addUserDelegatorInputForRoleTesting;
-	protected static DelegatorInput deleteUserDelegatorInput;
-	protected static DelegatorInput deleteUserDelegatorInputWithId;
-	protected static DelegatorInput readUserDelegatorInput;
-	protected static DelegatorInput readUserByIdDelegatorInput;
 
 	protected static List<String> roleList;
 	protected static Roles roles;
@@ -66,31 +49,6 @@ public abstract class ServiceDelegatorTest {
 	protected static Users usersWithId;
 
 	/**
-	 * Method setting up delegator inputs used by all delegator testclasses
-	 */
-	protected static void setupBaseDelegatorInputs() {
-		// DelegatorInput with null input
-		nullDelegatorInput = null;
-
-		// DelegatorInput with unrecognized input type
-		unrecognizedDelegatorInput = new DelegatorInput();
-		unrecognizedDelegatorInput.setInputObject(null);
-		unrecognizedDelegatorInput.setType(DelegatorTypeEnum.UNRECOGNIZED);
-	}
-
-	/**
-	 * Testing persistence delegator functionality with null input type
-	 */
-	@Test
-	public abstract void testDelegateUsingNullInput();
-
-	/**
-	 * Testing persistence delegator functionality with unrecognized input type
-	 */
-	@Test
-	public abstract void testDelegateUsingUnrecognizedInputType();
-
-	/**
 	 * Method building the initial setup for delegatortests of the UserService
 	 */
 	protected static void oneTimeInitialSetup() {
@@ -98,8 +56,8 @@ public abstract class ServiceDelegatorTest {
 		setUpUsers();
 		setUpUserEntities();
 		setUpRoleEntities();
-		setUpUserDelegatorInputs();
-		setUpUserPersistenceDelegators();
+		setUpBaseDelegatorInputs();
+		setUpPersistenceDelegatorInputs();
 	}
 
 	/**
@@ -174,46 +132,5 @@ public abstract class ServiceDelegatorTest {
 		retrievedRoleEntity = new GAEJPARoleEntity();
 		retrievedRoleEntityList = new ArrayList<>();
 		retrievedRoleEntityList.add(retrievedRoleEntity);
-	}
-
-	/**
-	 * Method setting up delegator inputs
-	 */
-	private static void setUpUserDelegatorInputs() {
-		// DelegatorInput for user entity adding
-		addUserDelegatorInput = new DelegatorInput();
-		addUserDelegatorInput.setInputObject(users);
-		addUserDelegatorInput.setType(DelegatorTypeEnum.ADD);
-
-		addUserDelegatorInputForRoleTesting = new DelegatorInput();
-		addUserDelegatorInputForRoleTesting.setInputObject(roleTestUsers);
-		addUserDelegatorInputForRoleTesting.setType(DelegatorTypeEnum.ADD);
-
-		// DelegatorInput for user entity deletion
-		deleteUserDelegatorInput = new DelegatorInput();
-		deleteUserDelegatorInput.setInputObject(users);
-		deleteUserDelegatorInput.setType(DelegatorTypeEnum.DELETE);
-
-		// DelegatorInput for user entity deletion with ID user
-		deleteUserDelegatorInputWithId = new DelegatorInput();
-		deleteUserDelegatorInputWithId.setInputObject(usersWithId);
-		deleteUserDelegatorInputWithId.setType(DelegatorTypeEnum.DELETE);
-
-		// DelegatorInput for user entity read
-		readUserDelegatorInput = new DelegatorInput();
-		readUserDelegatorInput.setInputObject(roles);
-		readUserDelegatorInput.setType(DelegatorTypeEnum.READ);
-
-		// DelegatorInput for user entity read by Id
-		readUserByIdDelegatorInput = new DelegatorInput();
-		readUserByIdDelegatorInput.setInputObject(TESTKEY);
-		readUserByIdDelegatorInput.setType(DelegatorTypeEnum.READ);
-	}
-
-	/**
-	 * Method setting up persistence delegator instances
-	 */
-	private static void setUpUserPersistenceDelegators() {
-		userPersistenceDelegator = new UserPersistenceDelegator();
 	}
 }

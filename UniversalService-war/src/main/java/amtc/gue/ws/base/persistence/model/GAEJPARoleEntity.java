@@ -60,7 +60,7 @@ public class GAEJPARoleEntity extends GAEPersistenceEntity {
 	}
 
 	public void setUsers(Set<GAEJPAUserEntity> users) {
-		this.users.clear();
+		clearSet(this.users);
 		if (users != null) {
 			for (GAEJPAUserEntity user : users) {
 				addToUsers(user);

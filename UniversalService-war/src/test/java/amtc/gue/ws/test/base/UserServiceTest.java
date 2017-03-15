@@ -43,8 +43,7 @@ public class UserServiceTest extends JerseyTest {
 
 	@Override
 	protected Application configure() {
-		return new ResourceConfig().register(new UserService(userDelegator,
-				mailDelegator));
+		return new ResourceConfig().register(new UserService(userDelegator, mailDelegator));
 	}
 
 	@BeforeClass
@@ -67,39 +66,37 @@ public class UserServiceTest extends JerseyTest {
 	@Test
 	public void testAddUsers() {
 		Users usersToAdd = new Users();
-		final Response resp = target("/users").request().post(
-				Entity.json(usersToAdd));
+		final Response resp = target("/users").request().post(Entity.json(usersToAdd));
 		assertNotNull(resp);
 	}
 
 	@Test
 	public void testGetUsers() {
-		final UserServiceResponse resp = target("/users").request().get(
-				UserServiceResponse.class);
-		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus()
-				.getStatusMessage());
-		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus()
-				.getStatusCode());
+		final UserServiceResponse resp = target("/users").request().get(UserServiceResponse.class);
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 	}
 
 	@Test(expected = NotAllowedException.class)
 	public void testRemoveUserUsingIncorrectCall() {
-		final UserServiceResponse resp = target("/users").request().delete(
-				UserServiceResponse.class);
-		assertNotNull(resp);
+		target("/users").request().delete(UserServiceResponse.class);
 	}
 
 	@Test
 	public void testRemoveBookUsingCorrectCall() {
-		final UserServiceResponse resp = target("/users/1").request().delete(
-				UserServiceResponse.class);
+		final UserServiceResponse resp = target("/users/1").request().delete(UserServiceResponse.class);
 		assertNotNull(resp);
 	}
 
 	@Test
 	public void testSendUserPasswordMail() {
-		final UserServiceResponse resp = target("/users/1/password").request()
-				.get(UserServiceResponse.class);
+		final Response resp = target("/users/1/password").request().put(Entity.json("test"));
+		assertNotNull(resp);
+	}
+
+	@Test
+	public void testResetPassword() {
+		final UserServiceResponse resp = target("/users/1/password").request().get(UserServiceResponse.class);
 		assertNotNull(resp);
 	}
 
@@ -111,12 +108,10 @@ public class UserServiceTest extends JerseyTest {
 
 	private static void setUpDelegatorMocks() {
 		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
-		EasyMock.expect(userDelegator.delegate())
-				.andReturn(userDelegatorOutput).times(3);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(3);
 		EasyMock.replay(userDelegator);
 		mailDelegator = EasyMock.createNiceMock(UserMailDelegator.class);
-		EasyMock.expect(mailDelegator.delegate())
-				.andReturn(mailDelegatorOutput);
+		EasyMock.expect(mailDelegator.delegate()).andReturn(mailDelegatorOutput);
 		EasyMock.replay(mailDelegator);
 	}
 }

@@ -71,6 +71,7 @@ public class CSVMapper {
 				if (userHasRole)
 					userEntityList.add(userEntity);
 			}
+			br.close();
 		} catch (Exception e) {
 			throw new CSVReaderException(csvFile, e);
 		}
@@ -120,6 +121,7 @@ public class CSVMapper {
 				if (userHasRole)
 					users.getUsers().add(user);
 			}
+			br.close();
 		} catch (Exception e) {
 			throw new CSVReaderException(csvFile, e);
 		}

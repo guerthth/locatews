@@ -9,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,20 +31,16 @@ import amtc.gue.ws.base.util.UserServiceEntityMapper;
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserService {
-	protected static final Logger log = Logger.getLogger(UserService.class
-			.getName());
+	protected static final Logger log = Logger.getLogger(UserService.class.getName());
 	private AbstractPersistenceDelegator userDelegator;
 	private AbstractMailDelegator mailDelegator;
 
 	public UserService() {
-		userDelegator = (UserPersistenceDelegator) SpringContext.context
-				.getBean("userPersistenceDelegator");
-		mailDelegator = (UserMailDelegator) SpringContext.context
-				.getBean("userMailDelegator");
+		userDelegator = (UserPersistenceDelegator) SpringContext.context.getBean("userPersistenceDelegator");
+		mailDelegator = (UserMailDelegator) SpringContext.context.getBean("userMailDelegator");
 	}
 
-	public UserService(AbstractPersistenceDelegator userDelegator,
-			AbstractMailDelegator mailDelegator) {
+	public UserService(AbstractPersistenceDelegator userDelegator, AbstractMailDelegator mailDelegator) {
 		this.userDelegator = userDelegator;
 		this.mailDelegator = mailDelegator;
 	}
@@ -55,8 +52,7 @@ public class UserService {
 	public UserServiceResponse addUsers(Users users) {
 		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, users);
 		IDelegatorOutput dOutput = userDelegator.delegate();
-		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(dOutput);
+		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
 	@PermitAll
@@ -64,11 +60,9 @@ public class UserService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public UserServiceResponse getUsers() {
 		Roles roles = new Roles();
-		userDelegator
-				.buildAndInitializeDelegator(DelegatorTypeEnum.READ, roles);
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, roles);
 		IDelegatorOutput dOutput = userDelegator.delegate();
-		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(dOutput);
+		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
 	@PermitAll
@@ -82,12 +76,9 @@ public class UserService {
 		userListToRemove.add(userToRemove);
 		userToRemove.setId(id);
 		usersToRemove.setUsers(userListToRemove);
-
-		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
-				usersToRemove);
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE, usersToRemove);
 		IDelegatorOutput dOutput = userDelegator.delegate();
-		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(dOutput);
+		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
 	}
 
 	@PermitAll
@@ -97,7 +88,19 @@ public class UserService {
 	public UserServiceResponse sendUserPasswordMail(@PathParam("id") String id) {
 		mailDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.MAIL, id);
 		IDelegatorOutput dOutput = mailDelegator.delegate();
-		return UserServiceEntityMapper
-				.mapBdOutputToUserServiceResponse(dOutput);
+		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
+	}
+
+	@PermitAll
+	@PUT
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Path("/{id}/password")
+	public UserServiceResponse resetUserPassword(@PathParam("id") String id, User user) {
+		User updatedUser = new User();
+		updatedUser.setId(id);
+		updatedUser.setPassword(user.getPassword());
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.UPDATE, updatedUser);
+		IDelegatorOutput dOutput = userDelegator.delegate();
+		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
 	}
 }

@@ -20,6 +20,10 @@ public abstract class AbstractAPIDelegator extends AbstractDelegator {
 		if (delegatorInput != null) {
 			if (delegatorInput.getType().equals(DelegatorTypeEnum.ADD)) {
 				addIssue();
+			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.READ)) {
+				getIssues();
+			} else {
+				setUnrecognizedDelegatorOutput();
 			}
 		} else {
 			setUnrecognizedDelegatorOutput();
@@ -33,4 +37,9 @@ public abstract class AbstractAPIDelegator extends AbstractDelegator {
 	 * 
 	 */
 	protected abstract void addIssue();
+	
+	/**
+	 * Method retrieving issues using a specigic APO
+	 */
+	protected abstract void getIssues();
 }

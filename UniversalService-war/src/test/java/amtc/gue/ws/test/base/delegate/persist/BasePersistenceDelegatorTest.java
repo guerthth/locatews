@@ -6,7 +6,7 @@ import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.base.delegate.input.DelegatorInput;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
-import amtc.gue.ws.test.base.delegate.ServiceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.BaseDelegatorTest;
 
 /**
  * Abstract Class holding all methods that should be used for testing
@@ -16,7 +16,7 @@ import amtc.gue.ws.test.base.delegate.ServiceDelegatorTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public abstract class BasePersistenceDelegatorTest extends ServiceDelegatorTest {
+public abstract class BasePersistenceDelegatorTest extends BaseDelegatorTest {
 
 	protected static DelegatorInput invalidAddDelegatorInput;
 	protected static DelegatorInput invalidDeleteDelegatorInput;
@@ -119,7 +119,6 @@ public abstract class BasePersistenceDelegatorTest extends ServiceDelegatorTest 
 	 * testclasses
 	 */
 	protected static void setUpPersistenceDelegatorInputs() {
-		setupBaseDelegatorInputs();
 
 		// DelegatorInput with invalid Add input
 		invalidAddDelegatorInput = new DelegatorInput();

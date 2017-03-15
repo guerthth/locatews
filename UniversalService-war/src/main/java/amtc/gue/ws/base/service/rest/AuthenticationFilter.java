@@ -40,9 +40,9 @@ import amtc.gue.ws.base.util.SpringContext;
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter {
 
-	private static final Logger log = Logger
-			.getLogger(AuthenticationFilter.class.getName());
+	private static final Logger log = Logger.getLogger(AuthenticationFilter.class.getName());
 	private User currentUser = (User) SpringContext.context.getBean("user");
+	private String[] allowedHttpMethods = { "GET", "POST", "PUT", "DELETE" };
 
 	@Context
 	private ResourceInfo resourceInfo;
@@ -55,75 +55,74 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	private AbstractPersistenceDelegator userDelegator;
 
 	@Override
-	public void filter(ContainerRequestContext requestContext)
-			throws IOException {
+	public void filter(ContainerRequestContext requestContext) throws IOException {
 
-		resetCurrentUser();
+		// the authentication check should only happen for GET, POST, PUT, and
+		// DELETE requests
+		if (Arrays.asList(allowedHttpMethods).contains(requestContext.getMethod())) {
+			resetCurrentUser();
 
-		Method method = resourceInfo.getResourceMethod();
+			Method method = resourceInfo.getResourceMethod();
 
-		// Access permitted for all
-		boolean permittedForAll = false;
-		if (method.isAnnotationPresent(PermitAll.class)) {
-			permittedForAll = true;
-		} else if (method.isAnnotationPresent(DenyAll.class)) {
-			// Access denied for all
-			throw new NotAuthorizedException(ACCESS_FORBIDDEN);
-		}
+			// Access permitted for all
+			boolean permittedForAll = false;
+			if (method.isAnnotationPresent(PermitAll.class)) {
+				permittedForAll = true;
+			} else if (method.isAnnotationPresent(DenyAll.class)) {
+				// Access denied for all
+				throw new NotAuthorizedException(ACCESS_FORBIDDEN);
+			}
 
-		// Get request headers
-		final MultivaluedMap<String, String> headers = requestContext
-				.getHeaders();
+			// Get request headers
+			final MultivaluedMap<String, String> headers = requestContext.getHeaders();
 
-		// Fetch authorization header
-		final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
+			// Fetch authorization header
+			final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
 
-		// check if authorization information is present
-		if (authorization != null && !authorization.isEmpty()) {
-			// Get encoded username and password
-			final String encodedUserPassword = authorization.get(0)
-					.replaceFirst(AUTHENTICATION_SCHEME + " ", "");
+			// check if authorization information is present
+			if (authorization != null && !authorization.isEmpty()) {
+				// Get encoded username and password
+				final String encodedUserPassword = authorization.get(0).replaceFirst(AUTHENTICATION_SCHEME + " ", "");
 
-			// Decode username and password
-			String usernameAndPassword = new String(
-					Base64.decode(encodedUserPassword.getBytes()));
+				// Decode username and password
+				String usernameAndPassword = new String(Base64.decode(encodedUserPassword.getBytes()));
 
-			// Split username and password tokens
-			final StringTokenizer tokenizer = new StringTokenizer(
-					usernameAndPassword, ":");
-			final String username = tokenizer.nextToken();
-			final String password = tokenizer.nextToken();
+				// Split username and password tokens
+				final StringTokenizer tokenizer = new StringTokenizer(usernameAndPassword, ":");
+				final String username = tokenizer.nextToken();
+				final String password = tokenizer.nextToken();
 
-			log.info("User " + username + " trying to access servicemethod "
-					+ method.getName());
-			log.info("password used to authenticate: " + password);
+				log.info("User " + username + " trying to access servicemethod " + method.getName());
+				log.info("password used to authenticate: " + password);
 
-			// try retrieving the user with the used userName from the DB
-			setCurrentUser(retrieveUser(username));
+				// try retrieving the user with the used userName from the DB
+				setCurrentUser(retrieveUser(username));
 
-			// Access allowed for all
-			if (!permittedForAll) {
-				// Verify user access
-				if (method.isAnnotationPresent(RolesAllowed.class)) {
-					RolesAllowed rolesAnnotation = method
-							.getAnnotation(RolesAllowed.class);
-					Set<String> allowedRoles = new HashSet<String>(
-							Arrays.asList(rolesAnnotation.value()));
+				// Access allowed for all
+				if (!permittedForAll) {
+					// Verify user access
+					if (method.isAnnotationPresent(RolesAllowed.class)) {
+						RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
+						Set<String> allowedRoles = new HashSet<String>(Arrays.asList(rolesAnnotation.value()));
 
-					// Is user valid?
-					if (!isUserAuthorized(username, password, allowedRoles)) {
+						// Is user valid?
+						if (!isUserAuthorized(username, password, allowedRoles)) {
+							throw new NotAuthorizedException(ACCESS_DENIED);
+						}
+					} else {
 						throw new NotAuthorizedException(ACCESS_DENIED);
 					}
-				} else {
+				}
+			} else {
+				// If no authorization information present and method access is
+				// NOT
+				// permitted for all; block access
+				if (!permittedForAll) {
 					throw new NotAuthorizedException(ACCESS_DENIED);
 				}
 			}
 		} else {
-			// If no authorization information present and method access is NOT
-			// permitted for all; block access
-			if (!permittedForAll) {
-				throw new NotAuthorizedException(ACCESS_DENIED);
-			}
+			log.info(requestContext.getMethod() + " call reveived. No Authentication check needed.");
 		}
 	}
 
@@ -161,8 +160,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	 *            the roles that are allowed to access the service method
 	 * @return true if allowed, false if not allowed
 	 */
-	private boolean isUserAuthorized(final String username,
-			final String password, final Set<String> allowedRoles) {
+	private boolean isUserAuthorized(final String username, final String password, final Set<String> allowedRoles) {
 		boolean isAllowed = false;
 		String encryptedPW = EncryptionMapper.encryptStringMD5(password);
 
@@ -190,10 +188,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	private User retrieveUser(String userName) {
 		User foundUser = null;
 		// call UserPersistenceDelegator to search for user by username
-		userDelegator = (UserPersistenceDelegator) SpringContext.context
-				.getBean("userPersistenceDelegator");
-		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ,
-				userName);
+		userDelegator = (UserPersistenceDelegator) SpringContext.context.getBean("userPersistenceDelegator");
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, userName);
 		IDelegatorOutput bpdOutput = userDelegator.delegate();
 
 		if (bpdOutput.getOutputObject() instanceof User) {

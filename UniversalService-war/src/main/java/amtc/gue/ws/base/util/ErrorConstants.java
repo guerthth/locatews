@@ -42,6 +42,14 @@ public class ErrorConstants {
 	public static final String RETRIEVE_USER_BY_ID_SUCCESS_MSG = "OK. Retrieved user for userName";
 
 	public static final String RETRIEVE_USER_FAILURE_MSG = "Not Found. Retrieving users failed";
+	
+	public static final int UPDATE_USER_SUCCESS_CODE = 201;
+	
+	public static final int UPDATE_USER_FAILURE_CODE = 500;
+	
+	public static final String UPDATE_USER_SUCCESS_MSG = "Updated PW for user";
+	
+	public static final String UPDATE_USER_FAILURE_MSG = "Failed to update PW for user";
 
 	public static final int SEND_MAIL_SUCESS_CODE = 200;
 

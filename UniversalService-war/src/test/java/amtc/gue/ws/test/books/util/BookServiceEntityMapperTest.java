@@ -343,7 +343,7 @@ public class BookServiceEntityMapperTest extends BookServiceUtilTest {
 	}
 
 	@Test
-	public void testMapBdOutputToTagServiceResponseUsingTagsDelegatorOutput() {
+	public void testMapBdOutputToTagServiceResponseUsingTagsOutputObject() {
 		TagServiceResponse serviceResponse = BookServiceEntityMapper
 				.mapBdOutputToTagServiceResponse(tagDelegatorOutput);
 		assertEquals(null, serviceResponse.getTags());

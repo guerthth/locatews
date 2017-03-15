@@ -34,6 +34,7 @@
 			<!-- <property name="datanucleus.maxFetchDepth" value="2" /> -->
 			<!-- <property name="datanucleus.appengine.storageVersion" value="WRITE_OWNED_CHILD_KEYS_TO_PARENTS" 
 				/> -->
+<!-- 			<property name="datanucleus.appengine.ignorableMetaDataBehavior" value="ERROR"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

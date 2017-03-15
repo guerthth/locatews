@@ -17,7 +17,7 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.vcsapi.delegate.AbstractAPIDelegator;
 import amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator;
-import amtc.gue.ws.vcsapi.inout.Issue;
+import amtc.gue.ws.vcsapi.inout.VCSIssue;
 
 @Path("/gitapi")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,7 +37,7 @@ public class GithubAPIService {
 	@POST
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public ServiceResponse addIssueToProject(Issue issue) {
+	public ServiceResponse addIssueToProject(VCSIssue issue) {
 		log.log(Level.INFO, "'addIssueToProject' method called.");
 		githubAPIDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, issue);
 		IDelegatorOutput dOutput = githubAPIDelegator.delegate();

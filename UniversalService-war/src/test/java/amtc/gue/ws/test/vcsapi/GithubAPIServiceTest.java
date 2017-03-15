@@ -22,7 +22,7 @@ import amtc.gue.ws.base.response.ServiceResponse;
 import amtc.gue.ws.vcsapi.GithubAPIService;
 import amtc.gue.ws.vcsapi.delegate.AbstractAPIDelegator;
 import amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator;
-import amtc.gue.ws.vcsapi.inout.Issue;
+import amtc.gue.ws.vcsapi.inout.VCSIssue;
 
 /**
  * Testclass for the GitHubAPI REST Service
@@ -58,7 +58,7 @@ public class GithubAPIServiceTest extends JerseyTest {
 
 	@Test
 	public void testAddIssueToProject() {
-		Issue issueToAdd = new Issue();
+		VCSIssue issueToAdd = new VCSIssue();
 		final Response resp = target("/gitapi").request().post(Entity.json(issueToAdd));
 		assertNotNull(resp);
 	}

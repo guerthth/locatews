@@ -2,6 +2,7 @@ package amtc.gue.ws.base.persistence.model;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.base.util.UserServiceEntityMapper;
 import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 
@@ -25,6 +27,9 @@ import com.google.appengine.datanucleus.annotations.Unowned;
 @Entity
 @Table(name = "user")
 public class GAEJPAUserEntity extends GAEPersistenceEntity {
+	
+	private static final Logger log = Logger.getLogger(GAEJPAUserEntity.class.getName());
+	
 	/**
 	 * 
 	 */
@@ -85,7 +90,7 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 	 *            be set or not. true = also set user reference
 	 */
 	public void setRoles(Set<GAEJPARoleEntity> roles, boolean alsoSetUsers) {
-		this.roles.clear();
+		clearSet(this.roles);
 		if (roles != null) {
 			for (GAEJPARoleEntity role : roles) {
 				if (alsoSetUsers) {
@@ -119,8 +124,11 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 		if (role != null) {
 			this.roles.add(role);
 			if (role.getUsers() == null) {
+				log.info(role.getUsers() + "");
 				role.setUsers(new HashSet<GAEJPAUserEntity>());
 			}
+			log.info(role +  "");
+			log.info(role.getUsers() + "");
 			role.getUsers().add(this);
 		}
 	}
@@ -139,7 +147,7 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 	 *            be set or not. true = also set user reference
 	 */
 	public void setBooks(Set<GAEJPABookEntity> books, boolean alsoSetUsers) {
-		this.books.clear();
+		clearSet(this.books);
 		if (books != null) {
 			for (GAEJPABookEntity book : books) {
 				if (alsoSetUsers) {
@@ -191,7 +199,7 @@ public class GAEJPAUserEntity extends GAEPersistenceEntity {
 				this.books.remove(existingBook);
 			}
 		}
-	}
+	}	
 
 	@Override
 	public String toString() {

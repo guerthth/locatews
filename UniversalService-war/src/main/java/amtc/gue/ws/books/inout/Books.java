@@ -30,7 +30,7 @@ public class Books {
 			books = new ArrayList<>();
 		}
 
-		return this.books;
+		return books;
 
 	}
 
