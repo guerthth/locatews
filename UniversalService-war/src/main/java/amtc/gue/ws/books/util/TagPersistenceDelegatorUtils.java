@@ -2,7 +2,8 @@ package amtc.gue.ws.books.util;
 
 import java.util.List;
 
-import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
+import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
+import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
 /**
  * Util class for the TagPersistenceDelegator
@@ -21,7 +22,7 @@ public class TagPersistenceDelegatorUtils {
 	 * @return the status message that can be used in the response as String
 	 */
 	public static String buildRetrieveTagsSuccessStatusMessage(
-			List<GAEJPATagEntity> foundTags) {
+			List<GAETagEntity> foundTags) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG);
 		sb.append(" '");

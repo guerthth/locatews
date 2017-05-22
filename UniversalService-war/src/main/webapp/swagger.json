@@ -41,12 +41,11 @@
   "definitions" : {
     "Player" : {
       "type" : "object",
-      "required" : [ "playerName" ],
       "properties" : {
         "id" : {
           "type" : "string"
         },
-        "playerName" : {
+        "description" : {
           "type" : "string"
         }
       }

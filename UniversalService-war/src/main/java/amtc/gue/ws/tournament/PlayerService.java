@@ -28,7 +28,7 @@ import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.inout.Player;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.response.PlayerServiceResponse;
-import amtc.gue.ws.tournament.util.TournamentServiceEntityMapper;
+import amtc.gue.ws.tournament.util.mapper.TournamentServiceEntityMapper;
 
 @Path("/players")
 @Api(value = "players")

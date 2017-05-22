@@ -8,11 +8,11 @@
 	<!-- NOTE: This seems to be the only relevant persistence file -->
 	<persistence-unit name="gae-jpa">
 		<provider>org.datanucleus.api.jpa.PersistenceProviderImpl</provider>
-		<class>amtc.gue.ws.books.persistence.model.GAEJPABookEntity</class>
-		<class>amtc.gue.ws.books.persistence.model.GAEJPATagEntity</class>
-		<class>amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity</class>
-		<class>amtc.gue.ws.base.persistence.model.GAEJPAUserEntity</class>
-		<class>amtc.gue.ws.base.persistence.model.GAEJPARoleEntity</class>
+		<class>amtc.gue.ws.books.persistence.model.book.jpa.GAEJPABookEntity</class>
+		<class>amtc.gue.ws.books.persistence.model.tag.jpa.GAEJPATagEntity</class>
+		<class>amtc.gue.ws.tournament.persistence.model.player.jpa.GAEJPAPlayerEntity</class>
+		<class>amtc.gue.ws.base.persistence.model.user.jpa.GAEJPAUserEntity</class>
+		<class>amtc.gue.ws.base.persistence.model.role.jpa.GAEJPARoleEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<!-- <property name="datanucleus.NontransactionalRead" value="true" /> -->
@@ -34,7 +34,8 @@
 			<!-- <property name="datanucleus.maxFetchDepth" value="2" /> -->
 			<!-- <property name="datanucleus.appengine.storageVersion" value="WRITE_OWNED_CHILD_KEYS_TO_PARENTS" 
 				/> -->
-<!-- 			<property name="datanucleus.appengine.ignorableMetaDataBehavior" value="ERROR"/> -->
+			<!-- <property name="datanucleus.appengine.ignorableMetaDataBehavior" 
+				value="ERROR"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

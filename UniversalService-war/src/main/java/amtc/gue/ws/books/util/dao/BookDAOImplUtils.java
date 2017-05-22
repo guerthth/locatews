@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import amtc.gue.ws.books.inout.Tags;
-import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
-import amtc.gue.ws.books.persistence.model.GAEJPATagEntity;
-import amtc.gue.ws.books.util.BookServiceEntityMapper;
+import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
+import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
+import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
 /**
  * Utility class for the BookDAOImpl
@@ -28,23 +28,23 @@ public class BookDAOImplUtils {
 	 * @return the list of books containing only those who do possess all the
 	 *         tags
 	 */
-	public static List<GAEJPABookEntity> retrieveBookEntitiesWithSpecificTags(
-			List<GAEJPABookEntity> books, Tags searchTags) {
-		List<GAEJPABookEntity> modifiableBookList = copyBookList(books);
+	public static List<GAEBookEntity> retrieveBookEntitiesWithSpecificTags(
+			List<GAEBookEntity> books, Tags searchTags) {
+		List<GAEBookEntity> modifiableBookList = copyBookList(books);
 
 		if (searchTags != null && !searchTags.getTags().isEmpty()) {
-			for (Iterator<GAEJPABookEntity> bookIterator = modifiableBookList
+			for (Iterator<GAEBookEntity> bookIterator = modifiableBookList
 					.iterator(); bookIterator.hasNext();) {
-				GAEJPABookEntity book = bookIterator.next();
+				GAEBookEntity book = bookIterator.next();
 				int foundTags = 0;
 				for (String tag : searchTags.getTags()) {
 					if (book != null && book.getTags() != null
 							&& !book.getTags().isEmpty()) {
 						// evaluate how many tags are found in the bookEntity
-						for (GAEJPATagEntity tagEntity : book.getTags()) {
+						for (GAETagEntity tagEntity : book.getTags()) {
 							if (BookServiceEntityMapper
 									.mapTagsToSimplyfiedString(
-											tagEntity.getTagName())
+											tagEntity.getKey())
 									.equals(BookServiceEntityMapper
 											.mapTagsToSimplyfiedString(tag))) {
 								foundTags++;
@@ -74,21 +74,21 @@ public class BookDAOImplUtils {
 	 * @return the list of books containing only those who do possess all the
 	 *         tags
 	 */
-	public static List<GAEJPABookEntity> retrieveBookEntitiesWithSpecificTagsOnly(
-			List<GAEJPABookEntity> books, Tags searchTags) {
-		List<GAEJPABookEntity> modifiableBookList = copyBookList(books);
+	public static List<GAEBookEntity> retrieveBookEntitiesWithSpecificTagsOnly(
+			List<GAEBookEntity> books, Tags searchTags) {
+		List<GAEBookEntity> modifiableBookList = copyBookList(books);
 
 		if (searchTags != null && !searchTags.getTags().isEmpty()) {
-			for (Iterator<GAEJPABookEntity> bookIterator = modifiableBookList
+			for (Iterator<GAEBookEntity> bookIterator = modifiableBookList
 					.iterator(); bookIterator.hasNext();) {
-				GAEJPABookEntity book = bookIterator.next();
+				GAEBookEntity book = bookIterator.next();
 				int foundTags = 0;
 				for (String tag : searchTags.getTags()) {
 					if (book != null && book.getTags() != null
 							&& book.getTags().size() > 0) {
 						// evaluate how many tags are found in the bookEntity
-						for (GAEJPATagEntity tagEntity : book.getTags()) {
-							if (tagEntity.getTagName().equals(tag)) {
+						for (GAETagEntity tagEntity : book.getTags()) {
+							if (tagEntity.getKey().equals(tag)) {
 								foundTags++;
 								break;
 							}
@@ -113,11 +113,11 @@ public class BookDAOImplUtils {
 	 *            the list that should be copied
 	 * @return the copy of the list
 	 */
-	public static List<GAEJPABookEntity> copyBookList(
-			List<GAEJPABookEntity> bookEntityListToCopy) {
-		List<GAEJPABookEntity> copiedList = null;
+	public static List<GAEBookEntity> copyBookList(
+			List<GAEBookEntity> bookEntityListToCopy) {
+		List<GAEBookEntity> copiedList = null;
 		if (bookEntityListToCopy != null) {
-			copiedList = new ArrayList<GAEJPABookEntity>(bookEntityListToCopy);
+			copiedList = new ArrayList<>(bookEntityListToCopy);
 		}
 		return copiedList;
 	}
@@ -134,7 +134,7 @@ public class BookDAOImplUtils {
 	 *         that there are separate tag search operations
 	 */
 	public static String buildSpecificBookQuery(String initialBookQuery,
-			GAEJPABookEntity bookEntity) {
+			GAEBookEntity bookEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialBookQuery);
 		int initialLength = sb.length();
@@ -156,10 +156,6 @@ public class BookDAOImplUtils {
 			}
 			if (bookEntity.getDescription() != null) {
 				sb.append(" and e.description = :description");
-			}
-			if (bookEntity.getUsers() != null
-					&& !bookEntity.getUsers().isEmpty()) {
-				sb.append(" and e.users = :user");
 			}
 		}
 		int newLength = sb.length();

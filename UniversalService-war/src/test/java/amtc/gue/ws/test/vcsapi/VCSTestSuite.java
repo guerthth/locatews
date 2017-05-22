@@ -10,5 +10,5 @@ import amtc.gue.ws.test.vcsapi.util.VCSAPIServiceEntityMapperTest;
 @RunWith(Suite.class)
 @SuiteClasses({ GithubAPIServiceTest.class, GithubAPIDelegatorTest.class, VCSAPIServiceEntityMapperTest.class })
 public class VCSTestSuite {
-
+	// base section done. VCSTests have to be rewritten
 }

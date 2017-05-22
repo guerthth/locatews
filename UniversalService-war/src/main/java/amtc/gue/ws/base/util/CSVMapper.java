@@ -12,8 +12,10 @@ import amtc.gue.ws.base.exception.CSVReaderException;
 import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
-import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
+import amtc.gue.ws.base.persistence.model.role.jpa.GAEJPARoleEntity;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
+import amtc.gue.ws.base.persistence.model.user.jpa.GAEJPAUserEntity;
 
 /**
  * Class mapping a CSV file to Java objects
@@ -40,9 +42,9 @@ public class CSVMapper {
 	 *             when an issue occured while trying to build list of
 	 *             GAEJPAUserEntities from CSV File
 	 */
-	public static List<GAEJPAUserEntity> mapCSVToUserListByRole(String csvFile,
+	public static List<GAEUserEntity> mapCSVToUserListByRole(String csvFile,
 			Roles roles) throws CSVReaderException {
-		List<GAEJPAUserEntity> userEntityList = new ArrayList<>();
+		List<GAEUserEntity> userEntityList = new ArrayList<>();
 
 		try {
 			InputStream is = CSVMapper.class.getResourceAsStream(csvFile);
@@ -52,10 +54,10 @@ public class CSVMapper {
 				String configUsername = userData[0];
 				String configPassword = userData[1];
 				String configRoles = userData[2];
-				Set<GAEJPARoleEntity> configRoleSet = new HashSet<>();
+				Set<GAERoleEntity> configRoleSet = new HashSet<>();
 				boolean userHasRole = false;
 				for (String role : configRoles.split(rolesSplitBy)) {
-					GAEJPARoleEntity roleEntity = new GAEJPARoleEntity();
+					GAERoleEntity roleEntity = new GAEJPARoleEntity();
 					roleEntity.setKey(role);
 					configRoleSet.add(roleEntity);
 					if (!userHasRole) {
@@ -63,7 +65,7 @@ public class CSVMapper {
 					}
 				}
 
-				GAEJPAUserEntity userEntity = new GAEJPAUserEntity();
+				GAEUserEntity userEntity = new GAEJPAUserEntity();
 				userEntity.setKey(configUsername);
 				userEntity.setPassword(configPassword);
 				userEntity.setRoles(configRoleSet, true);

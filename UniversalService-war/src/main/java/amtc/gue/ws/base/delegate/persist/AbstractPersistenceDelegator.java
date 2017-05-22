@@ -7,6 +7,7 @@ import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 
 /**
  * Abstract Persistance Delegator class
@@ -17,6 +18,9 @@ import amtc.gue.ws.base.util.SpringContext;
 public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
 	protected static final Logger log = Logger.getLogger(AbstractPersistenceDelegator.class.getName());
 
+	/** EntityMapper user by the delegator */
+	protected UserServiceEntityMapper userEntityMapper;
+	
 	@Override
 	public IDelegatorOutput delegate() {
 		delegatorOutput = (DelegatorOutput) SpringContext.context.getBean("delegatorOutput");
@@ -27,6 +31,8 @@ public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
 				removeEntities();
 			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.READ)) {
 				retrieveEntities();
+			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.UPDATE)) {
+				updateEntities();
 			} else {
 				setUnrecognizedDelegatorOutput();
 			}
@@ -51,4 +57,19 @@ public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
 	 * Method retrieving entities from the DB
 	 */
 	protected abstract void retrieveEntities();
+	
+	/**
+	 * Method updating entities in the DB
+	 */
+	protected abstract void updateEntities();
+	
+	/**
+	 * Setter for the entityMapper
+	 * 
+	 * @param entityMapper
+	 *            the EntityMapper instance used by the delegator
+	 */
+	public void setUserEntityMapper(UserServiceEntityMapper userEntityMapper) {
+		this.userEntityMapper = userEntityMapper;
+	}
 }

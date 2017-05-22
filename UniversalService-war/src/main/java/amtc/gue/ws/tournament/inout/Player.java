@@ -14,19 +14,19 @@ import amtc.gue.ws.base.inout.Item;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "player", propOrder = { "playerName" })
+@XmlType(name = "player", propOrder = { "playerDescription" })
 public class Player extends Item {
 
-	@XmlElement(name = "playerName", required = true, nillable = false)
-	private String playerName;
+	@XmlElement(name = "playerDescription", required = true, nillable = false)
+	private String playerDescription;
 
 	// Getters and Setters
-	public String getPlayerName() {
-		return this.playerName;
+	public String getDescription() {
+		return this.playerDescription;
 	}
 
-	public void setPlayerName(String playerName) {
-		this.playerName = playerName;
+	public void setDescription(String playerDescription) {
+		this.playerDescription = playerDescription;
 	}
 
 }

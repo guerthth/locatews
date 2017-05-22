@@ -15,7 +15,7 @@ import javax.mail.internet.MimeMessage;
 import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.exception.HtmlReaderException;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.base.util.HtmlMapper;
 
@@ -41,7 +41,7 @@ public class UserMailDelegator extends AbstractMailDelegator {
 		// TODO Sending Html Mail With password changing functionality
 		log.info("MAIL Sending action triggered for User Password");
 		try {
-			GAEJPAUserEntity foundUser = userDAOImpl.findEntityById(userName);
+			GAEUserEntity foundUser = userDAOImpl.findEntityById(userName);
 			if (foundUser != null) {
 				Properties props = new Properties();
 				Session session = Session.getDefaultInstance(props);

@@ -7,6 +7,7 @@ import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.persistence.dao.user.UserDAO;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.base.util.SpringContext;
@@ -23,7 +24,7 @@ public abstract class AbstractDelegator {
 	protected IDelegatorInput delegatorInput;
 	protected IDelegatorOutput delegatorOutput;
 	protected User currentUser;
-	protected UserDAO userDAOImpl;
+	protected UserDAO<GAEUserEntity, GAEUserEntity, String> userDAOImpl;
 
 	/**
 	 * Delegate method persisting object to the underlying DB
@@ -39,7 +40,6 @@ public abstract class AbstractDelegator {
 	 *            the used Input for the delegator
 	 */
 	public void initialize(IDelegatorInput input) {
-		userDAOImpl = (UserDAO) SpringContext.context.getBean("userDAOImpl");
 		if (input instanceof DelegatorInput) {
 			delegatorInput = input;
 		} else {
@@ -96,9 +96,9 @@ public abstract class AbstractDelegator {
 	/**
 	 * Getter for the used userDAOImpl
 	 * 
-	 * @return the UserDAOImpl object
+	 * @return the UserJPADAOImpl object
 	 */
-	public UserDAO getUserDAO() {
+	public UserDAO<GAEUserEntity, GAEUserEntity, String> getUserDAO() {
 		return userDAOImpl;
 	}
 
@@ -106,8 +106,9 @@ public abstract class AbstractDelegator {
 	 * Setter for the used userDAOImpl
 	 * 
 	 * @param userDAOImpl
-	 *            the UserDAOImpl object
+	 *            the UserJPADAOImpl object
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setUserDAO(UserDAO userDAOImpl) {
 		this.userDAOImpl = userDAOImpl;
 	}

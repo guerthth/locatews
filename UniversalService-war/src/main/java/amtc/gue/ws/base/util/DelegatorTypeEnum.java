@@ -20,6 +20,9 @@ public enum DelegatorTypeEnum {
 	/** read */
 	READ,
 	
+	/** reset PW */
+	RESET,
+	
 	/** sending mails */
 	MAIL,
 	

@@ -47,13 +47,13 @@ public class UserServiceTest extends JerseyTest {
 	}
 
 	@BeforeClass
-	public static void inititalSetup() {
+	public static void oneTimeInitialSetup() {
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
 
 	@AfterClass
-	public static void checkMocks() {
+	public static void finalTearDown() {
 		EasyMock.verify(userDelegator);
 		EasyMock.verify(mailDelegator);
 	}

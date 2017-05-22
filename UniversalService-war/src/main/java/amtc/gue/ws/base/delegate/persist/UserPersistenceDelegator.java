@@ -9,8 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.base.delegate.input.IDelegatorInput;
-import amtc.gue.ws.base.delegate.output.DelegatorOutput;
-import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
@@ -18,14 +16,12 @@ import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.dao.role.RoleDAO;
-import amtc.gue.ws.base.persistence.dao.user.UserDAO;
-import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
-import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.base.util.UserPersistenceDelegatorUtils;
-import amtc.gue.ws.base.util.UserServiceEntityMapper;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 
 /**
  * Persistence Delegator that handles all database actions for User resources
@@ -38,34 +34,11 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private static final Logger log = Logger.getLogger(UserPersistenceDelegator.class.getName());
 
 	/** DAOImplementations used by the delegator */
-	private RoleDAO roleDAOImpl;
+	private RoleDAO<GAERoleEntity, GAERoleEntity, String> roleDAOImpl;
 
 	@Override
 	public void initialize(IDelegatorInput input) {
 		super.initialize(input);
-		roleDAOImpl = (RoleDAO) SpringContext.context.getBean("roleDAOImpl");
-	}
-
-	@Override
-	public IDelegatorOutput delegate() {
-		delegatorOutput = (DelegatorOutput) SpringContext.context.getBean("delegatorOutput");
-		if (delegatorInput != null) {
-			if (delegatorInput.getType().equals(DelegatorTypeEnum.ADD)) {
-				persistEntities();
-			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.DELETE)) {
-				removeEntities();
-			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.READ)) {
-				retrieveEntities();
-			} else if (delegatorInput.getType().equals(DelegatorTypeEnum.UPDATE)) {
-				resetUserPassword();
-			} else {
-				setUnrecognizedDelegatorOutput();
-			}
-		} else {
-			setUnrecognizedDelegatorOutput();
-		}
-
-		return delegatorOutput;
 	}
 
 	@Override
@@ -74,17 +47,17 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 		if (delegatorInput.getInputObject() instanceof Users) {
 			Users users = (Users) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ErrorConstants.ADD_USER_SUCCESS_CODE);
-			List<GAEJPAUserEntity> userEntityList = UserServiceEntityMapper.transformUsersToUserEntities(users,
-					DelegatorTypeEnum.ADD);
-			List<GAEJPAUserEntity> successfullyAddedUserEntities = new ArrayList<>();
-			List<GAEJPAUserEntity> unsuccessfullyAddedUserEntities = new ArrayList<>();
+			List<GAEUserEntity> successfullyAddedUserEntities = new ArrayList<>();
+			List<GAEUserEntity> unsuccessfullyAddedUserEntities = new ArrayList<>();
+			GAEUserEntity persistedUserEntity;
 
 			// persist all UserEntities to the DB
-			for (GAEJPAUserEntity userEntity : userEntityList) {
-				String userEntityJSON;
-				GAEJPAUserEntity persistedUserEntity;
+			for (User user : users.getUsers()) {
+				Set<GAERoleEntity> roleEntityList = userEntityMapper.mapRolesToRoleEntityList(user.getRoles());
+				GAEUserEntity userEntity = userEntityMapper.mapUserToEntity(user, DelegatorTypeEnum.ADD);
+				String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntity);
 				try {
-					handleRolePersistenceForUserEntity(userEntity);
+					handleRolePersistenceForUserEntity(userEntity, roleEntityList);
 					persistedUserEntity = userDAOImpl.persistEntity(userEntity);
 					userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(persistedUserEntity);
 					successfullyAddedUserEntities.add(persistedUserEntity);
@@ -100,8 +73,8 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 			if (!successfullyAddedUserEntities.isEmpty()) {
 				delegatorOutput.setStatusMessage(UserPersistenceDelegatorUtils.buildPersistUserSuccessStatusMessage(
 						successfullyAddedUserEntities, unsuccessfullyAddedUserEntities));
-				delegatorOutput.setOutputObject(
-						UserServiceEntityMapper.transformUserEntitiesToUsers(successfullyAddedUserEntities));
+				delegatorOutput
+						.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(successfullyAddedUserEntities));
 			} else {
 				delegatorOutput.setStatusCode(ErrorConstants.ADD_USER_FAILURE_CODE);
 				delegatorOutput.setStatusMessage(ErrorConstants.ADD_USER_FAILURE_MSG);
@@ -118,20 +91,20 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 		log.info("DELETE User action triggered");
 
 		if (delegatorInput.getInputObject() instanceof Users) {
-			List<GAEJPAUserEntity> removedUserEntities = new ArrayList<>();
+			List<GAEUserEntity> removedUserEntities = new ArrayList<>();
 			Users usersToRemove = (Users) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ErrorConstants.DELETE_USER_SUCCESS_CODE);
 
 			// transform input object to userentities and remove
-			List<GAEJPAUserEntity> userEntities = UserServiceEntityMapper.transformUsersToUserEntities(usersToRemove,
+			List<GAEUserEntity> userEntities = userEntityMapper.transformUsersToUserEntities(usersToRemove,
 					DelegatorTypeEnum.DELETE);
-			for (GAEJPAUserEntity userEntity : userEntities) {
-				List<GAEJPAUserEntity> userEntitiesToRemove;
+			for (GAEUserEntity userEntity : userEntities) {
+				List<GAEUserEntity> userEntitiesToRemove;
 				String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntity);
 				try {
 					if (userEntity.getKey() != null) {
 						userEntitiesToRemove = new ArrayList<>();
-						GAEJPAUserEntity foundUser = userDAOImpl.findEntityById(userEntity.getKey());
+						GAEUserEntity foundUser = userDAOImpl.findEntityById(userEntity.getKey());
 						if (foundUser != null) {
 							userEntitiesToRemove.add(foundUser);
 						}
@@ -140,11 +113,11 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 					}
 
 					if (userEntitiesToRemove != null && !userEntitiesToRemove.isEmpty()) {
-						for (GAEJPAUserEntity userEntityToRemove : userEntitiesToRemove) {
+						for (GAEUserEntity userEntityToRemove : userEntitiesToRemove) {
 							String userEntityToRemoveJSON = UserServiceEntityMapper
 									.mapUserEntityToJSONString(userEntityToRemove);
 							try {
-								GAEJPAUserEntity removedUserEntity = userDAOImpl.removeEntity(userEntityToRemove);
+								GAEUserEntity removedUserEntity = userDAOImpl.removeEntity(userEntityToRemove);
 								log.info("UserEntity " + userEntityToRemoveJSON + " was successfully removed");
 								removedUserEntity.setRoles(userEntityToRemove.getRoles(), false);
 								removedUserEntities.add(removedUserEntity);
@@ -165,8 +138,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 			if (!removedUserEntities.isEmpty()) {
 				delegatorOutput.setStatusMessage(
 						UserPersistenceDelegatorUtils.buildRemoveUsersSuccessStatusMessage(removedUserEntities));
-				delegatorOutput
-						.setOutputObject(UserServiceEntityMapper.transformUserEntitiesToUsers(removedUserEntities));
+				delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(removedUserEntities));
 			} else {
 				delegatorOutput.setStatusCode(ErrorConstants.DELETE_USER_FAILURE_CODE);
 				delegatorOutput.setStatusMessage(ErrorConstants.DELETE_USER_FAILURE_MSG);
@@ -198,20 +170,20 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private void retrieveUsersByRoles(Roles roles) {
 		log.info("READ User by Roles action triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-		List<GAEJPAUserEntity> foundUsers = new ArrayList<>();
+		List<GAEUserEntity> foundUsers = new ArrayList<>();
 		try {
 			foundUsers = userDAOImpl.getUserEntitiesByRoles(roles);
 			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByRoleSuccessStatusMessage(roles,
 					foundUsers);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(UserServiceEntityMapper.transformUserEntitiesToUsers(foundUsers));
+			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUsers));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE,
 					"Error while trying to retrieve users with role: '" + roles.getRoles().toString() + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(UserServiceEntityMapper.transformUserEntitiesToUsers(foundUsers));
+			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUsers));
 		}
 	}
 
@@ -224,19 +196,19 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private void retrieveUserByUsername(String userName) {
 		log.info("READ User by userName action triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-		GAEJPAUserEntity foundUser = null;
+		GAEUserEntity foundUser = null;
 		try {
 			foundUser = userDAOImpl.findEntityById(userName);
 			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByIdSuccessStatusMessage(userName,
 					foundUser);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(UserServiceEntityMapper.mapUserEntityToUser(foundUser));
+			delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE, "Error while trying to retrieve users with userName: '" + userName + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(UserServiceEntityMapper.mapUserEntityToUser(foundUser));
+			delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
 		}
 	}
 
@@ -246,25 +218,27 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	 * 
 	 * @param userEntity
 	 *            the userEntity whose roles are checked
+	 * @param roleEntityList
+	 *            the Set of roleentities
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve RoleEntity
 	 * @throws EntityPersistenceException
 	 *             when issue occurs while trying to persist RoleEntity
 	 */
-	private void handleRolePersistenceForUserEntity(GAEJPAUserEntity userEntity)
+	private void handleRolePersistenceForUserEntity(GAEUserEntity userEntity, Set<GAERoleEntity> roleEntityList)
 			throws EntityRetrievalException, EntityPersistenceException {
-		Set<GAEJPARoleEntity> roleEntities = Collections
-				.synchronizedSet(new HashSet<GAEJPARoleEntity>(userEntity.getRoles()));
+		Set<GAERoleEntity> roleEntities = Collections
+				.synchronizedSet(new HashSet<GAERoleEntity>(roleEntityList));
 		String roleEntityJSON;
-		GAEJPARoleEntity persistedRoleEntity;
+		GAERoleEntity persistedRoleEntity;
 		userEntity.getRoles().clear();
 
 		synchronized (roleEntities) {
-			for (GAEJPARoleEntity roleEntity : roleEntities) {
-				roleEntityJSON = UserServiceEntityMapper.mapRoleEntityToJSONString(roleEntity);
+			for (GAERoleEntity roleEntity : roleEntities) {
+				roleEntityJSON = roleEntity.toString();
 				try {
 					roleEntity.getUsers().clear();
-					List<GAEJPARoleEntity> foundRoleEntities = roleDAOImpl.findSpecificEntity(roleEntity);
+					List<GAERoleEntity> foundRoleEntities = roleDAOImpl.findSpecificEntity(roleEntity);
 					if (foundRoleEntities.isEmpty()) {
 						persistedRoleEntity = roleDAOImpl.persistEntity(roleEntity);
 					} else {
@@ -284,40 +258,53 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 		}
 	}
 
-	/**
-	 * Method updating userEntity
-	 */
-	private void resetUserPassword() {
+	@Override
+	protected void updateEntities() {
+		// for users this method just updates the users password
 		log.info("UPDATE User action triggered");
-		if (delegatorInput.getInputObject() instanceof User) {
-			User updatedUser = (User) delegatorInput.getInputObject();
-			GAEJPAUserEntity updatedUserEntity = UserServiceEntityMapper.mapUserToEntity(updatedUser,
+		if (delegatorInput.getInputObject() instanceof Users) {
+			Users users = (Users) delegatorInput.getInputObject();
+			delegatorOutput.setStatusCode(ErrorConstants.UPDATE_USER_SUCCESS_CODE);
+			List<GAEUserEntity> userEntityList = userEntityMapper.transformUsersToUserEntities(users,
 					DelegatorTypeEnum.UPDATE);
-			String statusMessage = ErrorConstants.UPDATE_USER_FAILURE_MSG + " '" + updatedUserEntity.getKey() + "'";
-			GAEJPAUserEntity foundUser;
-			try {
-				foundUser = userDAOImpl.findEntityById(updatedUserEntity.getKey());
-				if (foundUser != null) {
-					if (updatedUserEntity.getPassword() != null)
-						foundUser.setPassword(updatedUserEntity.getPassword());
-					userDAOImpl.updateEntity(foundUser);
-					delegatorOutput.setStatusCode(ErrorConstants.UPDATE_USER_SUCCESS_CODE);
-					statusMessage = ErrorConstants.UPDATE_USER_SUCCESS_MSG + " '" + updatedUserEntity.getKey() + "'";
-					delegatorOutput.setStatusMessage(statusMessage);
-					delegatorOutput.setOutputObject(foundUser);
-					log.log(Level.INFO, statusMessage);
-				} else {
-					delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
-					statusMessage = ErrorConstants.RETRIEVE_USER_FAILURE_MSG;
-					delegatorOutput.setStatusMessage(statusMessage);
-					delegatorOutput.setOutputObject(foundUser);
-					log.log(Level.SEVERE, statusMessage);
+			List<GAEUserEntity> successfullyUpdatedUserEntities = new ArrayList<>();
+			List<GAEUserEntity> unsuccessfullyUpdatedUserEntities = new ArrayList<>();
+
+			// reset password for the UserEntities
+			for (GAEUserEntity userEntity : userEntityList) {
+				String userEntityJSON;
+				GAEUserEntity updatedUserEntitiy = null;
+				GAEUserEntity foundUser = null;
+				try {
+					foundUser = userDAOImpl.findEntityById(userEntity.getKey());
+					if (foundUser != null) {
+						if (userEntity.getPassword() != null)
+							foundUser.setPassword(userEntity.getPassword());
+						updatedUserEntitiy = userDAOImpl.updateEntity(foundUser);
+						userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(updatedUserEntitiy);
+						successfullyUpdatedUserEntities.add(updatedUserEntitiy);
+						log.log(Level.INFO, ErrorConstants.UPDATE_USER_SUCCESS_MSG + " '" + userEntityJSON + "'");
+					} else {
+						unsuccessfullyUpdatedUserEntities.add(userEntity);
+						log.log(Level.SEVERE, ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
+					}
+				} catch (Exception e) {
+					userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(updatedUserEntitiy);
+					unsuccessfullyUpdatedUserEntities.add(updatedUserEntitiy);
+					log.log(Level.SEVERE, "Error while trying to update password for: " + userEntityJSON, e);
 				}
-			} catch (EntityRetrievalException | EntityPersistenceException e) {
+			}
+
+			// set delegatorOutput
+			if (!successfullyUpdatedUserEntities.isEmpty()) {
+				delegatorOutput.setStatusMessage(UserPersistenceDelegatorUtils.buildResetPwSuccessStatusMessage(
+						successfullyUpdatedUserEntities, unsuccessfullyUpdatedUserEntities));
+				delegatorOutput.setOutputObject(
+						userEntityMapper.transformUserEntitiesToUsers(successfullyUpdatedUserEntities));
+			} else {
 				delegatorOutput.setStatusCode(ErrorConstants.UPDATE_USER_FAILURE_CODE);
-				delegatorOutput.setStatusMessage(statusMessage);
+				delegatorOutput.setStatusMessage(ErrorConstants.UPDATE_USER_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
-				log.log(Level.SEVERE, statusMessage, e);
 			}
 		} else {
 			setUnrecognizedDelegatorOutput();
@@ -325,21 +312,12 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	}
 
 	/**
-	 * Setter for the used userDAOImpl
-	 * 
-	 * @param userDAOImpl
-	 *            the UserDAOImpl object
-	 */
-	public void setUserDAO(UserDAO userDAOImpl) {
-		this.userDAOImpl = userDAOImpl;
-	}
-
-	/**
 	 * Setter for the used roleDAOImpl
 	 * 
 	 * @param roleDAOImpl
-	 *            the RoleDAOImpl object
+	 *            the RoleJPADAOImpl object
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setRoleDAO(RoleDAO roleDAOImpl) {
 		this.roleDAOImpl = roleDAOImpl;
 	}

@@ -1,7 +1,6 @@
 package amtc.gue.ws.base.persistence.dao.role;
 
 import amtc.gue.ws.base.persistence.dao.DAO;
-import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
 
 /**
  * Specific interface for RoleEntities
@@ -9,7 +8,7 @@ import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
  * @author Thomas
  *
  */
-public interface RoleDAO extends DAO<GAEJPARoleEntity, String>{
+public interface RoleDAO<S, E extends S, K> extends DAO<S, E, K>{
 	
 	// no specific methods so far
 }

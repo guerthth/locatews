@@ -5,7 +5,6 @@ import java.util.List;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.inout.Roles;
 import amtc.gue.ws.base.persistence.dao.DAO;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 
 /**
  * Specific interface for UserEntities
@@ -13,7 +12,7 @@ import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
  * @author Thomas
  *
  */
-public interface UserDAO extends DAO<GAEJPAUserEntity, String> {
+public interface UserDAO<S, E extends S, K> extends DAO<S, E, K> {
 
 	/**
 	 * Retrieving UserEntities that have specific roles
@@ -24,6 +23,6 @@ public interface UserDAO extends DAO<GAEJPAUserEntity, String> {
 	 * @throws EntityRetrievalException
 	 *             when issue while trying to retrieve UserEntities by role
 	 */
-	List<GAEJPAUserEntity> getUserEntitiesByRoles(Roles roles)
+	List<S> getUserEntitiesByRoles(Roles roles)
 			throws EntityRetrievalException;
 }

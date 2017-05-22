@@ -43,7 +43,4 @@ public class EntityPersistenceException extends Exception{
 		super(message, exception);
 		
 	}
-	
-	
-
 }

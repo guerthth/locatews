@@ -5,7 +5,6 @@ import java.util.List;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.persistence.dao.DAO;
 import amtc.gue.ws.books.inout.Tags;
-import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
 
 /**
  * Specific interface for BookEntities
@@ -13,7 +12,7 @@ import amtc.gue.ws.books.persistence.model.GAEJPABookEntity;
  * @author Thomas
  *
  */
-public interface BookDAO extends DAO<GAEJPABookEntity, String> {
+public interface BookDAO<S, E extends S, K> extends DAO<S, E, K> {
 
 	/**
 	 * Finding BookEntities that possess a specific tag
@@ -23,8 +22,7 @@ public interface BookDAO extends DAO<GAEJPABookEntity, String> {
 	 * @return list of bookentities posessing the tags
 	 * @throws EntityRetrievalException
 	 */
-	List<GAEJPABookEntity> getBookEntityByTag(Tags tags)
-			throws EntityRetrievalException;
+	List<S> getBookEntityByTag(Tags tags) throws EntityRetrievalException;
 
 	/**
 	 * Finding all BookEntities for a specific user
@@ -33,8 +31,7 @@ public interface BookDAO extends DAO<GAEJPABookEntity, String> {
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve entities
 	 */
-	List<GAEJPABookEntity> getBookEntityForUserByTag(Tags tags)
-			throws EntityRetrievalException;
+	List<S> getBookEntityForUserByTag(Tags tags) throws EntityRetrievalException;
 
 	/**
 	 * Finding a specific BookEntity for a specific user
@@ -45,6 +42,5 @@ public interface BookDAO extends DAO<GAEJPABookEntity, String> {
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve entities
 	 */
-	List<GAEJPABookEntity> findSpecificBookEntityForUser(
-			GAEJPABookEntity bookEntity) throws EntityRetrievalException;
+	List<S> findSpecificBookEntityForUser(S bookEntity) throws EntityRetrievalException;
 }

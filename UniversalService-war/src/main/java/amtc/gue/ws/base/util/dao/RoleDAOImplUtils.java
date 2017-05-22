@@ -1,6 +1,6 @@
 package amtc.gue.ws.base.util.dao;
 
-import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
+import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
 
 /**
  * Utility class for the RoleDAOImpl
@@ -20,7 +20,7 @@ public class RoleDAOImplUtils {
 	 * @return the built up complete query based on the search RoleEntity
 	 */
 	public static String buildSpecificRoleQuery(String initialRoleQuery,
-			GAEJPARoleEntity roleEntity) {
+			GAERoleEntity roleEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialRoleQuery);
 		int initialLength = sb.length();

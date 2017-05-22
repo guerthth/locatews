@@ -1,6 +1,6 @@
 package amtc.gue.ws.tournament.util.dao;
 
-import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
+import amtc.gue.ws.tournament.persistence.model.player.GAEPlayerEntity;
 
 /**
  * Utility class for the PlayerDAOImpl
@@ -20,21 +20,20 @@ public class PlayerDAOImplUtils {
 	 *            the PlayerEntity that is searched for
 	 * @return the built up complete query based on the search PlayerEntity
 	 */
-	public static String buildSpecificPlayerQuery(String initialPlayerQuery,
-			GAEJPAPlayerEntity playerEntity) {
+	public static String buildSpecificPlayerQuery(String initialPlayerQuery, GAEPlayerEntity playerEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialPlayerQuery);
 		int inititalLength = sb.length();
-		if(playerEntity != null){
-			if(playerEntity.getKey() != null){
-				sb.append(" and p.playerId = :id");
+		if (playerEntity != null) {
+			if (playerEntity.getKey() != null) {
+				sb.append(" and p.playerName = :id");
 			}
-			if(playerEntity.getPlayerName() != null){
-				sb.append(" and p.playerName = :playerName");
+			if (playerEntity.getDescription() != null) {
+				sb.append(" and p.description = :description");
 			}
 		}
 		int newLength = sb.length();
-		if(inititalLength != newLength){
+		if (inititalLength != newLength) {
 			sb.delete(inititalLength, inititalLength + 4);
 			sb.insert(inititalLength, " where");
 		}

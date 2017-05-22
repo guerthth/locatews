@@ -14,7 +14,7 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
 import amtc.gue.ws.books.response.TagServiceResponse;
-import amtc.gue.ws.books.util.BookServiceEntityMapper;
+import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
 @Path("/tags")
 @Produces(MediaType.APPLICATION_JSON)

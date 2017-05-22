@@ -16,7 +16,7 @@ import amtc.gue.ws.base.exception.EntityRetrievalException;
  * @param <K>
  *            id Type
  */
-public interface DAO<E, K> {
+public interface DAO<S, E extends S, K> {
 
 	/**
 	 * Persisting an entity in the DB
@@ -26,7 +26,7 @@ public interface DAO<E, K> {
 	 * @return persisted entity
 	 * @throws EntityPersistenceException
 	 */
-	E persistEntity(E entity) throws EntityPersistenceException;
+	S persistEntity(S entity) throws EntityPersistenceException;
 
 	/**
 	 * Finding all the Entities of a specific type in the DB
@@ -34,7 +34,7 @@ public interface DAO<E, K> {
 	 * @return all entities of a specific type
 	 * @throws EntityRetrievalException
 	 */
-	List<E> findAllEntities() throws EntityRetrievalException;
+	List<S> findAllEntities() throws EntityRetrievalException;
 
 	/**
 	 * Finding specific Entities in the DB
@@ -43,7 +43,7 @@ public interface DAO<E, K> {
 	 *            the entity that is searched for
 	 * @return all entities matching the search entity criteria
 	 */
-	List<E> findSpecificEntity(E entity) throws EntityRetrievalException;
+	List<S> findSpecificEntity(S entity) throws EntityRetrievalException;
 
 	/**
 	 * Finding specific entity by id
@@ -53,7 +53,7 @@ public interface DAO<E, K> {
 	 * @return entity if specific type with id
 	 * @throws EntityRetrievalException
 	 */
-	E findEntityById(K id) throws EntityRetrievalException;
+	S findEntityById(K id) throws EntityRetrievalException;
 
 	/**
 	 * Removing entity from the DB
@@ -63,7 +63,7 @@ public interface DAO<E, K> {
 	 * @return the removed entity
 	 * @throws EntityRemovalException
 	 */
-	E removeEntity(E entity) throws EntityRemovalException;
+	S removeEntity(S entity) throws EntityRemovalException;
 
 	/**
 	 * Updating an entity in the DB
@@ -74,7 +74,7 @@ public interface DAO<E, K> {
 	 * @return updated entity
 	 * @throws EntityPersistenceException
 	 */
-	E updateEntity(E entity) throws EntityPersistenceException;
+	S updateEntity(S entity) throws EntityPersistenceException;
 
 	/**
 	 * Merging an an entity to the DB
@@ -83,6 +83,6 @@ public interface DAO<E, K> {
 	 *            the entity that should be merged
 	 * @return the entity that was merged to the DB
 	 */
-	E mergeEntity(E entity);
+	S mergeEntity(S entity);
 
 }

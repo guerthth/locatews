@@ -1,4 +1,4 @@
 userA;pwA;roleA
 userB;pwB;roleB
 userC;pwC;roleC
-userD;pwD;roleD,roleE
+userD;pwD;testRole,roleE

@@ -5,8 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import amtc.gue.ws.base.inout.Roles;
-import amtc.gue.ws.base.persistence.model.GAEJPARoleEntity;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
+import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 
 /**
  * Utility class for the UserDAOImpl
@@ -27,24 +28,20 @@ public class UserDAOImplUtils {
 	 * @return the list of UserEntities containing only those who do possess all
 	 *         the roles
 	 */
-	public static List<GAEJPAUserEntity> retrieveUserEntitiesWithSpecificRolesOnly(
-			List<GAEJPAUserEntity> userEntities, Roles roles) {
-		List<GAEJPAUserEntity> modifiableUserEntityList = copyUserList(userEntities);
+	public static List<GAEUserEntity> retrieveUserEntitiesWithSpecificRolesOnly(List<GAEUserEntity> userEntities,
+			Roles roles) {
+		List<GAEUserEntity> modifiableUserEntityList = copyUserList(userEntities);
 
-		for (Iterator<GAEJPAUserEntity> userIterator = modifiableUserEntityList
-				.iterator(); userIterator.hasNext();) {
-			GAEJPAUserEntity userEntity = userIterator.next();
+		for (Iterator<GAEUserEntity> userIterator = modifiableUserEntityList.iterator(); userIterator.hasNext();) {
+			GAEUserEntity userEntity = userIterator.next();
 			int foundRoles = 0;
 
 			if (roles != null) {
 				for (String role : roles.getRoles()) {
-					if (userEntity != null && userEntity.getRoles() != null
-							&& !userEntity.getRoles().isEmpty()) {
+					if (userEntity != null && userEntity.getRoles() != null && !userEntity.getRoles().isEmpty()) {
 						// evaluate how many Roles are found in the userEntity
-						for (GAEJPARoleEntity roleEntity : userEntity
-								.getRoles()) {
-							if (roleEntity.getKey() != null
-									&& roleEntity.getKey().equals(role)) {
+						for (GAERoleEntity roleEntity : userEntity.getRoles()) {
+							if (roleEntity.getKey() != null && roleEntity.getKey().equals(role)) {
 								foundRoles++;
 								break;
 							}
@@ -72,24 +69,20 @@ public class UserDAOImplUtils {
 	 * @return the list of UserEntities containing only those who do possess at
 	 *         least one of the roles
 	 */
-	public static List<GAEJPAUserEntity> retrieveUserEntitiesWithSpecificRoles(
-			List<GAEJPAUserEntity> userEntities, Roles roles) {
-		List<GAEJPAUserEntity> modifiableUserEntityList = copyUserList(userEntities);
+	public static List<GAEUserEntity> retrieveUserEntitiesWithSpecificRoles(List<GAEUserEntity> userEntities,
+			Roles roles) {
+		List<GAEUserEntity> modifiableUserEntityList = copyUserList(userEntities);
 
-		for (Iterator<GAEJPAUserEntity> userIterator = modifiableUserEntityList
-				.iterator(); userIterator.hasNext();) {
-			GAEJPAUserEntity userEntity = userIterator.next();
+		for (Iterator<GAEUserEntity> userIterator = modifiableUserEntityList.iterator(); userIterator.hasNext();) {
+			GAEUserEntity userEntity = userIterator.next();
 			int foundRoles = 0;
 
 			if (roles != null && !roles.getRoles().isEmpty()) {
 				for (String role : roles.getRoles()) {
-					if (userEntity != null && userEntity.getRoles() != null
-							&& !userEntity.getRoles().isEmpty()) {
+					if (userEntity != null && userEntity.getRoles() != null && !userEntity.getRoles().isEmpty()) {
 						// evaluate how many Roles are found in the userEntity
-						for (GAEJPARoleEntity roleEntity : userEntity
-								.getRoles()) {
-							if (roleEntity.getKey() != null
-									&& roleEntity.getKey().equals(role)) {
+						for (GAERoleEntity roleEntity : userEntity.getRoles()) {
+							if (roleEntity.getKey() != null && roleEntity.getKey().equals(role)) {
 								foundRoles++;
 								break;
 							}
@@ -113,11 +106,10 @@ public class UserDAOImplUtils {
 	 *            the user list that should be copied
 	 * @return the copy of the list
 	 */
-	public static List<GAEJPAUserEntity> copyUserList(
-			List<GAEJPAUserEntity> userEntityListToCopy) {
-		List<GAEJPAUserEntity> copiedList = null;
+	public static List<GAEUserEntity> copyUserList(List<GAEUserEntity> userEntityListToCopy) {
+		List<GAEUserEntity> copiedList = null;
 		if (userEntityListToCopy != null) {
-			copiedList = new ArrayList<GAEJPAUserEntity>(userEntityListToCopy);
+			copiedList = new ArrayList<GAEUserEntity>(userEntityListToCopy);
 		}
 		return copiedList;
 	}
@@ -132,8 +124,7 @@ public class UserDAOImplUtils {
 	 *            the UserEntity that is searched for
 	 * @return the built up complete query based on the search UserEntity
 	 */
-	public static String buildSpecificUserQuery(String initialUserQuery,
-			GAEJPAUserEntity userEntity) {
+	public static String buildSpecificUserQuery(String initialUserQuery, GAEUserEntity userEntity) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(initialUserQuery);
 		int initialLength = sb.length();
@@ -144,7 +135,7 @@ public class UserDAOImplUtils {
 			if (userEntity.getPassword() != null) {
 				sb.append(" and u.password = :password");
 			}
-			if(userEntity.getEmail() != null){
+			if (userEntity.getEmail() != null) {
 				sb.append(" and u.email = :email");
 			}
 		}
@@ -154,5 +145,10 @@ public class UserDAOImplUtils {
 			sb.insert(initialLength, " where");
 		}
 		return sb.toString();
+	}
+
+	public static List<GAEObjectifyUserEntity> searchForUsersManually(List<GAEObjectifyUserEntity> completeUserlist,
+			GAEObjectifyUserEntity userEntity) {
+		return completeUserlist;
 	}
 }

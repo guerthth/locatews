@@ -26,7 +26,7 @@ import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.response.UserServiceResponse;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
-import amtc.gue.ws.base.util.UserServiceEntityMapper;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -72,9 +72,9 @@ public class UserService {
 	public UserServiceResponse removeUser(@PathParam("id") String id) {
 		Users usersToRemove = new Users();
 		User userToRemove = new User();
+		userToRemove.setId(id);
 		List<User> userListToRemove = new ArrayList<>();
 		userListToRemove.add(userToRemove);
-		userToRemove.setId(id);
 		usersToRemove.setUsers(userListToRemove);
 		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE, usersToRemove);
 		IDelegatorOutput dOutput = userDelegator.delegate();
@@ -96,10 +96,14 @@ public class UserService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("/{id}/password")
 	public UserServiceResponse resetUserPassword(@PathParam("id") String id, User user) {
-		User updatedUser = new User();
-		updatedUser.setId(id);
-		updatedUser.setPassword(user.getPassword());
-		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.UPDATE, updatedUser);
+		Users usersToUpdate = new Users();
+		User userToUpdate = new User();
+		userToUpdate.setId(id);
+		userToUpdate.setPassword(user.getPassword());
+		List<User> userListToUpdate = new ArrayList<>();
+		userListToUpdate.add(userToUpdate);
+		usersToUpdate.setUsers(userListToUpdate);
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.UPDATE, usersToUpdate);
 		IDelegatorOutput dOutput = userDelegator.delegate();
 		return UserServiceEntityMapper.mapBdOutputToUserServiceResponse(dOutput);
 	}

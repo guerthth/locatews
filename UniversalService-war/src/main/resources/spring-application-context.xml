@@ -11,34 +11,6 @@
 	<!-- logged in GAEJPAUserEntity User -->
 	<bean id="user" class="amtc.gue.ws.base.inout.User"></bean>
 
-	<!-- BookPersistenceDelegator -->
-	<bean id="bookPersistenceDelegator"
-		class="amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator">
-		<property name="currentUser" ref="user"></property>
-	</bean>
-
-	<!-- TagPersistenceDelegator -->
-	<bean id="tagPersistenceDelegator"
-		class="amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator">
-	</bean>
-
-	<!-- PlayerPersistenceDelegator -->
-	<bean id="playerPersistenceDelegator"
-		class="amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator">
-	</bean>
-
-	<!-- UserPersistenceDelegator -->
-	<bean id="userPersistenceDelegator"
-		class="amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator">
-	</bean>
-
-	<!-- UserMailDelegator -->
-	<bean id="userMailDelegator" class="amtc.gue.ws.base.delegate.mail.UserMailDelegator">
-	</bean>
-
-	<!-- GithubAPIDelegator -->
-	<bean id="githubAPIDelegator" class="amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator"></bean>
-
 	<!-- DelegatorInput -->
 	<bean id="delegatorInput" class="amtc.gue.ws.base.delegate.input.DelegatorInput">
 	</bean>
@@ -47,8 +19,57 @@
 	<bean id="delegatorOutput" class="amtc.gue.ws.base.delegate.output.DelegatorOutput">
 	</bean>
 
-	<!-- BookEntityDAOImpl -->
-	<bean id="bookDAOImpl" class="amtc.gue.ws.books.persistence.dao.book.impl.BookDAOImpl">
+	<!-- UserService relevant declarations -->
+	<!-- JPA UserDAOImpl -->
+	<bean id="userJPADAOImpl"
+		class="amtc.gue.ws.base.persistence.dao.user.jpa.UserJPADAOImpl">
+		<!-- emf instance used as constructor input -->
+		<constructor-arg>
+			<ref bean="emf" />
+		</constructor-arg>
+	</bean>
+
+	<!-- Objectify UserDAOImpl -->
+	<bean id="userObjectifyDAOImpl"
+		class="amtc.gue.ws.base.persistence.dao.user.objectify.UserObjectifyDAOImpl">
+	</bean>
+
+	<!-- JPA RoleDAOImpl -->
+	<bean id="roleJPADAOImpl"
+		class="amtc.gue.ws.base.persistence.dao.role.jpa.RoleJPADAOImpl">
+		<!-- emf instance used as constructor input -->
+		<constructor-arg>
+			<ref bean="emf" />
+		</constructor-arg>
+	</bean>
+
+	<!-- Objectitfy RoleDAOImpl -->
+	<bean id="roleObjectifyDAOImpl"
+		class="amtc.gue.ws.base.persistence.dao.role.objectify.RoleObjectifyDAOImpl">
+	</bean>
+
+	<!-- UserServiceJPAEntityMapper -->
+	<bean id="userJPAEntityMapper"
+		class="amtc.gue.ws.base.util.mapper.jpa.UserServiceJPAEntityMapper">
+	</bean>
+
+	<!-- UserServiceObjectifyEntityMapper -->
+	<bean id="userObjectifyEntityMapper"
+		class="amtc.gue.ws.base.util.mapper.objectify.UserServiceObjectifyEntityMapper">
+	</bean>
+
+	<!-- UserPersistenceDelegator -->
+	<bean id="userPersistenceDelegator"
+		class="amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator">
+		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
+		<property name="roleDAO" ref="roleObjectifyDAOImpl"></property>
+		<property name="userEntityMapper" ref="userObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- BookService relevant declarations -->
+	<!-- JPA BookDAOImpl -->
+	<bean id="bookJPADAOImpl"
+		class="amtc.gue.ws.books.persistence.dao.book.jpa.BookJPADAOImpl">
 		<!-- emf instance used as constructor input -->
 		<constructor-arg>
 			<ref bean="emf" />
@@ -58,36 +79,92 @@
 		</constructor-arg>
 	</bean>
 
-	<!-- TagDAOImpl -->
-	<bean id="tagDAOImpl" class="amtc.gue.ws.books.persistence.dao.tag.impl.TagDAOImpl">
+	<!-- Objectify BookDAOImpl -->
+	<bean id="bookObjectifyDAOImpl"
+		class="amtc.gue.ws.books.persistence.dao.book.objectify.BookObjectifyDAOImpl">
+		<constructor-arg>
+			<ref bean="user" />
+		</constructor-arg>
+	</bean>
+
+	<!-- JPA TagDAOImpl -->
+	<bean id="tagJPADAOImpl" class="amtc.gue.ws.books.persistence.dao.tag.jpa.TagJPADAOImpl">
 		<!-- emf instance used as constructor input -->
 		<constructor-arg>
 			<ref bean="emf" />
 		</constructor-arg>
 	</bean>
 
-	<!-- PlayerDAOImpl -->
-	<bean id="playerDAOImpl"
-		class="amtc.gue.ws.tournament.persistence.dao.player.impl.PlayerDAOImpl">
+	<!-- Objectitfy TagDAOImpl -->
+	<bean id="tagObjectifyDAOImpl"
+		class="amtc.gue.ws.books.persistence.dao.tag.objectify.TagObjectifyDAOImpl">
+	</bean>
+
+	<!-- BookServiceJPAEntityMapper -->
+	<bean id="bookJPAEntityMapper"
+		class="amtc.gue.ws.books.util.mapper.jpa.BookServiceJPAEntityMapper">
+	</bean>
+
+	<!-- BookServiceObjectifyEntityMapper -->
+	<bean id="bookObjectifyEntityMapper"
+		class="amtc.gue.ws.books.util.mapper.objectify.BookServiceObjectifyEntityMapper">
+	</bean>
+
+	<!-- BookPersistenceDelegator -->
+	<bean id="bookPersistenceDelegator"
+		class="amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator">
+		<property name="currentUser" ref="user"></property>
+		<property name="bookDAO" ref="bookObjectifyDAOImpl"></property>
+		<property name="tagDAO" ref="tagObjectifyDAOImpl"></property>
+		<property name="bookEntityMapper" ref="bookObjectifyEntityMapper"></property>
+		<property name="userEntityMapper" ref="userObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- TagPersistenceDelegator -->
+	<bean id="tagPersistenceDelegator"
+		class="amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator">
+		<property name="tagDAO" ref="tagObjectifyDAOImpl"></property>
+		<property name="userEntityMapper" ref="userObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- Tournament Service relevant declarations -->
+	<!-- JPA PlayerDAOImpl -->
+	<bean id="playerJPADAOImpl"
+		class="amtc.gue.ws.tournament.persistence.dao.player.jpa.PlayerJPADAOImpl">
 		<!-- emf instance used as constructor input -->
 		<constructor-arg>
 			<ref bean="emf" />
 		</constructor-arg>
 	</bean>
 
-	<!-- UserDAOImpl -->
-	<bean id="userDAOImpl" class="amtc.gue.ws.base.persistence.dao.user.impl.UserDAOImpl">
-		<!-- emf instance used as constructor input -->
-		<constructor-arg>
-			<ref bean="emf" />
-		</constructor-arg>
+	<!-- Objectify PlayerDAOImpl -->
+	<bean id="playerObjectifyDAOImpl"
+		class="amtc.gue.ws.tournament.persistence.dao.player.objectify.PlayerObjectifyDAOImpl">
 	</bean>
 
-	<!-- RoleDAOImpl -->
-	<bean id="roleDAOImpl" class="amtc.gue.ws.base.persistence.dao.role.impl.RoleDAOImpl">
-		<!-- emf instance used as constructor input -->
-		<constructor-arg>
-			<ref bean="emf" />
-		</constructor-arg>
+	<!-- TournamentServiceJPAEntityMapper -->
+	<bean id="tournamentJPAEntityMapper"
+		class="amtc.gue.ws.tournament.util.mapper.jpa.TournamentServiceJPAEntityMapper">
 	</bean>
+
+	<!-- PlayerServiceObjectifyEntityMapper -->
+	<bean id="tournamentObjectifyEntityMapper"
+		class="amtc.gue.ws.tournament.util.mapper.objectify.TournamentServiceObjectifyEntityMapper">
+	</bean>
+
+	<!-- PlayerPersistenceDelegator -->
+	<bean id="playerPersistenceDelegator"
+		class="amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator">
+		<property name="playerDAO" ref="playerObjectifyDAOImpl"></property>
+		<property name="tournamentEntityMapper" ref="tournamentObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- MailService relevant declarations -->
+	<!-- UserMailDelegator -->
+	<bean id="userMailDelegator" class="amtc.gue.ws.base.delegate.mail.UserMailDelegator">
+	</bean>
+
+	<!-- VCS Service relevant declarations -->
+	<!-- GithubAPIDelegator -->
+	<bean id="githubAPIDelegator" class="amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator"></bean>
 </beans>

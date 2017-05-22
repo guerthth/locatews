@@ -17,6 +17,7 @@ import amtc.gue.ws.base.delegate.input.DelegatorInput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.ErrorConstants;
+import amtc.gue.ws.test.vcsapi.VCSAPITest;
 import amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator;
 import amtc.gue.ws.vcsapi.util.VCSAPIServiceErrorConstants;
 
@@ -27,31 +28,33 @@ import amtc.gue.ws.vcsapi.util.VCSAPIServiceErrorConstants;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
-	protected static DelegatorInput addGithubIssueDelegatorInput;
-	protected static DelegatorInput getGithubIssuesDelegatorInput;
-	protected static DelegatorInput unknownGithubIssueDelegatorInput;
+public class GithubAPIDelegatorTest extends VCSAPITest implements IVCSAPIDelegatorTest {
+	private static DelegatorInput addGithubIssueDelegatorInput;
+	private static DelegatorInput getGithubIssuesDelegatorInput;
+	private static DelegatorInput unknownGithubIssueDelegatorInput;
 
-	protected static GithubAPIDelegator gitHubAPIDelegator;
+	private static GithubAPIDelegator gitHubAPIDelegator;
 
-	protected static IssueService issueService;
-	protected static IssueService issueFailureService;
+	private static IssueService issueService;
+	private static IssueService issueFailureService;
 
 	@BeforeClass
-	public static void initialSetup() throws IOException {
-		oneTimeInitialSetup();
+	public static void oneTimeInitialSetup() throws IOException {
+		setUpBasicEnvironment();
+		setUpDelegatorInputs();
 		setUpGithubAPIDelegatorInputs();
 		setUpGithubAPIDelegators();
-		setUpGithubAPIMocks();
+		setUpVCSMocks();
 	}
 
 	@AfterClass
-	public static void tearDown() {
+	public static void finalTearDown() {
 		EasyMock.verify(issueService);
 		EasyMock.verify(issueFailureService);
 	}
 
 	@Override
+	@Test
 	public void testDelegateUsingNullInput() {
 		gitHubAPIDelegator.initialize(nullDelegatorInput);
 		IDelegatorOutput delegatorOutput = gitHubAPIDelegator.delegate();
@@ -59,6 +62,7 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 	}
 
 	@Override
+	@Test
 	public void testDelegateUsingUnrecognizedInputType() {
 		gitHubAPIDelegator.initialize(unrecognizedDelegatorInput);
 		IDelegatorOutput delegatorOutput = gitHubAPIDelegator.delegate();
@@ -66,17 +70,9 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG, delegatorOutput.getStatusMessage());
 	}
 
+	@Override
 	@Test
-	public void testAddIssueUsingUnrecognizedInput() {
-		gitHubAPIDelegator.initialize(unknownGithubIssueDelegatorInput);
-		gitHubAPIDelegator.setIssueService(issueService);
-		IDelegatorOutput delegatorOutput = gitHubAPIDelegator.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Test
-	public void testAddIssueSuccess() {
+	public void testAddIssueSucess() {
 		gitHubAPIDelegator.initialize(addGithubIssueDelegatorInput);
 		gitHubAPIDelegator.setIssueService(issueService);
 		gitHubAPIDelegator.setGithubRepository(repository);
@@ -84,6 +80,7 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		assertEquals(VCSAPIServiceErrorConstants.ADD_ISSUE_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
+	@Override
 	@Test
 	public void testAddIssueFailure() {
 		gitHubAPIDelegator.initialize(addGithubIssueDelegatorInput);
@@ -92,9 +89,20 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		IDelegatorOutput delegatorOutput = gitHubAPIDelegator.delegate();
 		assertEquals(VCSAPIServiceErrorConstants.ADD_ISSUE_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
-
+	
+	@Override
 	@Test
-	public void testGetIssuesSuccess() {
+	public void testAddIssueUsingUnrecognizedInputObject() {
+		gitHubAPIDelegator.initialize(unknownGithubIssueDelegatorInput);
+		gitHubAPIDelegator.setIssueService(issueFailureService);
+		gitHubAPIDelegator.setGithubRepository(repository);
+		IDelegatorOutput delegatorOutput = gitHubAPIDelegator.delegate();
+		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
+	}
+
+	@Override
+	@Test
+	public void testGetIssueSuccess() {
 		gitHubAPIDelegator.initialize(getGithubIssuesDelegatorInput);
 		gitHubAPIDelegator.setIssueService(issueService);
 		gitHubAPIDelegator.setGithubRepository(repository);
@@ -103,8 +111,9 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		assertNotNull(delegatorOutput);
 	}
 
+	@Override
 	@Test
-	public void testGetIssuesFailure() {
+	public void testGetIssueFailure() {
 		gitHubAPIDelegator.initialize(getGithubIssuesDelegatorInput);
 		gitHubAPIDelegator.setIssueService(issueFailureService);
 		gitHubAPIDelegator.setGithubRepository(repository);
@@ -112,10 +121,12 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		assertEquals(VCSAPIServiceErrorConstants.RETRIEVE_ISSUES_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
-	// helper classes
+	/**
+	 * Method setting up GithubAPIDelegatorInputs
+	 */
 	private static void setUpGithubAPIDelegatorInputs() {
 		addGithubIssueDelegatorInput = new DelegatorInput();
-		addGithubIssueDelegatorInput.setInputObject(issue);
+		addGithubIssueDelegatorInput.setInputObject(vcsIssue);
 		addGithubIssueDelegatorInput.setType(DelegatorTypeEnum.ADD);
 
 		getGithubIssuesDelegatorInput = new DelegatorInput();
@@ -127,11 +138,20 @@ public class GithubAPIDelegatorTest extends VCSAPIDelegatorTest {
 		unknownGithubIssueDelegatorInput.setType(DelegatorTypeEnum.ADD);
 	}
 
+	/**
+	 * Method setting up GithubAPIDelegators
+	 */
 	private static void setUpGithubAPIDelegators() {
 		gitHubAPIDelegator = new GithubAPIDelegator();
 	}
 
-	private static void setUpGithubAPIMocks() throws IOException {
+	/**
+	 * Method setting up some VCS API Mocks
+	 * 
+	 * @throws IOException
+	 *             when issue occurs
+	 */
+	private static void setUpVCSMocks() throws IOException {
 		issueService = EasyMock.createNiceMock(IssueService.class);
 		EasyMock.expect(issueService.getClient()).andReturn(githubClient).times(2);
 		EasyMock.expect(issueService.createIssue(EasyMock.isA(Repository.class), EasyMock.isA(Issue.class)))

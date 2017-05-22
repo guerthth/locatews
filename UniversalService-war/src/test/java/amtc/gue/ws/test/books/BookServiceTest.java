@@ -33,7 +33,6 @@ import amtc.gue.ws.books.response.BookServiceResponse;
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BookServiceTest extends JerseyTest {
-
 	private static IDelegatorOutput delegatorOutput;
 	private static AbstractPersistenceDelegator bookDelegator;
 
@@ -43,7 +42,7 @@ public class BookServiceTest extends JerseyTest {
 	}
 
 	@BeforeClass
-	public static void inititalSetup() {
+	public static void oneTimeInitialSetup() {
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}

@@ -1,7 +1,6 @@
 package amtc.gue.ws.tournament.persistence.dao.player;
 
 import amtc.gue.ws.base.persistence.dao.DAO;
-import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
 
 /**
  * Specific interface for PlayerEntities
@@ -9,6 +8,6 @@ import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
  * @author Thomas
  *
  */
-public interface PlayerDAO extends DAO<GAEJPAPlayerEntity, String> {
+public interface PlayerDAO<S, E extends S, K> extends DAO<S, E, K> {
 	// no specific methods so far
 }

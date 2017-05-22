@@ -2,7 +2,8 @@ package amtc.gue.ws.tournament.util;
 
 import java.util.List;
 
-import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
+import amtc.gue.ws.tournament.persistence.model.player.GAEPlayerEntity;
+import amtc.gue.ws.tournament.util.mapper.TournamentServiceEntityMapper;
 
 /**
  * Utility class for the PlayerPersistenceDelegator
@@ -22,8 +23,8 @@ public class PlayerPersistenceDelegatorUtils {
 	 * @return success status message for player entity removal
 	 */
 	public static String buildPersistPlayerSuccessStatusMessage(
-			List<GAEJPAPlayerEntity> successfullyAddedPlayerEntities,
-			List<GAEJPAPlayerEntity> unsuccessfullyAddedPlayerEntities) {
+			List<GAEPlayerEntity> successfullyAddedPlayerEntities,
+			List<GAEPlayerEntity> unsuccessfullyAddedPlayerEntities) {
 		int numberOfSuccessfullyAddedEntities = (successfullyAddedPlayerEntities != null) ? successfullyAddedPlayerEntities
 				.size() : 0;
 		int numberOfUnsuccessfullyAddedEntities = (successfullyAddedPlayerEntities != null) ? unsuccessfullyAddedPlayerEntities
@@ -56,7 +57,7 @@ public class PlayerPersistenceDelegatorUtils {
 	 * @return the status message that can be used in the response as String
 	 */
 	public static String buildRemovePlayersSuccessStatusMessage(
-			List<GAEJPAPlayerEntity> removedPlayerEntities) {
+			List<GAEPlayerEntity> removedPlayerEntities) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(TournamentServiceErrorConstants.DELETE_PLAYER_SUCCESS_MSG);
 		sb.append(" '");
@@ -77,7 +78,7 @@ public class PlayerPersistenceDelegatorUtils {
 	 * @return the status message that can be used in the response as String
 	 */
 	public static String buildRetrievePlayersSuccessStatusMessage(
-			List<GAEJPAPlayerEntity> foundPlayers) {
+			List<GAEPlayerEntity> foundPlayers) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(TournamentServiceErrorConstants.RETRIEVE_PLAYER_SUCCESS_MSG);
 		sb.append(" '");

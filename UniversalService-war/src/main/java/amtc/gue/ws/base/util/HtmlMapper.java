@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import amtc.gue.ws.base.exception.HtmlReaderException;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 
 /**
  * Utility class for the UserMailDelegator
@@ -35,7 +35,7 @@ public class HtmlMapper {
 	 *             when an issue occures while trying to map the HTML File to a
 	 *             String
 	 */
-	public static String mapHtmlToString(GAEJPAUserEntity user, String htmlFile) throws HtmlReaderException {
+	public static String mapHtmlToString(GAEUserEntity user, String htmlFile) throws HtmlReaderException {
 		StringBuilder sb = new StringBuilder();
 		String line;
 		try {
@@ -65,7 +65,7 @@ public class HtmlMapper {
 	 *             when an issue occures while trying to map the HTML File to a
 	 *             String
 	 */
-	public static String parseHtml(GAEJPAUserEntity user, String htmlFile) throws HtmlReaderException {
+	public static String parseHtml(GAEUserEntity user, String htmlFile) throws HtmlReaderException {
 		String parsedHtml;
 		try {
 			URI htmlFileURI = HtmlMapper.class.getResource(htmlFile).toURI();

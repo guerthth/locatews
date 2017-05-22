@@ -25,7 +25,7 @@ import amtc.gue.ws.books.inout.Book;
 import amtc.gue.ws.books.inout.Books;
 import amtc.gue.ws.books.inout.Tags;
 import amtc.gue.ws.books.response.BookServiceResponse;
-import amtc.gue.ws.books.util.BookServiceEntityMapper;
+import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
 @Path("/books")
 @Produces(MediaType.APPLICATION_JSON)

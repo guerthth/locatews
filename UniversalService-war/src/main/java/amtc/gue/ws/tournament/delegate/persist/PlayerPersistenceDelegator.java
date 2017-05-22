@@ -11,13 +11,13 @@ import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
-import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.persistence.dao.player.PlayerDAO;
-import amtc.gue.ws.tournament.persistence.model.GAEJPAPlayerEntity;
+import amtc.gue.ws.tournament.persistence.model.player.GAEPlayerEntity;
+import amtc.gue.ws.tournament.persistence.model.player.jpa.GAEJPAPlayerEntity;
 import amtc.gue.ws.tournament.util.PlayerPersistenceDelegatorUtils;
-import amtc.gue.ws.tournament.util.TournamentServiceEntityMapper;
 import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
+import amtc.gue.ws.tournament.util.mapper.TournamentServiceEntityMapper;
 
 /**
  * Persistence Delegator that handles all database actions for Player resources
@@ -27,17 +27,17 @@ import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
  */
 public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 
-	private static final Logger log = Logger
-			.getLogger(PlayerPersistenceDelegator.class.getName());
+	private static final Logger log = Logger.getLogger(PlayerPersistenceDelegator.class.getName());
 
 	/** DAOImplementations used by the delegator */
-	private PlayerDAO playerDAOImpl;
+	private PlayerDAO<GAEPlayerEntity, GAEJPAPlayerEntity, String> playerDAOImpl;
+
+	/** EntityMapper user by the delegator */
+	private TournamentServiceEntityMapper tournamentEntityMapper;
 
 	@Override
 	public void initialize(IDelegatorInput input) {
 		super.initialize(input);
-		playerDAOImpl = (PlayerDAO) SpringContext.context
-				.getBean("playerDAOImpl");
 	}
 
 	@Override
@@ -45,49 +45,37 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 		log.info("ADD Player action triggered");
 		if (delegatorInput.getInputObject() instanceof Players) {
 			Players players = (Players) delegatorInput.getInputObject();
-			delegatorOutput
-					.setStatusCode(TournamentServiceErrorConstants.ADD_PLAYER_SUCCESS_CODE);
-			List<GAEJPAPlayerEntity> playerEntityList = TournamentServiceEntityMapper
-					.transformPlayersToPlayerEntities(players,
-							DelegatorTypeEnum.ADD);
-			List<GAEJPAPlayerEntity> successfullyAddedPlayerEntities = new ArrayList<>();
-			List<GAEJPAPlayerEntity> unsuccessfullyAddedPlayerEntities = new ArrayList<>();
+			delegatorOutput.setStatusCode(TournamentServiceErrorConstants.ADD_PLAYER_SUCCESS_CODE);
+			List<GAEPlayerEntity> playerEntityList = tournamentEntityMapper.transformPlayersToPlayerEntities(players,
+					DelegatorTypeEnum.ADD);
+			List<GAEPlayerEntity> successfullyAddedPlayerEntities = new ArrayList<>();
+			List<GAEPlayerEntity> unsuccessfullyAddedPlayerEntities = new ArrayList<>();
 
 			// persist all PlayerEntities to the DB
-			for (GAEJPAPlayerEntity playerEntity : playerEntityList) {
+			for (GAEPlayerEntity playerEntity : playerEntityList) {
 				String playerEntityJSON;
-				GAEJPAPlayerEntity persistedPlayerEntity;
+				GAEPlayerEntity persistedPlayerEntity;
 				try {
-					persistedPlayerEntity = playerDAOImpl
-							.persistEntity(playerEntity);
-					playerEntityJSON = TournamentServiceEntityMapper
-							.mapPlayerEntityToJSONString(persistedPlayerEntity);
+					persistedPlayerEntity = playerDAOImpl.persistEntity(playerEntity);
+					playerEntityJSON = TournamentServiceEntityMapper.mapPlayerEntityToJSONString(persistedPlayerEntity);
 					successfullyAddedPlayerEntities.add(persistedPlayerEntity);
 					log.info(playerEntityJSON + " added to DB");
 				} catch (EntityPersistenceException e) {
-					playerEntityJSON = TournamentServiceEntityMapper
-							.mapPlayerEntityToJSONString(playerEntity);
+					playerEntityJSON = TournamentServiceEntityMapper.mapPlayerEntityToJSONString(playerEntity);
 					unsuccessfullyAddedPlayerEntities.add(playerEntity);
-					log.log(Level.SEVERE, "Error while trying to persist: "
-							+ playerEntityJSON, e);
+					log.log(Level.SEVERE, "Error while trying to persist: " + playerEntityJSON, e);
 				}
 			}
 
 			// set delegatorOutput
 			if (!successfullyAddedPlayerEntities.isEmpty()) {
-				delegatorOutput
-						.setStatusMessage(PlayerPersistenceDelegatorUtils
-								.buildPersistPlayerSuccessStatusMessage(
-										successfullyAddedPlayerEntities,
-										successfullyAddedPlayerEntities));
-				delegatorOutput
-						.setOutputObject(TournamentServiceEntityMapper
-								.transformPlayerEntitiesToPlayers(successfullyAddedPlayerEntities));
+				delegatorOutput.setStatusMessage(PlayerPersistenceDelegatorUtils.buildPersistPlayerSuccessStatusMessage(
+						successfullyAddedPlayerEntities, successfullyAddedPlayerEntities));
+				delegatorOutput.setOutputObject(TournamentServiceEntityMapper
+						.transformPlayerEntitiesToPlayers(successfullyAddedPlayerEntities));
 			} else {
-				delegatorOutput
-						.setStatusCode(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_CODE);
-				delegatorOutput
-						.setStatusMessage(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_MSG);
+				delegatorOutput.setStatusCode(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
@@ -100,45 +88,34 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 		log.info("DELETE Player action triggered");
 
 		if (delegatorInput.getInputObject() instanceof Players) {
-			List<GAEJPAPlayerEntity> removedPlayerEntities = new ArrayList<>();
+			List<GAEPlayerEntity> removedPlayerEntities = new ArrayList<>();
 			Players playersToRemove = (Players) delegatorInput.getInputObject();
 
-			delegatorOutput
-					.setStatusCode(TournamentServiceErrorConstants.DELETE_PLAYER_SUCCESS_CODE);
+			delegatorOutput.setStatusCode(TournamentServiceErrorConstants.DELETE_PLAYER_SUCCESS_CODE);
 			// transform input object to playerentities and remove
-			List<GAEJPAPlayerEntity> playerEntities = TournamentServiceEntityMapper
-					.transformPlayersToPlayerEntities(playersToRemove,
-							DelegatorTypeEnum.DELETE);
-			for (GAEJPAPlayerEntity playerEntity : playerEntities) {
-				List<GAEJPAPlayerEntity> playerEntitiesToRemove;
-				String playerEntityJSON = TournamentServiceEntityMapper
-						.mapPlayerEntityToJSONString(playerEntity);
+			List<GAEPlayerEntity> playerEntities = tournamentEntityMapper
+					.transformPlayersToPlayerEntities(playersToRemove, DelegatorTypeEnum.DELETE);
+			for (GAEPlayerEntity playerEntity : playerEntities) {
+				List<GAEPlayerEntity> playerEntitiesToRemove;
+				String playerEntityJSON = TournamentServiceEntityMapper.mapPlayerEntityToJSONString(playerEntity);
 				try {
 					if (playerEntity.getKey() != null) {
 						playerEntitiesToRemove = new ArrayList<>();
-						playerEntitiesToRemove.add(playerDAOImpl
-								.findEntityById(playerEntity.getKey()));
+						playerEntitiesToRemove.add(playerDAOImpl.findEntityById(playerEntity.getKey()));
 					} else {
-						playerEntitiesToRemove = playerDAOImpl
-								.findSpecificEntity(playerEntity);
+						playerEntitiesToRemove = playerDAOImpl.findSpecificEntity(playerEntity);
 					}
 
-					if (playerEntitiesToRemove != null
-							&& !playerEntitiesToRemove.isEmpty()) {
-						for (GAEJPAPlayerEntity playerEntityToRemove : playerEntitiesToRemove) {
+					if (playerEntitiesToRemove != null && !playerEntitiesToRemove.isEmpty()) {
+						for (GAEPlayerEntity playerEntityToRemove : playerEntitiesToRemove) {
 							String playerEntityToRemoveJSON = TournamentServiceEntityMapper
 									.mapPlayerEntityToJSONString(playerEntityToRemove);
 							try {
-								GAEJPAPlayerEntity removedPlayerEntity = playerDAOImpl
-										.removeEntity(playerEntityToRemove);
-								log.info("PlayerEntity "
-										+ playerEntityToRemoveJSON
-										+ " was successfully removed");
+								GAEPlayerEntity removedPlayerEntity = playerDAOImpl.removeEntity(playerEntityToRemove);
+								log.info("PlayerEntity " + playerEntityToRemoveJSON + " was successfully removed");
 								removedPlayerEntities.add(removedPlayerEntity);
 							} catch (EntityRemovalException e) {
-								log.log(Level.SEVERE,
-										"Error while trying to remove: "
-												+ playerEntityToRemoveJSON, e);
+								log.log(Level.SEVERE, "Error while trying to remove: " + playerEntityToRemoveJSON, e);
 							}
 						}
 					} else {
@@ -146,24 +123,19 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 					}
 
 				} catch (EntityRetrievalException e) {
-					log.log(Level.SEVERE, "Error while trying to retrieve: "
-							+ playerEntityJSON, e);
+					log.log(Level.SEVERE, "Error while trying to retrieve: " + playerEntityJSON, e);
 				}
 			}
 
 			// set delegator output
 			if (!removedPlayerEntities.isEmpty()) {
-				delegatorOutput
-						.setStatusMessage(PlayerPersistenceDelegatorUtils
-								.buildRemovePlayersSuccessStatusMessage(removedPlayerEntities));
-				delegatorOutput
-						.setOutputObject(TournamentServiceEntityMapper
-								.transformPlayerEntitiesToPlayers(removedPlayerEntities));
+				delegatorOutput.setStatusMessage(
+						PlayerPersistenceDelegatorUtils.buildRemovePlayersSuccessStatusMessage(removedPlayerEntities));
+				delegatorOutput.setOutputObject(
+						TournamentServiceEntityMapper.transformPlayerEntitiesToPlayers(removedPlayerEntities));
 			} else {
-				delegatorOutput
-						.setStatusCode(TournamentServiceErrorConstants.DELETE_PLAYER_FAILURE_CODE);
-				delegatorOutput
-						.setStatusMessage(TournamentServiceErrorConstants.DELETE_PLAYER_FAILURE_MSG);
+				delegatorOutput.setStatusCode(TournamentServiceErrorConstants.DELETE_PLAYER_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(TournamentServiceErrorConstants.DELETE_PLAYER_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
@@ -174,24 +146,26 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 	@Override
 	protected void retrieveEntities() {
 		log.info("READ Player action triggered");
-		delegatorOutput
-				.setStatusCode(TournamentServiceErrorConstants.RETRIEVE_PLAYER_SUCCESS_CODE);
+		delegatorOutput.setStatusCode(TournamentServiceErrorConstants.RETRIEVE_PLAYER_SUCCESS_CODE);
 
 		try {
-			List<GAEJPAPlayerEntity> foundPlayers = playerDAOImpl
-					.findAllEntities();
-			delegatorOutput.setStatusMessage(PlayerPersistenceDelegatorUtils
-					.buildRetrievePlayersSuccessStatusMessage(foundPlayers));
-			delegatorOutput.setOutputObject(TournamentServiceEntityMapper
-					.transformPlayerEntitiesToPlayers(foundPlayers));
+			List<GAEPlayerEntity> foundPlayers = playerDAOImpl.findAllEntities();
+			delegatorOutput.setStatusMessage(
+					PlayerPersistenceDelegatorUtils.buildRetrievePlayersSuccessStatusMessage(foundPlayers));
+			delegatorOutput
+					.setOutputObject(TournamentServiceEntityMapper.transformPlayerEntitiesToPlayers(foundPlayers));
 		} catch (EntityRetrievalException e) {
-			delegatorOutput
-					.setStatusCode(TournamentServiceErrorConstants.RETRIEVE_PLAYER_FAILURE_CODE);
-			delegatorOutput
-					.setStatusMessage(TournamentServiceErrorConstants.RETRIEVE_PLAYER_FAILURE_MSG);
+			delegatorOutput.setStatusCode(TournamentServiceErrorConstants.RETRIEVE_PLAYER_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(TournamentServiceErrorConstants.RETRIEVE_PLAYER_FAILURE_MSG);
 			delegatorOutput.setOutputObject(null);
 			log.log(Level.SEVERE, "Error while trying to retrieve players", e);
 		}
+	}
+
+	@Override
+	protected void updateEntities() {
+		// not implemented
+		setUnrecognizedDelegatorOutput();
 	}
 
 	/**
@@ -200,7 +174,18 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 	 * @param playerDAOImpl
 	 *            the PlayerDAOImpl object
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setPlayerDAO(PlayerDAO playerDAOImpl) {
 		this.playerDAOImpl = playerDAOImpl;
+	}
+
+	/**
+	 * Setter for the entityMapper
+	 * 
+	 * @param entityMapper
+	 *            the TournamentEntityMapper instance used by the delegator
+	 */
+	public void setTournamentEntityMapper(TournamentServiceEntityMapper entityMapper) {
+		tournamentEntityMapper = entityMapper;
 	}
 }

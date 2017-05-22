@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.base.exception.HtmlReaderException;
-import amtc.gue.ws.base.persistence.model.GAEJPAUserEntity;
 import amtc.gue.ws.base.util.HtmlMapper;
+import amtc.gue.ws.test.base.UserTest;
 
 /**
  * Class testing the Html Mapper Class
@@ -18,47 +18,37 @@ import amtc.gue.ws.base.util.HtmlMapper;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class HtmlMapperTest {
+public class HtmlMapperTest extends UserTest {
 
-	private static GAEJPAUserEntity userEntity;
-	private static final String USERNAME = "userA";
 	private static final String HTMLFile = "/testPwMail.html";
 	private static final String NONEXISTINGFile = "test.csv";
 
 	@BeforeClass
 	public static void oneTimeInitialSetup() {
-		setupUsers();
+		setUpBasicEnvironment();
 	}
 
 	@Test
 	public void testMapHtmlToString() throws HtmlReaderException {
-		String mappedString = HtmlMapper.mapHtmlToString(userEntity, HTMLFile);
+		String mappedString = HtmlMapper.mapHtmlToString(JPAUserEntity1, HTMLFile);
 		assertFalse(mappedString.contains("{userId}"));
-		assertTrue(mappedString.contains(userEntity.getKey()));
+		assertTrue(mappedString.contains(JPAUserEntity1.getKey()));
 	}
 	
 	@Test(expected = HtmlReaderException.class)
 	public void testMapHtmlToStringUsingNonExistingInputFile() throws HtmlReaderException{
-		HtmlMapper.mapHtmlToString(userEntity, NONEXISTINGFile);
+		HtmlMapper.mapHtmlToString(JPAUserEntity1, NONEXISTINGFile);
 	}
 
 	@Test
 	public void testParseHtmlUsingSimpleHtmlFile() throws HtmlReaderException {
-		String parsedHtml = HtmlMapper.parseHtml(userEntity, HTMLFile);
+		String parsedHtml = HtmlMapper.parseHtml(JPAUserEntity1, HTMLFile);
 		assertFalse(parsedHtml.contains("{userId}"));
-		assertTrue(parsedHtml.contains(userEntity.getKey()));
+		assertTrue(parsedHtml.contains(JPAUserEntity1.getKey()));
 	}
 
 	@Test(expected = HtmlReaderException.class)
 	public void testParseHtmlUsingNonExistingInputFile() throws HtmlReaderException {
-		HtmlMapper.parseHtml(userEntity, NONEXISTINGFile);
-	}
-
-	/**
-	 * Setting up user entities
-	 */
-	private static void setupUsers() {
-		userEntity = new GAEJPAUserEntity();
-		userEntity.setKey(USERNAME);
+		HtmlMapper.parseHtml(JPAUserEntity1, NONEXISTINGFile);
 	}
 }

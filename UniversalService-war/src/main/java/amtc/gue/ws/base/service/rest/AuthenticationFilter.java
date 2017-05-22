@@ -22,13 +22,20 @@ import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.internal.util.Base64;
 
+import com.googlecode.objectify.ObjectifyService;
+
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.base.inout.User;
+import amtc.gue.ws.base.persistence.model.role.objectify.GAEObjectifyRoleEntity;
+import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 import amtc.gue.ws.base.util.EncryptionMapper;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
+import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
+import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
+import amtc.gue.ws.tournament.persistence.model.player.objectify.GAEObjectifyPlayerEntity;
 
 /**
  * Authenticationfilter used to check if caller is allowed to call service
@@ -39,6 +46,13 @@ import amtc.gue.ws.base.util.SpringContext;
  */
 @Provider
 public class AuthenticationFilter implements ContainerRequestFilter {
+	static {
+		ObjectifyService.register(GAEObjectifyUserEntity.class);
+		ObjectifyService.register(GAEObjectifyRoleEntity.class);
+		ObjectifyService.register(GAEObjectifyBookEntity.class);
+		ObjectifyService.register(GAEObjectifyTagEntity.class);
+		ObjectifyService.register(GAEObjectifyPlayerEntity.class);
+	}
 
 	private static final Logger log = Logger.getLogger(AuthenticationFilter.class.getName());
 	private User currentUser = (User) SpringContext.context.getBean("user");

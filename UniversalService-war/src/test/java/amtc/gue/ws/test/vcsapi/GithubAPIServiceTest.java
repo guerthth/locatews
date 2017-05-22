@@ -41,13 +41,13 @@ public class GithubAPIServiceTest extends JerseyTest {
 	}
 
 	@BeforeClass
-	public static void initialSetup() {
+	public static void oneTimeInitialSetup() {
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
 
 	@AfterClass
-	public static void checkMocks() {
+	public static void finalTearDown() {
 		EasyMock.verify(githubAPIDelegator);
 	}
 

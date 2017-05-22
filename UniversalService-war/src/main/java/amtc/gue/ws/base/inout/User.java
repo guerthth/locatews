@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "user", propOrder = {"username","password","roles","email" })
+@XmlType(name = "user", propOrder = {"id","password","roles","email" })
 public class User extends Item {
 	@XmlElement(name = "password", required = true, nillable = false)
 	private String password;

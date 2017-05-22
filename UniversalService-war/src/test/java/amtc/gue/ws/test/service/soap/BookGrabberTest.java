@@ -2,18 +2,20 @@ package amtc.gue.ws.test.service.soap;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.easymock.EasyMock;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.books.inout.Book;
-import amtc.gue.ws.books.inout.Books;
-import amtc.gue.ws.books.inout.Tags;
+import amtc.gue.ws.base.delegate.output.DelegatorOutput;
+import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
+import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
+import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
 import amtc.gue.ws.service.soap.BookGrabber;
+import amtc.gue.ws.test.books.BookTest;
 
 /**
  * Testclass for the BookGrabber Service class
@@ -22,51 +24,23 @@ import amtc.gue.ws.service.soap.BookGrabber;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BookGrabberTest {
-	private static Books books;
-	private static Book firstBook;
-	private static Book secondBook;
-	private static List<Book> bookList;
-	private static List<String> tagList;
-	private static Tags tags;
-
+public class BookGrabberTest extends BookTest{
 	private static BookGrabber bookGrabber;
-
-	private static final String searchTag1 = "testtag";
+	private static IDelegatorOutput delegatorOutput;
+	private static AbstractPersistenceDelegator bookDelegator;
+	private static AbstractPersistenceDelegator tagDelegator;
 
 	@BeforeClass
-	public static void oneTimeSetup() {
-
-		bookGrabber = new BookGrabber();
-
-		tagList = new ArrayList<String>();
-		tagList.add(searchTag1);
-
-		tags = new Tags();
-		tags.setTags(tagList);
-
-		bookList = new ArrayList<Book>();
-
-		firstBook = new Book();
-		firstBook.setAuthor("Testauthor1");
-		firstBook.setDescription("Testdescription1");
-		firstBook.setISBN("TestISBN");
-		firstBook.setPrice("100");
-		firstBook.setTags(tags.getTags());
-		firstBook.setTitle("Testtitle1");
-		bookList.add(firstBook);
-
-		secondBook = new Book();
-		secondBook.setAuthor("Testauthor2");
-		secondBook.setDescription("Testdescription2");
-		secondBook.setISBN("TestISBN");
-		secondBook.setPrice("100");
-		secondBook.setTags(tags.getTags());
-		secondBook.setTitle("Testtitle2");
-		bookList.add(secondBook);
-
-		books = new Books();
-		books.setBooks(bookList);
+	public static void oneTimeInitialSetup() {
+		setUpDelegatorOutputs();
+		setUpDelegatorMocks();
+		setUpBookGrabber();
+	}
+	
+	@AfterClass
+	public static void checkMocks() {
+		EasyMock.verify(bookDelegator);
+		EasyMock.verify(tagDelegator);
 	}
 
 	@Test
@@ -76,7 +50,7 @@ public class BookGrabberTest {
 
 	@Test
 	public void testGetBooksByTags() {
-		assertNotNull(bookGrabber.getBooksByTag(tags));
+		assertNotNull(bookGrabber.getBooksByTag(tagsA));
 	}
 
 	@Test
@@ -89,4 +63,22 @@ public class BookGrabberTest {
 		assertNotNull(bookGrabber.getTags());
 	}
 
+	// Helper methods	
+	private static void setUpDelegatorOutputs() {
+		delegatorOutput = new DelegatorOutput();
+	}
+
+	private static void setUpDelegatorMocks() {
+		bookDelegator = EasyMock.createNiceMock(BookPersistenceDelegator.class);
+		EasyMock.expect(bookDelegator.delegate()).andReturn(delegatorOutput).times(3);
+		EasyMock.replay(bookDelegator);
+		
+		tagDelegator = EasyMock.createNiceMock(TagPersistenceDelegator.class);
+		EasyMock.expect(tagDelegator.delegate()).andReturn(delegatorOutput);
+		EasyMock.replay(tagDelegator);
+	}
+	
+	private static void setUpBookGrabber() {
+		bookGrabber = new BookGrabber(bookDelegator, tagDelegator);
+	}
 }
