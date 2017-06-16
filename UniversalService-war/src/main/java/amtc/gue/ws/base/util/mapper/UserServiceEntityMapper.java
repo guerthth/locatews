@@ -64,8 +64,8 @@ public abstract class UserServiceEntityMapper {
 		User user = new User();
 		if (userEntity != null) {
 			user.setId(userEntity.getKey());
+			user.setUserName(userEntity.getUserName());
 			user.setPassword(userEntity.getPassword());
-			user.setEmail(userEntity.getEmail());
 			user.setRoles(mapRoleEntityListToRoles(userEntity.getRoles()));
 		}
 		return user;
@@ -131,12 +131,12 @@ public abstract class UserServiceEntityMapper {
 			sb.append("id: ");
 			String id = userEntity.getKey() != null ? userEntity.getKey() + ", " : "null, ";
 			sb.append(id);
+			sb.append("userName: ");
+			String userName = userEntity.getUserName() != null ? userEntity.getUserName() + ", " : "null, ";
+			sb.append(userName);
 			sb.append("password: ");
 			String password = userEntity.getPassword() != null ? userEntity.getPassword() + ", " : "null, ";
 			sb.append(password);
-			sb.append("email: ");
-			String email = userEntity.getEmail() != null ? userEntity.getEmail() + ", " : "null, ";
-			sb.append(email);
 			sb.append("userroles: ");
 			sb.append("[");
 			if (userEntity.getRoles() != null) {

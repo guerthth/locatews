@@ -30,7 +30,7 @@ public class BookJPADAOImpl extends JPADAOImpl<GAEBookEntity, GAEJPABookEntity, 
 
 	/** Select queries */
 	private final String BOOK_SPECIFIC_USER_QUERY = ENTITY_SELECTION_QUERY
-			+ " join e.users user where user.userId = :user";
+			+ " join e.users user where user.email = :user";
 
 	/**
 	 * Constructor initializing entitiymanagerfactory

@@ -1,53 +1,55 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	version="2.5"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-	<!-- REST Configuration using UiversalServiceServlet -->
+	<!-- REST Jersey Configuration -->
+	<!-- <display-name>REST Application</display-name> -->
+	<!-- <servlet> -->
+	<!-- <servlet-name>Jersey REST Service</servlet-name> -->
+	<!-- <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class> -->
+	<!-- Register JAX-RS Application, if needed -->
+	<!-- <init-param> -->
+	<!-- <param-name>javax.ws.rs.Application</param-name> -->
+	<!-- <param-value>amtc.gue.ws.service.RestApplication</param-value> -->
+	<!-- </init-param> -->
+	<!-- Register resources and providers under amtc.gue.ws.service -->
+	<!-- <init-param> -->
+	<!-- <param-name>jersey.config.server.provider.packages</param-name> -->
+	<!-- <param-value> -->
+	<!-- amtc.gue.ws -->
+	<!-- </param-value> -->
+	<!-- </init-param> -->
+	<!-- Enable Tracing support. -->
+	<!-- <init-param> -->
+	<!-- <param-name>jersey.config.server.tracing</param-name> -->
+	<!-- <param-value>ALL</param-value> -->
+	<!-- </init-param> -->
+	<!-- <init-param> -->
+	<!-- <param-name>jersey.config.server.provider.classnames</param-name> -->
+	<!-- <param-value> -->
+	<!-- org.glassfish.jersey.server.gae.GaeFeature; -->
+	<!-- </param-value> -->
+	<!-- </init-param> -->
+	<!-- OLD -->
+	<!-- <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class> -->
+	<!-- Register resources and providers under amtc.gue.ws package. -->
+	<!-- <init-param> -->
+	<!-- <param-name>com.sun.jersey.config.property.packages</param-name> -->
+	<!-- <param-value>amtc.gue.ws.service</param-value> -->
+	<!-- </init-param> -->
+	<!-- <init-param> -->
+	<!-- <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name> -->
+	<!-- <param-value>true</param-value> -->
+	<!-- </init-param> -->
+	<!-- NEW -->
+	<!-- <load-on-startup>1</load-on-startup> -->
+	<!-- </servlet> -->
 
-	<display-name>REST Application</display-name>
-	<servlet>
-		<servlet-name>Jersey REST Service</servlet-name>
-		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-		<!-- Register JAX-RS Application, if needed -->
-		<!-- <init-param> -->
-		<!-- <param-name>javax.ws.rs.Application</param-name> -->
-		<!-- <param-value>amtc.gue.ws.service.RestApplication</param-value> -->
-		<!-- </init-param> -->
-		<!-- Register resources and providers under amtc.gue.ws.service -->
-		<init-param>
-			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>
-			    amtc.gue.ws
-			</param-value>
-		</init-param>
-		<!-- Enable Tracing support. -->
-		<init-param>
-			<param-name>jersey.config.server.tracing</param-name>
-			<param-value>ALL</param-value>
-		</init-param>
-		<init-param>
-			<param-name>jersey.config.server.provider.classnames</param-name>
-			<param-value>
-            org.glassfish.jersey.server.gae.GaeFeature;
-         </param-value>
-		</init-param>
-		<!-- OLD -->
-		<!-- <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class> -->
-		<!-- Register resources and providers under amtc.gue.ws package. -->
-		<!-- <init-param> -->
-		<!-- <param-name>com.sun.jersey.config.property.packages</param-name> -->
-		<!-- <param-value>amtc.gue.ws.service</param-value> -->
-		<!-- </init-param> -->
-		<!-- <init-param> -->
-		<!-- <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name> -->
-		<!-- <param-value>true</param-value> -->
-		<!-- </init-param> -->
-		<!-- NEW -->
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>Jersey REST Service</servlet-name>
-		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
+	<!-- <servlet-mapping> -->
+	<!-- <servlet-name>Jersey REST Service</servlet-name> -->
+	<!-- <url-pattern>/*</url-pattern> -->
+	<!-- </servlet-mapping> -->
 
 	<filter>
 		<filter-name>ObjectifyFilter</filter-name>
@@ -57,6 +59,30 @@
 		<filter-name>ObjectifyFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
+	<servlet>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+		<init-param>
+			<param-name>services</param-name>
+			<param-value>amtc.gue.ws.base.UserService,amtc.gue.ws.books.BookService,amtc.gue.ws.books.TagService,amtc.gue.ws.tournament.PlayerService</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SystemServiceServlet</servlet-name>
+		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>all</web-resource-name>
+			<url-pattern>/*</url-pattern>
+		</web-resource-collection>
+		<user-data-constraint>
+			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
+		</user-data-constraint>
+	</security-constraint>
 
 	<!-- <filter> -->
 	<!-- <filter-name>CORS</filter-name> -->

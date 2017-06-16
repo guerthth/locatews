@@ -130,13 +130,13 @@ public class UserDAOImplUtils {
 		int initialLength = sb.length();
 		if (userEntity != null) {
 			if (userEntity.getKey() != null) {
-				sb.append(" and u.userId = :id");
+				sb.append(" and u.email = :email");
+			}
+			if (userEntity.getUserName() != null) {
+				sb.append(" and u.userName = :userName");
 			}
 			if (userEntity.getPassword() != null) {
 				sb.append(" and u.password = :password");
-			}
-			if (userEntity.getEmail() != null) {
-				sb.append(" and u.email = :email");
 			}
 		}
 		int newLength = sb.length();

@@ -25,11 +25,12 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private String userId;
-	@Index
-	private String password;
 	@Index
 	private String email;
+	@Index
+	private String userName;
+	@Index
+	private String password;
 	@Index
 	private List<Ref<GAEObjectifyRoleEntity>> roles = new ArrayList<>();
 	@Index
@@ -37,12 +38,22 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 
 	@Override
 	public String getKey() {
-		return userId;
+		return email;
 	}
 
 	@Override
-	public void setKey(String userId) {
-		this.userId = userId;
+	public void setKey(String email) {
+		this.email = email;
+	}
+	
+	@Override
+	public String getUserName() {
+		return userName;
+	}
+
+	@Override
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	@Override
@@ -53,16 +64,6 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	@Override
-	public String getEmail() {
-		return email;
-	}
-
-	@Override
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	@Override

@@ -15,30 +15,30 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "user", propOrder = {"id","password","roles","email" })
+@XmlType(name = "user", propOrder = {"id","userName","password","roles"})
 public class User extends Item {
+	@XmlElement(name = "userName", required = true, nillable = false)
+	private String userName;
 	@XmlElement(name = "password", required = true, nillable = false)
 	private String password;
-	@XmlElement(name = "email", required = true, nillable = false)
-	private String email;
 	@XmlElement(name = "roles")
 	private List<String> roles;
 
 	// Getters and Setters
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 	
 	public List<String> getRoles() {

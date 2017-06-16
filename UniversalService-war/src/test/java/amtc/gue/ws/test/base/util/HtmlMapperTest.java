@@ -20,7 +20,7 @@ import amtc.gue.ws.test.base.UserTest;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HtmlMapperTest extends UserTest {
 
-	private static final String HTMLFile = "/testPwMail.html";
+	private static final String HTMLFile = "/testUserDataMail.html";
 	private static final String NONEXISTINGFile = "test.csv";
 
 	@BeforeClass

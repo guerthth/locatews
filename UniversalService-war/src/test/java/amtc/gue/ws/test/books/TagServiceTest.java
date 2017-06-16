@@ -2,23 +2,21 @@ package amtc.gue.ws.test.books;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Application;
-
 import org.easymock.EasyMock;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.api.server.spi.response.UnauthorizedException;
+
 import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.books.TagService;
-import amtc.gue.ws.books.delegate.persist.TagPersistenceDelegator;
+import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
 import amtc.gue.ws.books.response.TagServiceResponse;
 
 /**
@@ -28,18 +26,15 @@ import amtc.gue.ws.books.response.TagServiceResponse;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TagServiceTest extends JerseyTest {
-
-	private static IDelegatorOutput delegatorOutput;
+public class TagServiceTest extends BookTest {
+	private static IDelegatorOutput tagDelegatorOutput;
+	private static IDelegatorOutput userDelegatorOutput;
 	private static AbstractPersistenceDelegator tagDelegator;
-
-	@Override
-	protected Application configure() {
-		return new ResourceConfig().register(new TagService(tagDelegator));
-	}
+	private static AbstractPersistenceDelegator userDelegator;
 
 	@BeforeClass
 	public static void initialSetup() {
+		setUpBasicBookEnvironment();
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
@@ -47,32 +42,36 @@ public class TagServiceTest extends JerseyTest {
 	@AfterClass
 	public static void checkMocks() {
 		EasyMock.verify(tagDelegator);
+		EasyMock.verify(userDelegator);
+	}
+	
+	@Test(expected = UnauthorizedException.class)
+	public void testGetTagsUsingUnauthorizedUser() throws UnauthorizedException {
+		new TagService().getTags(null);
 	}
 
 	@Test
-	public void testGetTagsUsingCorrectURL() {
-		final TagServiceResponse resp = target("/tags").request().get(
-				TagServiceResponse.class);
-		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus()
-				.getStatusMessage());
-		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus()
-				.getStatusCode());
-	}
-
-	@Test(expected = NotFoundException.class)
-	public void testGetTagsUsingIncorrectURL() {
-		target("/tags/wrong").request().get(TagServiceResponse.class);
+	public void testGetTags() throws UnauthorizedException {
+		TagServiceResponse resp = new TagService(userDelegator, tagDelegator).getTags(user);
+		assertEquals(tagDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(tagDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	// Helper Methods
 	private static void setUpDelegatorOutputs() {
-		delegatorOutput = new DelegatorOutput();
+		tagDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(serviceUser);
+		userDelegatorOutput.setOutputObject(invalidServiceUser);
 	}
 
 	private static void setUpDelegatorMocks() {
-		tagDelegator = EasyMock.createNiceMock(TagPersistenceDelegator.class);
-		EasyMock.expect(tagDelegator.delegate()).andReturn(delegatorOutput)
-				.times(1);
+		tagDelegator = EasyMock.createNiceMock(BookPersistenceDelegator.class);
+		EasyMock.expect(tagDelegator.delegate()).andReturn(tagDelegatorOutput).times(1);
 		EasyMock.replay(tagDelegator);
+
+		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(1);
+		EasyMock.replay(userDelegator);
 	}
 }

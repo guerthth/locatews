@@ -60,8 +60,8 @@ public class UserServiceEntityMapperTest extends UserTest {
 		user1.setId(USERNAME);
 		GAEUserEntity userEntity = JPAUserEntityMapper.mapUserToEntity(user1, DelegatorTypeEnum.DELETE);
 		assertEquals(user1.getId(), userEntity.getKey());
+		assertEquals("", userEntity.getUserName());
 		assertNotNull("", userEntity.getPassword());
-		assertEquals("", userEntity.getEmail());
 	}
 
 	@Test
@@ -82,8 +82,8 @@ public class UserServiceEntityMapperTest extends UserTest {
 		user1.setId(USERNAME);
 		GAEUserEntity userEntity = JPAUserEntityMapper.mapUserToEntity(user1, DelegatorTypeEnum.ADD);
 		assertNotNull(userEntity.getKey());
+		assertEquals("", userEntity.getUserName());
 		assertNotNull(userEntity.getPassword());
-		assertEquals("", userEntity.getEmail());
 	}
 
 	@Test
@@ -245,9 +245,9 @@ public class UserServiceEntityMapperTest extends UserTest {
 		// USER_ENTITY_JSON
 		sb.append("{");
 		sb.append("id: ").append(USERNAME);
+		sb.append(", userName: null");
 		sb.append(", password: ").append(PASSWORD);
-		sb.append(", email: null, ");
-		sb.append("userroles: [], ");
+		sb.append(", userroles: [], ");
 		sb.append("books: []");
 		sb.append("}");
 		USER_ENTITY_JSON = sb.toString();
@@ -257,10 +257,10 @@ public class UserServiceEntityMapperTest extends UserTest {
 
 		// COMPLEX_USER_ENTITY_JSON
 		sb.setLength(0);
-		sb.append("{id: null, password: null, email: null, userroles: [], books: []}");
+		sb.append("{id: null, userName: null, password: null, userroles: [], books: []}");
 		COMPLEX_USER_ENTITY_JSON = sb.toString();
 		sb.setLength(0);
-		sb.append("{id: null, password: null, email: null, userroles: [], books: []}");
+		sb.append("{id: null, userName: null, password: null, userroles: [], books: []}");
 		COMPLEX_USER_ENTITY_JSON_V2 = sb.toString();
 
 		// ROLE_ENTITY_JSON

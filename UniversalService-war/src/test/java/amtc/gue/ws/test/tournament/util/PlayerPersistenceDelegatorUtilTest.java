@@ -83,7 +83,7 @@ public class PlayerPersistenceDelegatorUtilTest extends TournamentTest {
 				.append(TournamentServiceEntityMapper
 						.mapPlayerEntityListToConsolidatedJSONString(JPAPlayerEntityEmptyList))
 				.append("'. ").append(JPAPlayerEntityEmptyList.size()).append(" players were successfully added.")
-				.append(System.getProperty("line.seperator")).append("'")
+				.append(System.getProperty("line.separator")).append("'")
 				.append(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_MSG)
 				.append(TournamentServiceEntityMapper.mapPlayerEntityListToConsolidatedJSONString(JPAPlayerEntityList))
 				.append("'. ").append(JPAPlayerEntityList.size()).append(" players were not added successfully.");

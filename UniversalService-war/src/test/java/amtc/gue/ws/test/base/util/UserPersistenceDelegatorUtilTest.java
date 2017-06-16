@@ -90,7 +90,7 @@ public class UserPersistenceDelegatorUtilTest extends UserTest {
 		sb.append(" '")
 				.append(UserServiceEntityMapper.mapUserEntityListToConsolidatedJSONString(JPAUserEntityEmptyList))
 				.append("'. ").append(JPAUserEntityEmptyList.size()).append(" users were successfully added.")
-				.append(System.getProperty("line.seperator")).append("'").append(ErrorConstants.ADD_USER_FAILURE_MSG)
+				.append(System.getProperty("line.seperator")).append(ErrorConstants.ADD_USER_FAILURE_MSG).append(" '")
 				.append(UserServiceEntityMapper.mapUserEntityListToConsolidatedJSONString(JPAUserEntityList))
 				.append("'. ").append(JPAUserEntityList.size()).append(" users were not added successfully.");
 		EXPECTED_NO_SUCCESSES_USER_PERSISTENCE_MESSAGE_RESULT = sb.toString();

@@ -26,8 +26,8 @@ import amtc.gue.ws.test.base.UserTest;
 public class UserDAOImplUtilTest extends UserTest {
 	private static final String BASIC_USER_SPECIFIC_QUERY = "select u from UserEntity u";
 	private static final String UPDATED_USER_QUERY_1 = "select u from UserEntity u"
-			+ " where u.userId = :id and u.password = :password";
-	private static final String UPDATED_USER_QUERY_2 = "select u from UserEntity u" + " where u.userId = :id";
+			+ " where u.email = :email and u.password = :password";
+	private static final String UPDATED_USER_QUERY_2 = "select u from UserEntity u" + " where u.email = :email";
 
 	@BeforeClass
 	public static void oneTimeInitialSetup()

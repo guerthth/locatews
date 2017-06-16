@@ -2,11 +2,31 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Your Password</title>
+<title>Your User Data!</title>
 </head>
 <body>
-	<h1>Welcome!</h1>
-	<p>You received this email to change your password. Enter the new password in the input field and send the request. Follow the link to proceed!</p>
+	<h1>Hi There!</h1>
+	<p>You received this email because you requested all information known for your user</p>
+	<table>
+		<tbody>
+			<tr>
+				<td>UserId:</td>
+				<td>{userId}</td>
+			</tr>
+			<tr>
+				<td>Username:</td>
+				<td>{userName}</td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td>{userPassword}</td>
+			</tr>
+			<tr>
+				<td>Roles:</td>
+				<td>{userRoles}</td>
+			</tr>
+		</tbody>
+	</table>
 	<a href="http://tguerth.lima-city.de/pwReset/{userId}">link text</a>
 </body>
 </html>

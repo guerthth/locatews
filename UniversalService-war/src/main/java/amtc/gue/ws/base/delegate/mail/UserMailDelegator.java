@@ -38,7 +38,6 @@ public class UserMailDelegator extends AbstractMailDelegator {
 
 	@Override
 	public void sendMailTo(String userName) {
-		// TODO Sending Html Mail With password changing functionality
 		log.info("MAIL Sending action triggered for User Password");
 		try {
 			GAEUserEntity foundUser = userDAOImpl.findEntityById(userName);
@@ -47,8 +46,8 @@ public class UserMailDelegator extends AbstractMailDelegator {
 				Session session = Session.getDefaultInstance(props);
 				Message msg = new MimeMessage(session);
 				msg.setFrom(new InternetAddress(EMAIL, "Admin"));
-				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(foundUser.getEmail(), "Mr. User"));
-				msg.setSubject("Your password for the UniversalService");
+				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(foundUser.getKey(), foundUser.getUserName()));
+				msg.setSubject("Your userdata found for the universalservice");
 				msg.setContent(HtmlMapper.parseHtml(foundUser, HTMLFile), "text/html");
 				Transport.send(msg);
 				delegatorOutput.setStatusCode(ErrorConstants.SEND_MAIL_SUCESS_CODE);

@@ -163,7 +163,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 	 */
 	@Test
 	public void testDelegateJPAAddUsingCorrectInputWithUsers() {
-		bookPersistenceDelegator.setCurrentUser(user);
+		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		bookPersistenceDelegator.initialize(addBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImpl);
 		bookPersistenceDelegator.setTagDAO(tagJPADAOImpl);
@@ -181,7 +181,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 	 */
 	@Test
 	public void testDelegateObjectifyAddUsingCorrectInputWithUsers() {
-		bookPersistenceDelegator.setCurrentUser(user);
+		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		bookPersistenceDelegator.initialize(addBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImplSpecificEntityFound);
 		bookPersistenceDelegator.setTagDAO(tagObjectifyDAOImpl);
@@ -507,7 +507,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 	public void testDelegateJPADeleteWithExistingUsers() {
 		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImpl);
-		bookPersistenceDelegator.setCurrentUser(user);
+		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
@@ -519,7 +519,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 	public void testDelegateObjectifyDeleteWithExistingUsers() {
 		bookPersistenceDelegator.initialize(deleteBookDelegatorInput);
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImpl);
-		bookPersistenceDelegator.setCurrentUser(user);
+		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
 		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}

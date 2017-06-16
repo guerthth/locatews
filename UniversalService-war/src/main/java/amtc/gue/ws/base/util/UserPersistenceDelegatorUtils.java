@@ -36,8 +36,8 @@ public class UserPersistenceDelegatorUtils {
 		sb.append("'. ").append(numberOfSuccessfullyAddedEntities).append(" users were successfully added.");
 		if (numberOfUnsuccessfullyAddedEntities > 0) {
 			sb.append(System.getProperty("line.seperator"));
-			sb.append("'");
 			sb.append(ErrorConstants.ADD_USER_FAILURE_MSG);
+			sb.append(" '");
 			sb.append(
 					UserServiceEntityMapper.mapUserEntityListToConsolidatedJSONString(unsuccessfullyAddedUserEntities));
 			sb.append("'. ").append(numberOfUnsuccessfullyAddedEntities).append(" users were not added successfully.");

@@ -2,27 +2,23 @@ package amtc.gue.ws.test.tournament;
 
 import static org.junit.Assert.*;
 
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
-
 import org.easymock.EasyMock;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
+
 import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.tournament.PlayerService;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
-import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.response.PlayerServiceResponse;
 
 /**
@@ -32,18 +28,21 @@ import amtc.gue.ws.tournament.response.PlayerServiceResponse;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PlayerServiceTest extends JerseyTest {
+public class PlayerServiceTest extends TournamentTest {
+	private static User user;
+	private static amtc.gue.ws.base.inout.User serviceUser;
+	private static amtc.gue.ws.base.inout.User invalidServiceUser;
 	private static IDelegatorOutput delegatorOutput;
+	private static IDelegatorOutput userDelegatorOutput;
+	private static IDelegatorOutput failureUserDelegatorOutput;
 	private static AbstractPersistenceDelegator playerDelegator;
-
-	@Override
-	protected Application configure() {
-		return new ResourceConfig()
-				.register(new PlayerService(playerDelegator));
-	}
+	private static AbstractPersistenceDelegator userDelegator;
+	private static AbstractPersistenceDelegator failureUserDelegator;
 
 	@BeforeClass
 	public static void initialSetup() {
+		setUpBasicTournamentEnvironment();
+		setUpServiceUsers();
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
@@ -51,55 +50,78 @@ public class PlayerServiceTest extends JerseyTest {
 	@AfterClass
 	public static void checkMocks() {
 		EasyMock.verify(playerDelegator);
+		EasyMock.verify(userDelegator);
 	}
 
-	@Test(expected = NotFoundException.class)
-	public void testServiceUsingIncorrectURL() {
-		target("incorrectUrl").request().get(PlayerServiceResponse.class);
-	}
-
-	@Test
-	public void testAddPlayers() {
-		Players playersToAdd = new Players();
-		final Response resp = target("/players").request().post(
-				Entity.json(playersToAdd));
-		assertNotNull(resp);
+	@Test(expected = UnauthorizedException.class)
+	public void testAddPlayersUsingUnauthorizedUser() throws UnauthorizedException {
+		new PlayerService().addPlayers(null, players);
 	}
 
 	@Test
-	public void testGetPlayers() {
-		final PlayerServiceResponse resp = target("/players").request().get(
-				PlayerServiceResponse.class);
-		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus()
-				.getStatusMessage());
-		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus()
-				.getStatusCode());
+	public void testAddPlayers() throws UnauthorizedException {
+		PlayerServiceResponse resp = new PlayerService(userDelegator, playerDelegator).addPlayers(user, players);
+		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
-	
-	@Test(expected = NotAllowedException.class)
-	public void testRemovePlayerUsingIncorrectCall() {
-		final PlayerServiceResponse resp = target("/players").request().delete(
-				PlayerServiceResponse.class);
-		assertNotNull(resp);
+
+	@Test(expected = UnauthorizedException.class)
+	public void testGetPlayersUsingUnauthorizedUser() throws UnauthorizedException {
+		new PlayerService().getPlayers(null);
 	}
 
 	@Test
-	public void testRemoveBookUsingCorrectCall() {
-		final PlayerServiceResponse resp = target("/players/1").request().delete(
-				PlayerServiceResponse.class);
-		assertNotNull(resp);
+	public void testGetPlayers() throws UnauthorizedException {
+		PlayerServiceResponse resp = new PlayerService(userDelegator, playerDelegator).getPlayers(user);
+		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test
+	public void testRemovePlayer() throws UnauthorizedException {
+		PlayerServiceResponse resp = new PlayerService(userDelegator, playerDelegator).removePlayer(user, null);
+		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test(expected = UnauthorizedException.class)
+	public void testRemovePlayerUsingUnauthorizedUser() throws UnauthorizedException {
+		PlayerServiceResponse resp = new PlayerService(userDelegator, playerDelegator).removePlayer(null,
+				user.getEmail());
+		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	// Helper Methods
+	private static void setUpServiceUsers() {
+		String userMail = "test@test.com";
+		String authDomain = "domain";
+		user = new User(userMail, authDomain);
+		serviceUser = new amtc.gue.ws.base.inout.User();
+		serviceUser.getRoles().add("tournament");
+		invalidServiceUser = new amtc.gue.ws.base.inout.User();
+		invalidServiceUser.getRoles().add("tournament");
+	}
+
 	private static void setUpDelegatorOutputs() {
 		delegatorOutput = new DelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(serviceUser);
+		failureUserDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(invalidServiceUser);
 	}
 
 	private static void setUpDelegatorMocks() {
-		playerDelegator = EasyMock
-				.createNiceMock(PlayerPersistenceDelegator.class);
-		EasyMock.expect(playerDelegator.delegate()).andReturn(delegatorOutput)
-				.times(3);
+		playerDelegator = EasyMock.createNiceMock(PlayerPersistenceDelegator.class);
+		EasyMock.expect(playerDelegator.delegate()).andReturn(delegatorOutput).times(3);
 		EasyMock.replay(playerDelegator);
+
+		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(3);
+		EasyMock.replay(userDelegator);
+		
+		failureUserDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
+		EasyMock.expect(failureUserDelegator.delegate()).andReturn(failureUserDelegatorOutput).times(3);
+		EasyMock.replay(failureUserDelegator);
 	}
 }

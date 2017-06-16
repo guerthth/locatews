@@ -25,12 +25,12 @@ public class UserServiceJPAEntityMapper extends UserServiceEntityMapper {
 		GAEUserEntity userEntity = new GAEJPAUserEntity();
 		if (user.getId() != null)
 			userEntity.setKey(user.getId());
-		userEntity.setPassword(EncryptionMapper.encryptStringMD5(user.getPassword()));
-		if (user.getEmail() != null) {
-			userEntity.setEmail(user.getEmail());
+		if (user.getUserName() != null) {
+			userEntity.setUserName(user.getUserName());
 		} else {
-			userEntity.setEmail("");
+			userEntity.setUserName("");
 		}
+		userEntity.setPassword(EncryptionMapper.encryptStringMD5(user.getPassword()));
 		if (type != DelegatorTypeEnum.ADD) {
 			userEntity.setRoles(mapRolesToRoleEntityList(user.getRoles()), true);
 		} else {

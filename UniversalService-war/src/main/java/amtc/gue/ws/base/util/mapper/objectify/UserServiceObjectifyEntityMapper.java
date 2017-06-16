@@ -25,12 +25,10 @@ public class UserServiceObjectifyEntityMapper extends UserServiceEntityMapper {
 		GAEUserEntity userEntity = new GAEObjectifyUserEntity();
 		if (user.getId() != null)
 			userEntity.setKey(user.getId());
-		userEntity.setPassword(EncryptionMapper.encryptStringMD5(user.getPassword()));
-		if (user.getEmail() != null) {
-			userEntity.setEmail(user.getEmail());
-		} else {
-			userEntity.setEmail("");
+		if (user.getUserName() != null) {
+			userEntity.setUserName(user.getUserName());
 		}
+		userEntity.setPassword(EncryptionMapper.encryptStringMD5(user.getPassword()));
 		if (type != DelegatorTypeEnum.ADD) {
 			userEntity.setRoles(mapRolesToRoleEntityList(user.getRoles()), true);
 		} else {

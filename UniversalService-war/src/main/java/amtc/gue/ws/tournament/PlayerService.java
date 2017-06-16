@@ -1,25 +1,19 @@
 package amtc.gue.ws.tournament;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
+
+import amtc.gue.ws.Constants;
+import amtc.gue.ws.base.Service;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
@@ -30,66 +24,66 @@ import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.response.PlayerServiceResponse;
 import amtc.gue.ws.tournament.util.mapper.TournamentServiceEntityMapper;
 
-@Path("/players")
-@Api(value = "players")
-@Produces(MediaType.APPLICATION_JSON)
-public class PlayerService {
-
-	protected static final Logger log = Logger.getLogger(PlayerService.class
-			.getName());
+@Api(name = "tournament", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
+		Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Tournament backend application")
+public class PlayerService extends Service {
+	private static final Logger log = Logger.getLogger(PlayerService.class.getName());
+	private static final String SCOPE = "tournament";
 	private AbstractPersistenceDelegator playerDelegator;
 
 	public PlayerService() {
-		this.playerDelegator = (PlayerPersistenceDelegator) SpringContext.context
-				.getBean("playerPersistenceDelegator");
+		super();
+		playerDelegator = (PlayerPersistenceDelegator) SpringContext.context.getBean("playerPersistenceDelegator");
 	}
 
-	public PlayerService(AbstractPersistenceDelegator delegator) {
-		this.playerDelegator = delegator;
+	public PlayerService(AbstractPersistenceDelegator userDelegator, AbstractPersistenceDelegator playerDelegator) {
+		super(userDelegator);
+		this.playerDelegator = playerDelegator;
 	}
 
-	@RolesAllowed("TOURNAMENT")
-	@POST
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	public PlayerServiceResponse addPlayers(Players players) {
-		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD,
-				players);
+	@ApiMethod(name = "addPlayers", path = "player", httpMethod = HttpMethod.POST)
+	public PlayerServiceResponse addPlayers(final User user, Players players) throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, players);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
-		return TournamentServiceEntityMapper
-				.mapBdOutputToPlayerServiceResponse(bdOutput);
+		PlayerServiceResponse response = TournamentServiceEntityMapper.mapBdOutputToPlayerServiceResponse(bdOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
 	}
 
-	@RolesAllowed("TOURNAMENT")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	@ApiOperation(value = "Returns all players", notes = "Returns all players", response = PlayerServiceResponse.class)
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Successful retrieval of players", response = PlayerServiceResponse.class),
-			@ApiResponse(code = 500, message = "Internal server error") })
-	public PlayerServiceResponse getPlayers() {
-		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ,
-				null);
+	@ApiMethod(name = "getPlayers", path = "player", httpMethod = HttpMethod.GET)
+	public PlayerServiceResponse getPlayers(final User user) throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, null);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
-		return TournamentServiceEntityMapper
-				.mapBdOutputToPlayerServiceResponse(bdOutput);
+		PlayerServiceResponse response = TournamentServiceEntityMapper.mapBdOutputToPlayerServiceResponse(bdOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
 	}
 
-	@RolesAllowed("TOURNAMENT")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/{id}")
-	public PlayerServiceResponse removePlayer(@PathParam("id") String id) {
+	@ApiMethod(name = "removePlayer", path = "player/{id}", httpMethod = HttpMethod.DELETE)
+	public PlayerServiceResponse removePlayer(final User user, @Named("id") final String id)
+			throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+
 		Players playersToRemove = new Players();
 		Player playerToRemove = new Player();
 		playerToRemove.setId(id);
 		List<Player> playerListToRemove = new ArrayList<>();
 		playerListToRemove.add(playerToRemove);
 		playersToRemove.setPlayers(playerListToRemove);
-		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
-				playersToRemove);
+		playerDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE, playersToRemove);
 		IDelegatorOutput bdOutput = playerDelegator.delegate();
-		return TournamentServiceEntityMapper
-				.mapBdOutputToPlayerServiceResponse(bdOutput);
+		PlayerServiceResponse response = TournamentServiceEntityMapper.mapBdOutputToPlayerServiceResponse(bdOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
 	}
 }

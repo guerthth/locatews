@@ -1,6 +1,5 @@
 package amtc.gue.ws.base.delegate.output;
 
-
 /**
  * Represents an Outputobject created by PersistenceDelegators
  * 
@@ -8,11 +7,11 @@ package amtc.gue.ws.base.delegate.output;
  *
  */
 public class DelegatorOutput implements IDelegatorOutput {
-
 	private int statusCode;
 	private String statusMessage;
+	private String statusReason;
 	private Object outputObject;
-	
+
 	@Override
 	public void setStatusCode(int statusCode) {
 		this.statusCode = statusCode;
@@ -20,8 +19,7 @@ public class DelegatorOutput implements IDelegatorOutput {
 
 	@Override
 	public int getStatusCode() {
-	
-		return this.statusCode;
+		return statusCode;
 	}
 
 	@Override
@@ -32,18 +30,27 @@ public class DelegatorOutput implements IDelegatorOutput {
 
 	@Override
 	public String getStatusMessage() {
-		return this.statusMessage;
+		return statusMessage;
 	}
 
 	@Override
 	public void setOutputObject(Object outputObject) {
 		this.outputObject = outputObject;
-		
+
 	}
 
 	@Override
 	public Object getOutputObject() {
-		return this.outputObject;
+		return outputObject;
 	}
-	
+
+	@Override
+	public void setStatusReason(String statusReason) {
+		this.statusReason = statusReason;
+	}
+
+	@Override
+	public String getStatusReason() {
+		return statusReason;
+	}
 }

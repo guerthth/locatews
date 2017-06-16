@@ -236,7 +236,6 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 	@Override
 	@Test
 	public void testUpdateSimpleEntity() throws EntityRetrievalException, EntityPersistenceException {
-		// TODO this makes no sense. entity removed without update. Check
 		bookObjectifyDAO.persistEntity(objectifyBookEntity1);
 		objectifyTagEntity1.addToBooksAndTags(objectifyBookEntity1);
 		tagObjectifyDAO.persistEntity(objectifyTagEntity1);
@@ -244,6 +243,8 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		assertEquals(1, tagObjectifyDAO.findAllEntities().get(0).getBooks().size());
 		objectifyTagEntity1.removeBook(objectifyBookEntity1);
 		tagObjectifyDAO.updateEntity(objectifyTagEntity1);
+		assertEquals(1, tagObjectifyDAO.findAllEntities().size());
+		assertEquals(1, bookObjectifyDAO.findAllEntities().size());
 		assertEquals(0, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey()).getBooks().size());
 	}
 

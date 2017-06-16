@@ -72,7 +72,19 @@ public class HtmlMapper {
 			File inputFile = new File(htmlFileURI);
 			Document doc = Jsoup.parse(inputFile, null);
 			Elements elements = doc.getElementsByTag("body");
-			parsedHtml = elements.html().replace("{userId}", user.getKey());
+			parsedHtml = elements.html();
+			if (parsedHtml.contains("{userId}") && user.getKey() != null) {
+				parsedHtml = parsedHtml.replace("{userId}", user.getKey());
+			}
+			if (parsedHtml.contains("{userName}") && user.getUserName() != null) {
+				parsedHtml = parsedHtml.replace("{userName}", user.getUserName());
+			}
+			if (parsedHtml.contains("{userPassword}") && user.getPassword() != null) {
+				parsedHtml = parsedHtml.replace("{userPassword}", user.getPassword());
+			}
+			if (parsedHtml.contains("{userRoles}") && user.getRoles() != null) {
+				parsedHtml = parsedHtml.replace("{userRoles}", "" + user.getRoles());
+			}
 		} catch (Exception e) {
 			throw new HtmlReaderException(htmlFile, e);
 		}

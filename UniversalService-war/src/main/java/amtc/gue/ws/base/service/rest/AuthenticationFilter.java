@@ -18,7 +18,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.internal.util.Base64;
 
@@ -44,7 +43,7 @@ import amtc.gue.ws.tournament.persistence.model.player.objectify.GAEObjectifyPla
  * @author Thomas
  *
  */
-@Provider
+//@Provider
 public class AuthenticationFilter implements ContainerRequestFilter {
 	static {
 		ObjectifyService.register(GAEObjectifyUserEntity.class);
@@ -145,22 +144,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	 */
 	private void resetCurrentUser() {
 		currentUser.setId(null);
+		currentUser.setUserName(null);
 		currentUser.setPassword(null);
-		currentUser.setEmail(null);
 		currentUser.setRoles(null);
 	}
 
 	/**
 	 * Method setting the data of the currentUser with valued from a User that
-	 * was retriebed from the datastore
+	 * was retrieved from the datastore
 	 * 
 	 * @param retrievedUser
 	 *            a User retrieved from the datastore
 	 */
 	private void setCurrentUser(User retrievedUser) {
 		currentUser.setId(retrievedUser.getId());
+		currentUser.setUserName(retrievedUser.getUserName());
 		currentUser.setPassword(retrievedUser.getPassword());
-		currentUser.setEmail(retrievedUser.getEmail());
 		currentUser.setRoles(retrievedUser.getRoles());
 	}
 

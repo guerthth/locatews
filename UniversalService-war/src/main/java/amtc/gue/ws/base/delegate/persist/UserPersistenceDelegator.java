@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.internet.InternetAddress;
+
 import amtc.gue.ws.base.delegate.input.IDelegatorInput;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
@@ -50,6 +52,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 			List<GAEUserEntity> successfullyAddedUserEntities = new ArrayList<>();
 			List<GAEUserEntity> unsuccessfullyAddedUserEntities = new ArrayList<>();
 			GAEUserEntity persistedUserEntity;
+			StringBuilder sb = new StringBuilder();
 
 			// persist all UserEntities to the DB
 			for (User user : users.getUsers()) {
@@ -57,6 +60,10 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 				GAEUserEntity userEntity = userEntityMapper.mapUserToEntity(user, DelegatorTypeEnum.ADD);
 				String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntity);
 				try {
+					// check if userId is an email format
+					if (user.getId() != null) {
+						new InternetAddress(user.getId()).validate();
+					}
 					handleRolePersistenceForUserEntity(userEntity, roleEntityList);
 					persistedUserEntity = userDAOImpl.persistEntity(userEntity);
 					userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(persistedUserEntity);
@@ -65,25 +72,29 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 				} catch (Exception e) {
 					userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntity);
 					unsuccessfullyAddedUserEntities.add(userEntity);
+					sb.append(e.getMessage());
 					log.log(Level.SEVERE, "Error while trying to persist: " + userEntityJSON, e);
 				}
 			}
+
+			String statusReason = sb.toString();
 
 			// set delegatorOutput
 			if (!successfullyAddedUserEntities.isEmpty()) {
 				delegatorOutput.setStatusMessage(UserPersistenceDelegatorUtils.buildPersistUserSuccessStatusMessage(
 						successfullyAddedUserEntities, unsuccessfullyAddedUserEntities));
+				delegatorOutput.setStatusReason(statusReason);
 				delegatorOutput
 						.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(successfullyAddedUserEntities));
 			} else {
 				delegatorOutput.setStatusCode(ErrorConstants.ADD_USER_FAILURE_CODE);
 				delegatorOutput.setStatusMessage(ErrorConstants.ADD_USER_FAILURE_MSG);
+				delegatorOutput.setStatusReason(statusReason);
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
 			setUnrecognizedDelegatorOutput();
 		}
-
 	}
 
 	@Override
@@ -227,8 +238,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	 */
 	private void handleRolePersistenceForUserEntity(GAEUserEntity userEntity, Set<GAERoleEntity> roleEntityList)
 			throws EntityRetrievalException, EntityPersistenceException {
-		Set<GAERoleEntity> roleEntities = Collections
-				.synchronizedSet(new HashSet<GAERoleEntity>(roleEntityList));
+		Set<GAERoleEntity> roleEntities = Collections.synchronizedSet(new HashSet<GAERoleEntity>(roleEntityList));
 		String roleEntityJSON;
 		GAERoleEntity persistedRoleEntity;
 		userEntity.getRoles().clear();

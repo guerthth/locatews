@@ -21,6 +21,21 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Getter for the userName of the UserEntity
+	 * 
+	 * @return userName of the UserEntity
+	 */
+	public abstract String getUserName();
+
+	/**
+	 * Setter for the userName of the UserEntity
+	 * 
+	 * @param userName
+	 *            of the UserEntity
+	 */
+	public abstract void setUserName(String userName);
+	
+	/**
 	 * Getter for the password of the UserEntity
 	 * 
 	 * @return password of the UserEntity
@@ -34,21 +49,6 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	 *            of the UserEntity
 	 */
 	public abstract void setPassword(String password);
-
-	/**
-	 * Getter for the email of the UserEntity
-	 * 
-	 * @return email of the UserEntity
-	 */
-	public abstract String getEmail();
-
-	/**
-	 * Setter for the email of the UserEntity
-	 * 
-	 * @param email
-	 *            of the UserEntity
-	 */
-	public abstract void setEmail(String email);
 
 	/**
 	 * Getter for the RoleEntities of the UserEntity

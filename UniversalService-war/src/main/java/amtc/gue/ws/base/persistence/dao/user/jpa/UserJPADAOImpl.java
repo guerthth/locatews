@@ -58,12 +58,12 @@ public class UserJPADAOImpl extends JPADAOImpl<GAEUserEntity, GAEJPAUserEntity, 
 					.buildSpecificUserQuery(BASIC_USER_SPECIFIC_QUERY,
 							userEntity));
 			if (userEntity.getKey() != null)
-				q.setParameter("id", userEntity.getKey());
-			if (userEntity.getPassword() != null)
-				q.setParameter("password", userEntity.getPassword());
-			if (userEntity.getEmail() != null) {
-				q.setParameter("email", userEntity.getEmail());
+				q.setParameter("email", userEntity.getKey());
+			if (userEntity.getUserName() != null) {
+				q.setParameter("userName", userEntity.getUserName());
 			}
+			if (userEntity.getPassword() != null)
+				q.setParameter("password", userEntity.getPassword());	
 			foundUsers = q.getResultList();
 		} catch (Exception e) {
 			throw new EntityRetrievalException(
@@ -84,8 +84,8 @@ public class UserJPADAOImpl extends JPADAOImpl<GAEUserEntity, GAEJPAUserEntity, 
 			entityManager.getTransaction().begin();
 			updatedUserEntity = entityManager.find(GAEJPAUserEntity.class,
 					userEntity.getKey());
+			updatedUserEntity.setUserName(userEntity.getUserName());
 			updatedUserEntity.setPassword(userEntity.getPassword());
-			updatedUserEntity.setEmail(userEntity.getEmail());
 			updatedUserEntity.setRoles(userEntity.getRoles(), true);
 			updatedUserEntity.setBooks(userEntity.getBooks(), true);
 			entityManager.getTransaction().commit();

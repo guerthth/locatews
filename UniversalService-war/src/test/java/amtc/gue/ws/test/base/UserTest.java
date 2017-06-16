@@ -91,11 +91,12 @@ public abstract class UserTest extends BaseTest {
 	protected static List<GAERoleEntity> JPARoleEntityEmptyList;
 	protected static List<GAERoleEntity> JPARoleEntityNullValueList;
 
+	protected static final String EMAIL = "test@test.com";
+	protected static final String EMAIL_B = "testB@test.com";
 	protected static final String USERNAME = "userName";
 	protected static final String USERNAME_B = "userNameB";
 	protected static final String PASSWORD = "userPasswordA";
 	protected static final String PASSWORD_B = "userPasswordB";
-	protected static final String EMAIL = "test@test.com";
 	protected static final String ROLE = "testRole";
 	protected static final String ROLE_B = "otherTestRole";
 	protected static final String ROLE_C = "testRoleC";
@@ -189,10 +190,10 @@ public abstract class UserTest extends BaseTest {
 	private static void setupUserEntities() {
 		// Objectify Userentities
 		objectifyUserEntity1 = new GAEObjectifyUserEntity();
-		objectifyUserEntity1.setKey(USERNAME);
+		objectifyUserEntity1.setKey(EMAIL);
 		objectifyUserEntity2 = new GAEObjectifyUserEntity();
-		objectifyUserEntity2.setKey(USERNAME_B);
-		objectifyUserEntity2.setEmail(EMAIL);
+		objectifyUserEntity2.setKey(EMAIL_B);
+		objectifyUserEntity2.setUserName(USERNAME);
 		objectifyUserEntity3 = new GAEObjectifyUserEntity();
 
 		objectifyUserEntityList = new ArrayList<>();
@@ -260,7 +261,7 @@ public abstract class UserTest extends BaseTest {
 		userList.add(user2);
 
 		user3 = new User();
-		user3.setId(USERNAME);
+		user3.setId(EMAIL);
 		userListWithId.add(user3);
 
 		users = new Users();

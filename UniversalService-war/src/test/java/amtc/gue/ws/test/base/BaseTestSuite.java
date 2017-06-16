@@ -1,9 +1,9 @@
 package amtc.gue.ws.test.base;
 
 import org.junit.runner.RunWith;
+
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
 import amtc.gue.ws.test.base.delegate.mail.UserMailDelegatorTest;
 import amtc.gue.ws.test.base.delegate.persist.UserPersistenceDelegatorTest;
 import amtc.gue.ws.test.base.persistence.dao.jpa.RoleDAOJPATest;

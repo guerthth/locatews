@@ -254,10 +254,10 @@ public class UserDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 	@Test
 	public void testUpdateSimpleEntity() throws EntityRetrievalException, EntityPersistenceException {
 		userObjectifyDAO.persistEntity(objectifyUserEntity1);
-		assertNull(userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getEmail());
-		objectifyUserEntity1.setEmail(EMAIL);
+		assertNull(userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getUserName());
+		objectifyUserEntity1.setUserName(USERNAME);
 		userObjectifyDAO.updateEntity(objectifyUserEntity1);
-		assertEquals(EMAIL, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getEmail());
+		assertEquals(USERNAME, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getUserName());
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class UserDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 	@Test
 	public void testFindSpecificEntity() throws EntityRetrievalException, EntityPersistenceException {
 		GAEObjectifyUserEntity searchUserEntity = new GAEObjectifyUserEntity();
-		searchUserEntity.setEmail(EMAIL);
+		searchUserEntity.setUserName(USERNAME);
 		userObjectifyDAO.persistEntity(objectifyUserEntity1);
 		userObjectifyDAO.persistEntity(objectifyUserEntity2);
 		assertEquals(2, userObjectifyDAO.findAllEntities().size());

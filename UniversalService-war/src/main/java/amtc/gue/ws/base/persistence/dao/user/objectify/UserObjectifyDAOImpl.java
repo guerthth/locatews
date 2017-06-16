@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cmd.Query;
 
@@ -20,6 +21,8 @@ import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
+import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
+import amtc.gue.ws.tournament.persistence.model.player.objectify.GAEObjectifyPlayerEntity;
 
 /**
  * Implementation for the Objectify UserDAO
@@ -29,7 +32,14 @@ import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity
  */
 public class UserObjectifyDAOImpl extends ObjectifyDAOImpl<GAEUserEntity, GAEObjectifyUserEntity, String>
 		implements UserDAO<GAEUserEntity, GAEObjectifyUserEntity, String> {
-
+	static {
+		ObjectifyService.register(GAEObjectifyUserEntity.class);
+		ObjectifyService.register(GAEObjectifyRoleEntity.class);
+		ObjectifyService.register(GAEObjectifyBookEntity.class);
+		ObjectifyService.register(GAEObjectifyTagEntity.class);
+		ObjectifyService.register(GAEObjectifyPlayerEntity.class);
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<GAEUserEntity> findSpecificEntity(GAEUserEntity entity) throws EntityRetrievalException {
@@ -45,11 +55,11 @@ public class UserObjectifyDAOImpl extends ObjectifyDAOImpl<GAEUserEntity, GAEObj
 		} else {
 			// if not, search for similar attributes
 			Query<GAEObjectifyUserEntity> query = ofy().load().type(GAEObjectifyUserEntity.class);
+			if (specificEntity.getUserName() != null) {
+				query = query.filter("userName", specificEntity.getUserName());
+			}
 			if (specificEntity.getPassword() != null) {
 				query = query.filter("password", specificEntity.getPassword());
-			}
-			if (specificEntity.getEmail() != null) {
-				query = query.filter("email", specificEntity.getEmail());
 			}
 			if (specificEntity.getRoles() != null) {
 				for (GAERoleEntity role : specificEntity.getRoles()) {
@@ -80,7 +90,7 @@ public class UserObjectifyDAOImpl extends ObjectifyDAOImpl<GAEUserEntity, GAEObj
 			specificEntity = (GAEObjectifyUserEntity) entity;
 			ofy().save().entity(specificEntity).now();
 		} catch (Exception e) {
-			throw new EntityPersistenceException("Updating UserEntity for userName " + entity.getKey() + " failed", e);
+			throw new EntityPersistenceException("Updating UserEntity for email " + entity.getKey() + " failed", e);
 		}
 		return specificEntity;
 	}

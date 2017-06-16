@@ -172,6 +172,15 @@
 					persistence unit test which is JPATest.java.
 				</p>
 			</subsection>
+			<subsection
+				name="Using google endpoints api explorer to test application"
+				id="googleEndpointsHowTo">
+				<p>
+					Implementing a webservice using Google Endpoints enables one to use specific functionality for testing. The entry point to do so is {urlOfDeployedGAEApp}/_ah/api/explorer. 
+					This functionality can bed used locally and in production. Besides that {urlOfDeployedGAEApp}/_ah/admin can be used to access a user interface where one can check the current 
+					entries in the datastore. It also possible to check indexes that are existing.
+				</p>
+			</subsection>
 		</section>
 	</body>
 </document>

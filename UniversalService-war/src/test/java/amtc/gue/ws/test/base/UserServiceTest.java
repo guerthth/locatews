@@ -1,22 +1,16 @@
 package amtc.gue.ws.test.base;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
 
 import org.easymock.EasyMock;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.base.UserService;
 import amtc.gue.ws.base.delegate.mail.AbstractMailDelegator;
@@ -25,7 +19,6 @@ import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
-import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.response.UserServiceResponse;
 
 /**
@@ -35,19 +28,20 @@ import amtc.gue.ws.base.response.UserServiceResponse;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserServiceTest extends JerseyTest {
+public class UserServiceTest extends UserTest {
+	private static User user;
+	private static amtc.gue.ws.base.inout.User serviceUser;
+	private static amtc.gue.ws.base.inout.User invalidServiceUser;
 	private static IDelegatorOutput userDelegatorOutput;
+	private static IDelegatorOutput failureUserDelegatorOutput;
 	private static IDelegatorOutput mailDelegatorOutput;
 	private static AbstractPersistenceDelegator userDelegator;
+	private static AbstractPersistenceDelegator failureUserDelegator;
 	private static AbstractMailDelegator mailDelegator;
-
-	@Override
-	protected Application configure() {
-		return new ResourceConfig().register(new UserService(userDelegator, mailDelegator));
-	}
 
 	@BeforeClass
 	public static void oneTimeInitialSetup() {
+		setupServiceUsers();
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
@@ -58,58 +52,81 @@ public class UserServiceTest extends JerseyTest {
 		EasyMock.verify(mailDelegator);
 	}
 
-	@Test(expected = NotFoundException.class)
-	public void testServiceUsingIncorrectURL() {
-		target("incorrectUrl").request().get(UserServiceResponse.class);
-	}
-
 	@Test
-	public void testAddUsers() {
-		Users usersToAdd = new Users();
-		final Response resp = target("/users").request().post(Entity.json(usersToAdd));
-		assertNotNull(resp);
-	}
-
-	@Test
-	public void testGetUsers() {
-		final UserServiceResponse resp = target("/users").request().get(UserServiceResponse.class);
-		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	public void testAddUsers() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).addUsers(user, users);
 		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
-	@Test(expected = NotAllowedException.class)
-	public void testRemoveUserUsingIncorrectCall() {
-		target("/users").request().delete(UserServiceResponse.class);
-	}
-
-	@Test
-	public void testRemoveBookUsingCorrectCall() {
-		final UserServiceResponse resp = target("/users/1").request().delete(UserServiceResponse.class);
-		assertNotNull(resp);
+	@Test(expected = UnauthorizedException.class)
+	public void testGetUsersUsingUnauthorizedUser() throws UnauthorizedException {
+		new UserService().getUsers(null);
 	}
 
 	@Test
-	public void testSendUserPasswordMail() {
-		final Response resp = target("/users/1/password").request().put(Entity.json("test"));
-		assertNotNull(resp);
+	public void testGetUsers() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).getUsers(user);
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	@Test
-	public void testResetPassword() {
-		final UserServiceResponse resp = target("/users/1/password").request().get(UserServiceResponse.class);
-		assertNotNull(resp);
+	public void testRemoveUser() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).removeUser(user, user.getUserId());
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test(expected = UnauthorizedException.class)
+	public void testRemoveUserUsingUnauthorizedUser() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).removeUser(null, user.getEmail());
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test
+	public void testSendUserMail() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).sendUserMail(user, user.getUserId());
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test(expected = UnauthorizedException.class)
+	public void testSendUserMailUsingUnauthorizedUser() throws UnauthorizedException {
+		UserServiceResponse resp = new UserService(userDelegator, mailDelegator).sendUserMail(null, user.getUserId());
+		assertEquals(userDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(userDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	// Helper methods
+	private static void setupServiceUsers() {
+		String userMail = "test@test.com";
+		String authDomain = "domain";
+		user = new User(userMail, authDomain, userMail);
+		serviceUser = new amtc.gue.ws.base.inout.User();
+		serviceUser.getRoles().add("users");
+		invalidServiceUser = new amtc.gue.ws.base.inout.User();
+		invalidServiceUser.getRoles().add("users");
+	}
+
 	private static void setUpDelegatorOutputs() {
-		userDelegatorOutput = new DelegatorOutput();
 		mailDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(serviceUser);
+		failureUserDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(invalidServiceUser);
 	}
 
 	private static void setUpDelegatorMocks() {
 		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
-		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(3);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(6);
 		EasyMock.replay(userDelegator);
+
+		failureUserDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
+		EasyMock.expect(failureUserDelegator.delegate()).andReturn(failureUserDelegatorOutput).times(3);
+		EasyMock.replay(failureUserDelegator);
+
 		mailDelegator = EasyMock.createNiceMock(UserMailDelegator.class);
 		EasyMock.expect(mailDelegator.delegate()).andReturn(mailDelegatorOutput);
 		EasyMock.replay(mailDelegator);

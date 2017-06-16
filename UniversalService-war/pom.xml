@@ -26,6 +26,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-endpoints</artifactId>
+			<version>${appengine.target.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
@@ -207,25 +212,61 @@
 			<version>${jersey.version}</version>
 		</dependency>
 
-		<!-- Jersey (JAX-RS) -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.jersey</groupId> -->
-		<!-- <artifactId>jersey-server</artifactId> -->
-		<!-- <version>1.8</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.jersey</groupId> -->
-		<!-- <artifactId>jersey-json</artifactId> -->
-		<!-- <version>1.8</version> -->
-		<!-- </dependency> -->
-		<!-- https://mvnrepository.com/artifact/com.owlike/genson -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.owlike</groupId> -->
-		<!-- <artifactId>genson</artifactId> -->
-		<!-- <version>1.4</version> -->
-		<!-- </dependency> -->
+		<!-- Endpoints -->
+		<dependency>
+			<groupId>com.google.endpoints</groupId>
+			<artifactId>endpoints-framework</artifactId>
+			<version>${endpoints.framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.endpoints</groupId>
+			<artifactId>endpoints-management-control-appengine-all</artifactId>
+			<version>${endpoints.management.version}</version>
+		</dependency>
 
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>GetSwaggerDoc</id>
+			<activation>
+				<property>
+					<name>GetSwaggerDoc</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.4.0</version>
+						<configuration>
+							<includePluginDependencies>true</includePluginDependencies>
+							<mainClass>com.google.api.server.spi.tools.EndpointsTool</mainClass>
+							<arguments>
+								<argument>get-swagger-doc</argument>
+								<argument>--hostname=echo-http://${endpoints.project.id}.appspot.com/_ah/api/</argument>
+								<argument>--war=target/UniversalService-war-1.0-SNAPSHOT</argument>
+								<argument>amtc.gue.ws.tournament.PlayerService</argument>
+							</arguments>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>com.google.endpoints</groupId>
+								<artifactId>endpoints-framework-tools</artifactId>
+								<version>${endpoints.framework.version}</version>
+							</dependency>
+							<dependency>
+								<groupId>com.google.appengine</groupId>
+								<artifactId>appengine-api-1.0-sdk</artifactId>
+								<version>${appengine.target.version}</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<outputDirectory>target/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
@@ -274,6 +315,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
+				<version>3.6</version>
 				<configuration>
 					<locales>en,de</locales>
 				</configuration>
@@ -283,7 +325,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.5.201505241946</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -292,51 +334,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!-- Swagger -->
-			<plugin>
-				<groupId>com.github.kongchen</groupId>
-				<artifactId>swagger-maven-plugin</artifactId>
-				<version>3.1.2</version>
-				<configuration>
-					<apiSources>
-						<apiSource>
-							<springmvc>false</springmvc>
-							<locations>amtc.gue.ws</locations>
-							<schemes>http,https</schemes>
-							<host>localhost:8080</host>
-							<basePath>/</basePath>
-							<info>
-								<title>Swagger spec for UniversalService REST API</title>
-								<version>v1</version>
-								<description>This is a sample spec for our REST API</description>
-								<termsOfService>
-
-								</termsOfService>
-								<contact>
-									<email></email>
-									<name></name>
-									<url></url>
-								</contact>
-								<license>
-									<url>http://choosealicense.com/licenses/gpl-3.0/</url>
-									<name>GNU GENERAL PUBLIC LICENSE</name>
-								</license>
-							</info>
-							<swaggerDirectory>src/main/webapp/</swaggerDirectory>
-						</apiSource>
-					</apiSources>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
 
 			<!-- <plugin> -->
 			<!-- <groupId>org.jacoco</groupId> -->
@@ -401,6 +398,7 @@
 	</build>
 
 	<reporting>
+		<excludeDefaults>true</excludeDefaults>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -433,19 +431,39 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.5.201505241946</version>
+				<version>${jacoco.version}</version>
 			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>org.codehaus.mojo</groupId> -->
-			<!-- <artifactId>cobertura-maven-plugin</artifactId> -->
-			<!-- <version>${cobertura.version}</version> -->
-			<!-- <configuration> -->
-			<!-- <formats> -->
-			<!-- <format>html</format> -->
-			<!-- <format>xml</format> -->
-			<!-- </formats> -->
-			<!-- </configuration> -->
-			<!-- </plugin> -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.3</version>
+				<configuration>
+					<effort>Max</effort>
+					<!--Restrict analysis to the given comma-separated list of classes and 
+						packages -->
+					<!--<onlyAnalyze>com.example.*</onlyAnalyze> -->
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>LATEST</version>
+						</plugin>
+					</plugins>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.6</version>
+				<configuration>
+					<!--A list of files to include into checking. Can contain Ant-style 
+						wildcards and double wildcards. Defaults to **/*.java. -->
+					<!--<includes> <include>**/*Example.java</include> </includes> -->
+					<!--A list of files to exclude from checking. Can contain Ant-style 
+						wildcards and double wildcards. -->
+					<!--<excludes> <exclude>**/*Example.java</exclude> </excludes> -->
+				</configuration>
+			</plugin>
 		</plugins>
 	</reporting>
 

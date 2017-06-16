@@ -37,7 +37,7 @@ public class PlayerPersistenceDelegatorUtils {
 		sb.append("'. ").append(numberOfSuccessfullyAddedEntities)
 				.append(" players were successfully added.");
 		if (numberOfUnsuccessfullyAddedEntities > 0) {
-			sb.append(System.getProperty("line.seperator"));
+			sb.append(System.getProperty("line.separator"));
 			sb.append("'");
 			sb.append(TournamentServiceErrorConstants.ADD_PLAYER_FAILURE_MSG);
 			sb.append(TournamentServiceEntityMapper

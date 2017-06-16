@@ -18,7 +18,7 @@ public class TournamentServiceObjectifyEntityMapper extends TournamentServiceEnt
 	@Override
 	public GAEPlayerEntity mapPlayerToEntity(Player player, DelegatorTypeEnum type) {
 		GAEPlayerEntity playerEntity = new GAEObjectifyPlayerEntity();
-		if (player.getId() != null && type != DelegatorTypeEnum.ADD)
+		if (player.getId() != null)
 			playerEntity.setKey(player.getId());
 		playerEntity.setDescription(player.getDescription());
 		return playerEntity;

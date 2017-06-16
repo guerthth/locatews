@@ -25,6 +25,7 @@ public class StatusMapper {
 			status = new Status();
 			status.setStatusMessage(dOutput.getStatusMessage());
 			status.setStatusCode(dOutput.getStatusCode());
+			status.setStatusReason(dOutput.getStatusReason());
 		}
 		return status;
 	}

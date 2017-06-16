@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.security.PermitAll;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
+import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiMethod;
+import com.google.api.server.spi.config.ApiMethod.HttpMethod;
+import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
+import com.google.appengine.api.users.User;
 
+import amtc.gue.ws.Constants;
+import amtc.gue.ws.base.Service;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
@@ -27,83 +25,73 @@ import amtc.gue.ws.books.inout.Tags;
 import amtc.gue.ws.books.response.BookServiceResponse;
 import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
-@Path("/books")
-@Produces(MediaType.APPLICATION_JSON)
-public class BookService {
-	protected static final Logger log = Logger.getLogger(BookService.class
-			.getName());
+@Api(name = "books", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
+		Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Book backend application")
+public class BookService extends Service {
+	protected static final Logger log = Logger.getLogger(BookService.class.getName());
+	private static final String SCOPE = "books";
 	private AbstractPersistenceDelegator bookDelegator;
 
 	public BookService() {
-		this.bookDelegator = (BookPersistenceDelegator) SpringContext.context
-				.getBean("bookPersistenceDelegator");
+		super();
+		bookDelegator = (BookPersistenceDelegator) SpringContext.context.getBean("bookPersistenceDelegator");
 	}
 
-	public BookService(AbstractPersistenceDelegator delegator) {
-		this.bookDelegator = delegator;
+	public BookService(AbstractPersistenceDelegator userDelegator, AbstractPersistenceDelegator bookDelegator) {
+		super(userDelegator);
+		this.bookDelegator = bookDelegator;
 	}
 
-	@PermitAll
-	@POST
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	public BookServiceResponse addBooks(Books items) {
-		// set up the pesistence delegator
-		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, items);
-
-		// call BookPersistenceDelegators delegate method to handle persist
-		IDelegatorOutput bpdOutput = bookDelegator.delegate();
-
-		// return delegator output mapped to serviceresponse
-		return BookServiceEntityMapper
-				.mapBdOutputToBookServiceResponse(bpdOutput);
-	}
-
-	@PermitAll
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public BookServiceResponse getBooks(@Context UriInfo info) {
-		// check for queryparams and propery set tags
-		Tags tags = new Tags();
-		List<String> searchTag = info.getQueryParameters().get("searchTag");
-		if (searchTag != null) {
-			tags.setTags(searchTag);
+	@ApiMethod(name = "addBooks", path = "book", httpMethod = HttpMethod.POST)
+	public BookServiceResponse addBooks(final User user, Books books) throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
 		}
 
-		// set up the pesistence delegator
-		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, tags);
-
-		// call BookPersistenceDelegators delegate method to handle retrieval of
-		// existing books
-		IDelegatorOutput bpdOutput = bookDelegator.delegate();
-
-		// return delegator output mapped to serviceresponse
-		return BookServiceEntityMapper
-				.mapBdOutputToBookServiceResponse(bpdOutput);
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.ADD, books);
+		IDelegatorOutput dOutput = bookDelegator.delegate();
+		BookServiceResponse response = BookServiceEntityMapper.mapBdOutputToBookServiceResponse(dOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
 	}
 
-	@PermitAll
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	@Path("/{id}")
-	public BookServiceResponse removeBook(@PathParam("id") String id) {
-		// set up the pesistence delegator
+	@ApiMethod(name = "getBooks", path = "book", httpMethod = HttpMethod.GET)
+	public BookServiceResponse getBooks(final User user, @Named("searchTag") @Nullable String searchTag)
+			throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+
+		Tags tags = new Tags();
+		List<String> searchTags = new ArrayList<>();
+		if (searchTag != null) {
+			searchTags.add(searchTag);
+			tags.setTags(searchTags);
+		}
+
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, tags);
+		IDelegatorOutput dOutput = bookDelegator.delegate();
+		BookServiceResponse response = BookServiceEntityMapper.mapBdOutputToBookServiceResponse(dOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
+	}
+
+	@ApiMethod(name = "removeBook", path = "book/{id}", httpMethod = HttpMethod.DELETE)
+	public BookServiceResponse removeBook(final User user, @Named("id") String id) throws UnauthorizedException {
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+
 		Books booksToRemove = new Books();
 		Book bookToRemove = new Book();
+		bookToRemove.setId(id);
 		List<Book> bookListToRemove = new ArrayList<>();
 		bookListToRemove.add(bookToRemove);
-		bookToRemove.setId(id);
 		booksToRemove.setBooks(bookListToRemove);
-
-		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE,
-				booksToRemove);
-
-		// call BookPersistenceDelegators delegate method to handle removal of
-		// existing books
-		IDelegatorOutput bpdOutput = bookDelegator.delegate();
-
-		// return delegator output mapped to serviceresponse
-		return BookServiceEntityMapper
-				.mapBdOutputToBookServiceResponse(bpdOutput);
+		bookDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.DELETE, booksToRemove);
+		IDelegatorOutput dOutput = bookDelegator.delegate();
+		BookServiceResponse response = BookServiceEntityMapper.mapBdOutputToBookServiceResponse(dOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
 	}
 }

@@ -379,17 +379,6 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		GAEObjectifyBookEntity searchBook3 = new GAEObjectifyBookEntity();
 		searchBook3.addToUsersOnly(objectifyUserEntity1);
 		assertEquals(1, bookObjectifyDAO.findSpecificEntity(searchBook3).size());
-
-		// TODO CHECK
-		// GAEObjectifyUserEntity searchUser = new GAEObjectifyUserEntity();
-		// searchUser.addToBooksOnly(objectifyBookEntity1);
-		// assertEquals(1,userObjectifyDAO.findSpecificEntity(searchUser).size());
-
-		// GAEObjectifyTagEntity searchTag = new GAEObjectifyTagEntity();
-		// searchTag.addToBooksOnly(objectifyBookEntity1);
-		// searchTag.addToBooksOnly(objectifyBookEntity2);
-		// assertEquals(1,
-		// tagObjectifyDAO.findSpecificEntity(searchTag).size());
 	}
 
 	@Override

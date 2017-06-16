@@ -2,27 +2,21 @@ package amtc.gue.ws.test.books;
 
 import static org.junit.Assert.*;
 
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Response;
-
 import org.easymock.EasyMock;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.api.server.spi.response.UnauthorizedException;
+
 import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.books.BookService;
 import amtc.gue.ws.books.delegate.persist.BookPersistenceDelegator;
-import amtc.gue.ws.books.inout.Books;
 import amtc.gue.ws.books.response.BookServiceResponse;
 
 /**
@@ -32,17 +26,15 @@ import amtc.gue.ws.books.response.BookServiceResponse;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BookServiceTest extends JerseyTest {
-	private static IDelegatorOutput delegatorOutput;
+public class BookServiceTest extends BookTest {
+	private static IDelegatorOutput bookDelegatorOutput;
+	private static IDelegatorOutput userDelegatorOutput;
 	private static AbstractPersistenceDelegator bookDelegator;
-
-	@Override
-	protected Application configure() {
-		return new ResourceConfig().register(new BookService(bookDelegator));
-	}
+	private static AbstractPersistenceDelegator userDelegator;
 
 	@BeforeClass
-	public static void oneTimeInitialSetup() {
+	public static void initialSetup() {
+		setUpBasicBookEnvironment();
 		setUpDelegatorOutputs();
 		setUpDelegatorMocks();
 	}
@@ -50,65 +42,69 @@ public class BookServiceTest extends JerseyTest {
 	@AfterClass
 	public static void checkMocks() {
 		EasyMock.verify(bookDelegator);
+		EasyMock.verify(userDelegator);
 	}
 
-	@Test(expected = NotFoundException.class)
-	public void testServiceUsingIncorrectURL() {
-		target("incorrectUrl").request().get(BookServiceResponse.class);
-	}
-
-	@Test
-	public void testAddBooks() {
-		Books booksToAdd = new Books();
-		final Response resp = target("/books").request().post(
-				Entity.json(booksToAdd));
-		assertNotNull(resp);
+	@Test(expected = UnauthorizedException.class)
+	public void testAddBooksUsingUnauthorizedUser() throws UnauthorizedException {
+		new BookService().addBooks(null, books);
 	}
 
 	@Test
-	public void testGetBooksUsingNoTagsearch() {
-		final BookServiceResponse resp = target("/books").request().get(
-				BookServiceResponse.class);
-		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus()
-				.getStatusMessage());
-		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus()
-				.getStatusCode());
+	public void testAddBooks() throws UnauthorizedException {
+		BookServiceResponse resp = new BookService(userDelegator, bookDelegator).addBooks(user, books);
+		assertEquals(bookDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(bookDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test(expected = UnauthorizedException.class)
+	public void testGetBooksUsingUnauthorizedUser() throws UnauthorizedException {
+		new BookService().getBooks(null, TAG);
 	}
 
 	@Test
-	public void testGetBooksUsingTagSearch() {
-		final BookServiceResponse resp = target("/books")
-				.queryParam("searchTag", "testTag").request()
-				.get(BookServiceResponse.class);
-		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus()
-				.getStatusMessage());
-		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus()
-				.getStatusCode());
-	}
-
-	@Test(expected = NotAllowedException.class)
-	public void testRemoveBookUsingIncorrectCall() {
-		final BookServiceResponse resp = target("/books").request().delete(
-				BookServiceResponse.class);
-		assertNotNull(resp);
+	public void testGetBooksUsingNullSearchTag() throws UnauthorizedException {
+		BookServiceResponse resp = new BookService(userDelegator, bookDelegator).getBooks(user, null);
+		assertEquals(bookDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(bookDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	@Test
-	public void testRemoveBookUsingCorrectCall() {
-		final BookServiceResponse resp = target("/books/1").request().delete(
-				BookServiceResponse.class);
-		assertNotNull(resp);
+	public void testGetBooksUsingSimpleSearchTag() throws UnauthorizedException {
+		BookServiceResponse resp = new BookService(userDelegator, bookDelegator).getBooks(user, TAG);
+		assertEquals(bookDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(bookDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test(expected = UnauthorizedException.class)
+	public void testRemoveBookUsingUnauthorizedUser() throws UnauthorizedException {
+		BookServiceResponse resp = new BookService(userDelegator, bookDelegator).removeBook(null, BOOKKEY);
+		assertEquals(bookDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(bookDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+
+	@Test
+	public void testRemoveBook() throws UnauthorizedException {
+		BookServiceResponse resp = new BookService(userDelegator, bookDelegator).removeBook(user, BOOKKEY);
+		assertEquals(bookDelegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(bookDelegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
 
 	// Helper methods
 	private static void setUpDelegatorOutputs() {
-		delegatorOutput = new DelegatorOutput();
+		bookDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput = new DelegatorOutput();
+		userDelegatorOutput.setOutputObject(serviceUser);
+		userDelegatorOutput.setOutputObject(invalidServiceUser);
 	}
 
 	private static void setUpDelegatorMocks() {
 		bookDelegator = EasyMock.createNiceMock(BookPersistenceDelegator.class);
-		EasyMock.expect(bookDelegator.delegate()).andReturn(delegatorOutput)
-				.times(4);
+		EasyMock.expect(bookDelegator.delegate()).andReturn(bookDelegatorOutput).times(4);
 		EasyMock.replay(bookDelegator);
+
+		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(4);
+		EasyMock.replay(userDelegator);
 	}
 }

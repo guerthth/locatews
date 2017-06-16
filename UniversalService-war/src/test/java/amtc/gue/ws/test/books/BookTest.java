@@ -8,11 +8,11 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 
+import com.google.appengine.api.users.User;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
 import amtc.gue.ws.base.inout.Roles;
-import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.persistence.EMF;
 import amtc.gue.ws.base.persistence.ProductiveEMF;
 import amtc.gue.ws.base.persistence.dao.user.UserDAO;
@@ -63,6 +63,8 @@ public class BookTest extends BaseTest {
 	protected static UserDAO<GAEUserEntity, GAEJPAUserEntity, String> userJPADAO;
 
 	protected static User user;
+	protected static amtc.gue.ws.base.inout.User serviceUser;
+	protected static amtc.gue.ws.base.inout.User invalidServiceUser;
 
 	protected static Tags tagsA;
 	protected static Tags tagsAB;
@@ -140,7 +142,7 @@ public class BookTest extends BaseTest {
 	protected static UserServiceEntityMapper objectifyUserEntityMapper;
 	protected static BookServiceEntityMapper JPABookEntityMapper;
 	protected static BookServiceEntityMapper objectifyBookEntityMapper;
-	
+
 	@Before
 	public void setUp() {
 		setupDBHelpers();
@@ -168,13 +170,13 @@ public class BookTest extends BaseTest {
 		ObjectifyService.register(GAEObjectifyTagEntity.class);
 
 		userObjectifyDAO = new UserObjectifyDAOImpl();
-		bookObjectifyDAO = new BookObjectifyDAOImpl(user);
+		bookObjectifyDAO = new BookObjectifyDAOImpl(serviceUser);
 		noUserBookObjectifyDAO = new BookObjectifyDAOImpl(null);
 		tagObjectifyDAO = new TagObjectifyDAOImpl();
 
 		// JPA setup
 		EMF emf = new ProductiveEMF();
-		bookJPADAO = new BookJPADAOImpl(emf, user);
+		bookJPADAO = new BookJPADAOImpl(emf, serviceUser);
 		noUserBookJPADAO = new BookJPADAOImpl(emf, null);
 		failureBookJPADAO = new BookJPADAOImpl(null, null);
 		tagJPADAO = new TagJPADAOImpl(emf);
@@ -249,7 +251,7 @@ public class BookTest extends BaseTest {
 
 		objectifyBookEntityList = new ArrayList<>();
 		objectifyBookEntityList.add(objectifyBookEntity1);
-		
+
 		objectifyBookEntityListWithID = new ArrayList<>();
 		objectifyBookEntityListWithID.add(objectifyBookEntity4);
 
@@ -376,10 +378,18 @@ public class BookTest extends BaseTest {
 	 * Method setting up User objects
 	 */
 	private static void setupUsers() {
-		user = new User();
-		user.setId(USERNAME);
+		String userMail = "test@test.com";
+		String authDomain = "domain";
+		user = new User(userMail, authDomain);
+		serviceUser = new amtc.gue.ws.base.inout.User();
+		serviceUser.setId(USERNAME);
+		serviceUser.getRoles().add("books");
+		serviceUser.getRoles().add("tags");
+		invalidServiceUser = new amtc.gue.ws.base.inout.User();
+		invalidServiceUser.getRoles().add("books");
+		invalidServiceUser.getRoles().add("tags");
 	}
-	
+
 	/**
 	 * Method setting up entity mappers
 	 */

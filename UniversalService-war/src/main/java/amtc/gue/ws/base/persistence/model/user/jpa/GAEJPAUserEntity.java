@@ -35,13 +35,13 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "userId")
-	private String userId;
-	@Column(name = "password")
-	private String password;
 	@Column(name = "email")
 	private String email;
-
+	@Column(name = "userName")
+	private String userName;
+	@Column(name = "password")
+	private String password;
+	
 	@Unowned
 	@ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<GAEJPARoleEntity> roles = new HashSet<>();
@@ -51,12 +51,22 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 
 	@Override
 	public String getKey() {
-		return userId;
+		return email;
 	}
 
 	@Override
-	public void setKey(String userId) {
-		this.userId = userId;
+	public void setKey(String email) {
+		this.email = email;
+	}
+	
+	@Override
+	public String getUserName() {
+		return userName;
+	}
+
+	@Override
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	@Override
@@ -67,16 +77,6 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	@Override
-	public String getEmail() {
-		return email;
-	}
-
-	@Override
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.dev.HighRepJobPolicy;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.cache.AsyncCacheFilter;
 import com.googlecode.objectify.util.Closeable;
@@ -47,7 +48,8 @@ public abstract class BaseTest {
 	// see
 	// http://codeover.org/questions/21185922/app-engine-cloud-endpoints-unit-testing-issues-with-data-nucleus-is-it-possibl
 	protected final LocalServiceTestHelper helper = new LocalServiceTestHelper(
-			new LocalDatastoreServiceTestConfig().setAlternateHighRepJobPolicyClass(ConsistentHighRepPolicy.class));
+			new LocalDatastoreServiceTestConfig().setAlternateHighRepJobPolicyClass(ConsistentHighRepPolicy.class),
+			new LocalUserServiceTestConfig()).setEnvIsAdmin(false).setEnvIsLoggedIn(true).setEnvEmail("test@test.com");
 	protected Closeable session;
 
 	/**
