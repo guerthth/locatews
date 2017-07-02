@@ -16,11 +16,12 @@ import amtc.gue.ws.base.persistence.model.role.jpa.GAEJPARoleEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.book.jpa.GAEJPABookEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
 
 import com.google.appengine.datanucleus.annotations.Unowned;
 
 /**
- * Model for Users stored in the datastore
+ * Model for Users stored in the JPA datastore
  * 
  * @author Thomas
  *
@@ -183,5 +184,35 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Set<GAEShoppinggroupEntity> getShoppinggroups() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
 	}
 }

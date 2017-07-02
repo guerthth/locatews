@@ -6,6 +6,7 @@ import amtc.gue.ws.base.persistence.model.PersistenceEntity;
 import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
 
 /**
  * User Persistence Entity for GAE datastore
@@ -34,7 +35,7 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	 *            of the UserEntity
 	 */
 	public abstract void setUserName(String userName);
-	
+
 	/**
 	 * Getter for the password of the UserEntity
 	 * 
@@ -84,7 +85,7 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	 *            the RoleEntity that should be added to the UserEntity
 	 */
 	public abstract void addToRolesAndUsers(GAERoleEntity role);
-	
+
 	/**
 	 * Method removing a RoleEntity from the UserEntity
 	 * 
@@ -107,7 +108,7 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	 *            BookEntities of the UserEntity
 	 * @param alsoSetUsers
 	 *            flag depicting if the respective UserEntities should be set in
-	 *            the RoleEntities
+	 *            the BookEntities
 	 */
 	public abstract void setBooks(Set<GAEBookEntity> books, boolean alsoSetUsers);
 
@@ -135,6 +136,49 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	 *            the BookEntity that should be removed
 	 */
 	public abstract void removeBook(GAEBookEntity book);
+
+	/**
+	 * Getter for the ShoppinggroupEntities of the UserEntity
+	 * 
+	 * @return ShoppingroupEntities of the UserEntity
+	 */
+	public abstract Set<GAEShoppinggroupEntity> getShoppinggroups();
+
+	/**
+	 * Setter for the ShoppinggroupEntities of the UserEntity
+	 * 
+	 * @param shoppinggroups
+	 *            ShoppinggroupEntities of the UserEntity
+	 * @param alsoSetUsers
+	 *            flag depicting if the respective UserEntities should be set in
+	 *            the ShoppinggroupEntities
+	 */
+	public abstract void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers);
+
+	/**
+	 * Method only adding a ShoppinggroupEntity to the UserEntity
+	 * 
+	 * @param book
+	 *            the ShoppinggroupEntity that should be added to the UserEntity
+	 */
+	public abstract void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup);
+
+	/**
+	 * Method adding a ShoppinggroupEntity to the UserEntity. The UserEntity is
+	 * also added to the ShoppinggroupEntity
+	 * 
+	 * @param shoppinggroup
+	 *            the ShoppinggroupEntity that should be added to the UserEntity
+	 */
+	public abstract void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup);
+
+	/**
+	 * Method removing a ShoppinggroupEntity from the UserEntity
+	 * 
+	 * @param shoppinggroup
+	 *            the ShoppinggroupEntity that should be removed
+	 */
+	public abstract void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup);
 
 	@Override
 	public String toString() {

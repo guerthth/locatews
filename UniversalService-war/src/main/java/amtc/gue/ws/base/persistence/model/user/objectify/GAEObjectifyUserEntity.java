@@ -16,7 +16,14 @@ import amtc.gue.ws.base.persistence.model.role.objectify.GAEObjectifyRoleEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
 
+/**
+ * Model for Users stored in the Objectify datastore
+ * 
+ * @author Thomas
+ *
+ */
 @Entity
 public class GAEObjectifyUserEntity extends GAEUserEntity {
 	/**
@@ -178,5 +185,35 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 				book.removeUser(this);
 			}
 		}
+	}
+
+	@Override
+	public Set<GAEShoppinggroupEntity> getShoppinggroups() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup) {
+		// TODO Auto-generated method stub
+		
 	}
 }

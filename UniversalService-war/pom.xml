@@ -224,6 +224,13 @@
 			<version>${endpoints.management.version}</version>
 		</dependency>
 
+		<!-- App Stats -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-labs</artifactId>
+			<version>${appengine.target.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>
