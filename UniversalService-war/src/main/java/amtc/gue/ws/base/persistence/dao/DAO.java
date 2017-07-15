@@ -11,6 +11,8 @@ import amtc.gue.ws.base.exception.EntityRetrievalException;
  * 
  * @author Thomas
  *
+ * @param <S>
+ *            Superclass of the Entity
  * @param <E>
  *            Entity to save, remove, search for
  * @param <K>

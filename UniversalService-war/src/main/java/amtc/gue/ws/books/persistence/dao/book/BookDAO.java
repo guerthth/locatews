@@ -7,10 +7,17 @@ import amtc.gue.ws.base.persistence.dao.DAO;
 import amtc.gue.ws.books.inout.Tags;
 
 /**
+ * 
  * Specific interface for BookEntities
  * 
  * @author Thomas
  *
+ * @param <S>
+ *            Entity Superclass
+ * @param <E>
+ *            Entity Class
+ * @param <K>
+ *            Type of the key
  */
 public interface BookDAO<S, E extends S, K> extends DAO<S, E, K> {
 

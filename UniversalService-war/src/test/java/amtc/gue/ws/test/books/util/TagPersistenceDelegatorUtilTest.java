@@ -7,7 +7,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.books.util.TagPersistenceDelegatorUtils;
 import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 import amtc.gue.ws.test.books.BookTest;
@@ -40,7 +40,7 @@ public class TagPersistenceDelegatorUtilTest extends BookTest {
 	private static void setUpExpectedTagPersistStatusMessages() {
 		// EXPECTED_TAG_RETRIEVAL_MESSAGE
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper.mapTagEntityListToConsolidatedJSONString(JPATagEntityList));
 		sb.append("'. ");

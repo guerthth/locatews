@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.books.util.BookPersistenceDelegatorUtils;
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 import amtc.gue.ws.test.books.BookTest;
 
@@ -112,29 +112,29 @@ public class BookPersistenceDelegatorUtilTest extends BookTest {
 	private static void setUpExpectedBookPersistStatusMessages() {
 		// EXPECTED_NO_FAILURES_BOOK_PERSISTENCE_MESSAGE_RESULT
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG);
 		sb.append(" '").append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityList))
 				.append("'. ").append(JPABookEntityList.size()).append(" books were successfully added.");
 		EXPECTED_NO_FAILURES_BOOK_PERSISTENCE_MESSAGE_RESULT = sb.toString();
 
 		// EXPECTED_FAILURE_AND_SUCCESS_BOOK_PERSISTENCE_MESSAGE_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG);
 		sb.append(" '").append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityList))
 				.append("'.").append(" ").append(JPABookEntityList.size()).append(" books were successfully added.")
 				.append(System.getProperty("line.separator")).append("'")
-				.append(BookServiceErrorConstants.ADD_BOOK_FAILURE_MSG)
+				.append(BooksErrorConstants.ADD_BOOK_FAILURE_MSG)
 				.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityList))
 				.append("'. ").append(JPABookEntityList.size()).append(" books were not added successfully.");
 		EXPECTED_FAILURE_AND_SUCCESS_BOOK_PERSISTENCE_MESSAGE_RESULT = sb.toString();
 
 		// EXPECTED_NO_SUCCESSES_BOOK_PERSISTENCE_MESSAGE_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG);
 		sb.append(" '").append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(null)).append("'.")
 				.append(" ").append("0").append(" books were successfully added.")
 				.append(System.getProperty("line.separator")).append("'")
-				.append(BookServiceErrorConstants.ADD_BOOK_FAILURE_MSG)
+				.append(BooksErrorConstants.ADD_BOOK_FAILURE_MSG)
 				.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityList))
 				.append("'. ").append(JPABookEntityList.size()).append(" books were not added successfully.");
 
@@ -142,7 +142,7 @@ public class BookPersistenceDelegatorUtilTest extends BookTest {
 
 		// EXPECTED_BOOK_RETRIEVAL_MESSAGE_SIMPLE_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(tagsA.getTags().toString());
 		sb.append("': '");
@@ -154,7 +154,7 @@ public class BookPersistenceDelegatorUtilTest extends BookTest {
 
 		// EXPECTED_BOOK_RETRIEVAL_MESSAGE_EMPTY_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(tagsA.getTags().toString());
 		sb.append("': '");
@@ -166,7 +166,7 @@ public class BookPersistenceDelegatorUtilTest extends BookTest {
 
 		// EXPECTED_BOOK_REMOVAL_MESSAGE_SIMPLE_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.DELETE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityList));
 		sb.append("'. ");
@@ -176,7 +176,7 @@ public class BookPersistenceDelegatorUtilTest extends BookTest {
 
 		// EXPECTED_BOOK_REMOVAL_MESSAGE_EMPTY_RESULT
 		sb.setLength(0);
-		sb.append(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.DELETE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(JPABookEntityEmptyList));
 		sb.append("'. ");

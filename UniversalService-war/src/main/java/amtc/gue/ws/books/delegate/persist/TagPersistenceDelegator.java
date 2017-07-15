@@ -9,7 +9,7 @@ import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.books.util.TagPersistenceDelegatorUtils;
 import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
@@ -47,7 +47,7 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void retrieveEntities() {
 		log.info("READ Tag action triggered");
 
-		delegatorOutput.setStatusCode(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE);
+		delegatorOutput.setStatusCode(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE);
 
 		try {
 			List<GAETagEntity> foundTags = tagDAOImpl.findAllEntities();
@@ -55,8 +55,8 @@ public class TagPersistenceDelegator extends AbstractPersistenceDelegator {
 					.setStatusMessage(TagPersistenceDelegatorUtils.buildRetrieveTagsSuccessStatusMessage(foundTags));
 			delegatorOutput.setOutputObject(BookServiceEntityMapper.mapTagEntityListToTags(foundTags));
 		} catch (EntityRetrievalException e) {
-			delegatorOutput.setStatusCode(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_CODE);
-			delegatorOutput.setStatusMessage(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_MSG);
+			delegatorOutput.setStatusCode(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_MSG);
 			delegatorOutput.setOutputObject(null);
 			log.log(Level.SEVERE, "Error while trying to retrieve tags", e);
 		}

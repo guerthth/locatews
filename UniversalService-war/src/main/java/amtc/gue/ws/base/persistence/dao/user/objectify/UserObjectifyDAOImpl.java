@@ -39,16 +39,14 @@ public class UserObjectifyDAOImpl extends ObjectifyDAOImpl<GAEUserEntity, GAEObj
 		ObjectifyService.register(GAEObjectifyTagEntity.class);
 		ObjectifyService.register(GAEObjectifyPlayerEntity.class);
 	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+
 	@Override
 	public List<GAEUserEntity> findSpecificEntity(GAEUserEntity entity) throws EntityRetrievalException {
 		GAEObjectifyUserEntity specificEntity = (GAEObjectifyUserEntity) entity;
 		List<GAEUserEntity> foundEntities = new ArrayList<>();
 		if (specificEntity != null && specificEntity.getKey() != null) {
 			// if entity has an ID, search by ID
-			Key key = Key.create(entityClass, (String) specificEntity.getKey());
-			GAEObjectifyUserEntity foundEntity = (GAEObjectifyUserEntity) ofy().load().key(key).now();
+			GAEObjectifyUserEntity foundEntity = (GAEObjectifyUserEntity) ofy().load().entity(specificEntity).now();
 			if (foundEntity != null) {
 				foundEntities.add(foundEntity);
 			}

@@ -23,7 +23,7 @@ import amtc.gue.ws.books.persistence.dao.tag.TagDAO;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
 import amtc.gue.ws.books.util.BookPersistenceDelegatorUtils;
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.books.util.mapper.BookServiceEntityMapper;
 
 /**
@@ -54,7 +54,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 		if (delegatorInput.getInputObject() instanceof Books) {
 			Books books = (Books) delegatorInput.getInputObject();
 			// initialize delegatoroutput status
-			delegatorOutput.setStatusCode(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE);
+			delegatorOutput.setStatusCode(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE);
 
 			// list of books
 			List<GAEBookEntity> successfullyAddedBookEntities = new ArrayList<>();
@@ -101,8 +101,8 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setOutputObject(
 						BookServiceEntityMapper.transformBookEntitiesToBooks(successfullyAddedBookEntities));
 			} else {
-				delegatorOutput.setStatusCode(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE);
-				delegatorOutput.setStatusMessage(BookServiceErrorConstants.ADD_BOOK_FAILURE_MSG);
+				delegatorOutput.setStatusCode(BooksErrorConstants.ADD_BOOK_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(BooksErrorConstants.ADD_BOOK_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
@@ -120,7 +120,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			Books booksToRemove = (Books) delegatorInput.getInputObject();
 
 			// initialize delegatoroutput status
-			delegatorOutput.setStatusCode(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE);
+			delegatorOutput.setStatusCode(BooksErrorConstants.DELETE_BOOK_SUCCESS_CODE);
 
 			// transform inputobject to bookentities bookentities and remove
 			List<GAEBookEntity> bookEntities = bookEntityMapper.transformBooksToBookEntities(booksToRemove,
@@ -180,8 +180,8 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput
 						.setOutputObject(BookServiceEntityMapper.transformBookEntitiesToBooks(removedBookEntities));
 			} else {
-				delegatorOutput.setStatusCode(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE);
-				delegatorOutput.setStatusMessage(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG);
+				delegatorOutput.setStatusCode(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
 			}
 		} else {
@@ -198,7 +198,7 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 			Tags searchTags = (Tags) delegatorInput.getInputObject();
 
 			// initialize delegatoroutput status
-			delegatorOutput.setStatusCode(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
+			delegatorOutput.setStatusCode(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE);
 
 			List<GAEBookEntity> foundBooks = new ArrayList<>();
 			try {
@@ -214,8 +214,8 @@ public class BookPersistenceDelegator extends AbstractPersistenceDelegator {
 				delegatorOutput.setStatusMessage(statusMessage);
 				delegatorOutput.setOutputObject(BookServiceEntityMapper.transformBookEntitiesToBooks(foundBooks));
 			} catch (EntityRetrievalException e) {
-				delegatorOutput.setStatusCode(BookServiceErrorConstants.RETRIEVE_BOOK_FAILURE_CODE);
-				delegatorOutput.setStatusMessage(BookServiceErrorConstants.RETRIEVE_BOOK_FAILURE_MSG);
+				delegatorOutput.setStatusCode(BooksErrorConstants.RETRIEVE_BOOK_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(BooksErrorConstants.RETRIEVE_BOOK_FAILURE_MSG);
 				delegatorOutput.setOutputObject(null);
 				log.log(Level.SEVERE,
 						"Error while trying to retrieve book with tag: '" + searchTags.getTags().toString() + "'", e);

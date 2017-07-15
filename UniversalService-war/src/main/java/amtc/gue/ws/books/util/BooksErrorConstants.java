@@ -6,7 +6,7 @@ package amtc.gue.ws.books.util;
  * @author Thomas
  *
  */
-public class BookServiceErrorConstants {
+public class BooksErrorConstants {
 
 	/**
 	 * BookService Constants

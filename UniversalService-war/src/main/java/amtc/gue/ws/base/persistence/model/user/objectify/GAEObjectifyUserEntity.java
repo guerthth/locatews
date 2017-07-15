@@ -16,7 +16,8 @@ import amtc.gue.ws.base.persistence.model.role.objectify.GAEObjectifyRoleEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
-import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
+import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyBillinggroupEntity;
 
 /**
  * Model for Users stored in the Objectify datastore
@@ -42,6 +43,8 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	private List<Ref<GAEObjectifyRoleEntity>> roles = new ArrayList<>();
 	@Index
 	private List<Ref<GAEObjectifyBookEntity>> books = new ArrayList<>();
+	@Index
+	private List<Ref<GAEObjectifyBillinggroupEntity>> billinggroups = new ArrayList<>();
 
 	@Override
 	public String getKey() {
@@ -52,7 +55,7 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	public void setKey(String email) {
 		this.email = email;
 	}
-	
+
 	@Override
 	public String getUserName() {
 		return userName;
@@ -188,32 +191,62 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	}
 
 	@Override
-	public Set<GAEShoppinggroupEntity> getShoppinggroups() {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<GAEBillinggroupEntity> getBillinggroups() {
+		Set<GAEBillinggroupEntity> billinggroupEntities = new HashSet<>();
+		if (billinggroups != null) {
+			for (Ref<GAEObjectifyBillinggroupEntity> billinggroupRef : billinggroups) {
+				billinggroupEntities.add(billinggroupRef.get());
+			}
+		}
+		return billinggroupEntities;
 	}
 
 	@Override
-	public void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
-		// TODO Auto-generated method stub
-		
+	public void setBillinggroups(Set<GAEBillinggroupEntity> billinggroups, boolean alsoSetUsers) {
+		this.billinggroups = new ArrayList<>();
+		if (billinggroups != null) {
+			for (GAEBillinggroupEntity billinggroup : billinggroups) {
+				if (alsoSetUsers) {
+					addToBillinggroupsAndUsers(billinggroup);
+				} else {
+					addToBillinggroupsOnly(billinggroup);
+				}
+			}
+		}
 	}
 
 	@Override
-	public void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup) {
-		// TODO Auto-generated method stub
-		
+	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
+		if (billinggroup != null) {
+			Ref<GAEObjectifyBillinggroupEntity> referenceToAdd = Ref.create(
+					Key.create(GAEObjectifyBillinggroupEntity.class, Long.valueOf(billinggroup.getKey()).longValue()));
+			billinggroups.add(referenceToAdd);
+		}
 	}
 
 	@Override
-	public void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup) {
-		// TODO Auto-generated method stub
-		
+	public void addToBillinggroupsAndUsers(GAEBillinggroupEntity billinggroup) {
+		if (billinggroup != null) {
+			billinggroup.addToUsersOnly(this);
+			addToBillinggroupsOnly(billinggroup);
+		}
 	}
 
 	@Override
-	public void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup) {
-		// TODO Auto-generated method stub
-		
+	public void removeBillinggroup(GAEBillinggroupEntity billinggroup) {
+		if (billinggroups != null && !billinggroups.isEmpty()) {
+			Ref<GAEObjectifyBillinggroupEntity> billinggroupRefToRemove = null;
+			for (Ref<GAEObjectifyBillinggroupEntity> existingBillinggroupRef : billinggroups) {
+				GAEObjectifyBillinggroupEntity existingBillinggroup = existingBillinggroupRef.get();
+				if (existingBillinggroup != null && existingBillinggroup.getKey().equals(billinggroup.getKey())) {
+					billinggroupRefToRemove = existingBillinggroupRef;
+					break;
+				}
+			}
+			if (billinggroupRefToRemove != null) {
+				billinggroups.remove(billinggroupRefToRemove);
+				billinggroup.removeUser(this);
+			}
+		}
 	}
 }

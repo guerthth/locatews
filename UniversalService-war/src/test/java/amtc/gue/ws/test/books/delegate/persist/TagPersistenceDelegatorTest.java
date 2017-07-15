@@ -24,7 +24,7 @@ import amtc.gue.ws.books.persistence.dao.tag.objectify.TagObjectifyDAOImpl;
 import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
 import amtc.gue.ws.books.persistence.model.tag.jpa.GAEJPATagEntity;
 import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.test.base.delegate.persist.IBasePersistenceDelegatorTest;
 import amtc.gue.ws.test.books.BookTest;
 
@@ -66,6 +66,8 @@ public class TagPersistenceDelegatorTest extends BookTest implements IBasePersis
 	public static void finalTearDown() {
 		EasyMock.verify(tagJPADAOImpl);
 		EasyMock.verify(tagJPADAOImplGeneralFail);
+		EasyMock.verify(tagObjectifyDAOImpl);
+		EasyMock.verify(tagObjectifyDAOImplGeneralFail);
 	}
 
 	@Override
@@ -312,8 +314,8 @@ public class TagPersistenceDelegatorTest extends BookTest implements IBasePersis
 		tagPersistenceDelegator.initialize(readTagDelegatorInput);
 		tagPersistenceDelegator.setTagDAO(tagJPADAOImpl);
 		IDelegatorOutput delegatorOutput = tagPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG));
 	}
 
 	@Override
@@ -322,8 +324,8 @@ public class TagPersistenceDelegatorTest extends BookTest implements IBasePersis
 		tagPersistenceDelegator.initialize(readTagDelegatorInput);
 		tagPersistenceDelegator.setTagDAO(tagObjectifyDAOImpl);
 		IDelegatorOutput delegatorOutput = tagPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG));
 	}
 
 	@Override
@@ -332,8 +334,8 @@ public class TagPersistenceDelegatorTest extends BookTest implements IBasePersis
 		tagPersistenceDelegator.initialize(readTagDelegatorInput);
 		tagPersistenceDelegator.setTagDAO(tagJPADAOImplGeneralFail);
 		IDelegatorOutput delegatorOutput = tagPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_MSG));
+		assertEquals(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_MSG));
 	}
 
 	@Override
@@ -342,8 +344,8 @@ public class TagPersistenceDelegatorTest extends BookTest implements IBasePersis
 		tagPersistenceDelegator.initialize(readTagDelegatorInput);
 		tagPersistenceDelegator.setTagDAO(tagObjectifyDAOImplGeneralFail);
 		IDelegatorOutput delegatorOutput = tagPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.RETRIEVE_TAGS_FAILURE_MSG));
+		assertEquals(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.RETRIEVE_TAGS_FAILURE_MSG));
 	}
 
 	@Override

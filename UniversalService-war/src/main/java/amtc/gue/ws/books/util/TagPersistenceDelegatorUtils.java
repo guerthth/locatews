@@ -24,7 +24,7 @@ public class TagPersistenceDelegatorUtils {
 	public static String buildRetrieveTagsSuccessStatusMessage(
 			List<GAETagEntity> foundTags) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.RETRIEVE_TAGS_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper
 				.mapTagEntityListToConsolidatedJSONString(foundTags));

@@ -36,7 +36,7 @@ import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity
 import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
 import amtc.gue.ws.books.persistence.model.tag.jpa.GAEJPATagEntity;
 import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
-import amtc.gue.ws.books.util.BookServiceErrorConstants;
+import amtc.gue.ws.books.util.BooksErrorConstants;
 import amtc.gue.ws.test.base.delegate.persist.IBasePersistenceDelegatorTest;
 import amtc.gue.ws.test.books.BookTest;
 
@@ -139,8 +139,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(JPABookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -153,8 +153,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -171,8 +171,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(JPABookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -189,8 +189,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -206,8 +206,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(JPABookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -224,8 +224,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
-		assertTrue(delegatorOutput.getStatusMessage().startsWith(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG));
+		assertEquals(BooksErrorConstants.ADD_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertTrue(delegatorOutput.getStatusMessage().startsWith(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG));
 		assertNotNull(delegatorOutput.getOutputObject());
 	}
 
@@ -241,7 +241,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(JPABookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -273,7 +273,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(JPABookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.ADD_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -343,7 +343,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImpl);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -355,7 +355,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -367,8 +367,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplNoFoundBooks);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -380,8 +380,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImplNoFoundBooks);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -391,8 +391,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplNullBooks);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -402,8 +402,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImplNullBooks);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -414,8 +414,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplGeneralFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -426,8 +426,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImplGeneralFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -437,8 +437,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplDeletionFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -450,8 +450,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -461,8 +461,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplRetrievalFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -474,8 +474,8 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookEntityMapper(objectifyBookEntityMapper);
 		bookPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -509,7 +509,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImpl);
 		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -521,7 +521,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImpl);
 		bookPersistenceDelegator.setCurrentUser(serviceUser);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.DELETE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -531,7 +531,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImpl);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -541,7 +541,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImpl);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -551,7 +551,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookJPADAOImplGeneralFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.RETRIEVE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
@@ -561,7 +561,7 @@ public class BookPersistenceDelegatorTest extends BookTest implements IBasePersi
 		bookPersistenceDelegator.setBookDAO(bookObjectifyDAOImplGeneralFail);
 		bookPersistenceDelegator.setCurrentUser(null);
 		IDelegatorOutput delegatorOutput = bookPersistenceDelegator.delegate();
-		assertEquals(BookServiceErrorConstants.RETRIEVE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(BooksErrorConstants.RETRIEVE_BOOK_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override

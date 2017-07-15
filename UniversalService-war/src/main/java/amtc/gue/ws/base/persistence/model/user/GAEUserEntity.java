@@ -6,7 +6,7 @@ import amtc.gue.ws.base.persistence.model.PersistenceEntity;
 import amtc.gue.ws.base.persistence.model.role.GAERoleEntity;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
-import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
 
 /**
  * User Persistence Entity for GAE datastore
@@ -138,47 +138,47 @@ public abstract class GAEUserEntity extends PersistenceEntity {
 	public abstract void removeBook(GAEBookEntity book);
 
 	/**
-	 * Getter for the ShoppinggroupEntities of the UserEntity
+	 * Getter for the BillingggroupEntities of the UserEntity
 	 * 
-	 * @return ShoppingroupEntities of the UserEntity
+	 * @return BillingroupEntities of the UserEntity
 	 */
-	public abstract Set<GAEShoppinggroupEntity> getShoppinggroups();
+	public abstract Set<GAEBillinggroupEntity> getBillinggroups();
 
 	/**
-	 * Setter for the ShoppinggroupEntities of the UserEntity
+	 * Setter for the BillinggroupEntities of the UserEntity
 	 * 
-	 * @param shoppinggroups
-	 *            ShoppinggroupEntities of the UserEntity
+	 * @param billinggroups
+	 *            BillinggroupEntities of the UserEntity
 	 * @param alsoSetUsers
 	 *            flag depicting if the respective UserEntities should be set in
-	 *            the ShoppinggroupEntities
+	 *            the BillinggroupEntities
 	 */
-	public abstract void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers);
+	public abstract void setBillinggroups(Set<GAEBillinggroupEntity> billinggroups, boolean alsoSetUsers);
 
 	/**
-	 * Method only adding a ShoppinggroupEntity to the UserEntity
+	 * Method only adding a BillinggroupEntity to the UserEntity
 	 * 
-	 * @param book
-	 *            the ShoppinggroupEntity that should be added to the UserEntity
+	 * @param billinggroup
+	 *            the BillinggroupEntity that should be added to the UserEntity
 	 */
-	public abstract void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup);
+	public abstract void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup);
 
 	/**
-	 * Method adding a ShoppinggroupEntity to the UserEntity. The UserEntity is
-	 * also added to the ShoppinggroupEntity
+	 * Method adding a BillinggroupEntity to the UserEntity. The UserEntity is
+	 * also added to the BillinggroupEntity
 	 * 
-	 * @param shoppinggroup
-	 *            the ShoppinggroupEntity that should be added to the UserEntity
+	 * @param billinggroup
+	 *            the BillinggroupEntity that should be added to the UserEntity
 	 */
-	public abstract void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup);
+	public abstract void addToBillinggroupsAndUsers(GAEBillinggroupEntity billinggroup);
 
 	/**
-	 * Method removing a ShoppinggroupEntity from the UserEntity
+	 * Method removing a BillinggroupEntity from the UserEntity
 	 * 
-	 * @param shoppinggroup
-	 *            the ShoppinggroupEntity that should be removed
+	 * @param billinggroup
+	 *            the BillinggroupEntity that should be removed
 	 */
-	public abstract void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup);
+	public abstract void removeBillinggroup(GAEBillinggroupEntity billinggroup);
 
 	@Override
 	public String toString() {

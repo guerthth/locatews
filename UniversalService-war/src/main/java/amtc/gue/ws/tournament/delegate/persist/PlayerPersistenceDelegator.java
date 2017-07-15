@@ -14,7 +14,6 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.tournament.inout.Players;
 import amtc.gue.ws.tournament.persistence.dao.player.PlayerDAO;
 import amtc.gue.ws.tournament.persistence.model.player.GAEPlayerEntity;
-import amtc.gue.ws.tournament.persistence.model.player.jpa.GAEJPAPlayerEntity;
 import amtc.gue.ws.tournament.util.PlayerPersistenceDelegatorUtils;
 import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
 import amtc.gue.ws.tournament.util.mapper.TournamentServiceEntityMapper;
@@ -30,7 +29,7 @@ public class PlayerPersistenceDelegator extends AbstractPersistenceDelegator {
 	private static final Logger log = Logger.getLogger(PlayerPersistenceDelegator.class.getName());
 
 	/** DAOImplementations used by the delegator */
-	private PlayerDAO<GAEPlayerEntity, GAEJPAPlayerEntity, String> playerDAOImpl;
+	private PlayerDAO<GAEPlayerEntity, GAEPlayerEntity, String> playerDAOImpl;
 
 	/** EntityMapper user by the delegator */
 	private TournamentServiceEntityMapper tournamentEntityMapper;

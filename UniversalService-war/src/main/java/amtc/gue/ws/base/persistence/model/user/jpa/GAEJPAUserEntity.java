@@ -16,7 +16,7 @@ import amtc.gue.ws.base.persistence.model.role.jpa.GAEJPARoleEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.books.persistence.model.book.GAEBookEntity;
 import amtc.gue.ws.books.persistence.model.book.jpa.GAEJPABookEntity;
-import amtc.gue.ws.shopping.persistence.model.GAEShoppinggroupEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
 
 import com.google.appengine.datanucleus.annotations.Unowned;
 
@@ -187,31 +187,31 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	}
 
 	@Override
-	public Set<GAEShoppinggroupEntity> getShoppinggroups() {
+	public Set<GAEBillinggroupEntity> getBillinggroups() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setShoppinggroups(Set<GAEShoppinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
+	public void setBillinggroups(Set<GAEBillinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void addToShoppinggroupsOnly(GAEShoppinggroupEntity shoppinggroup) {
+	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void addToShoppinggroupsAndUsers(GAEShoppinggroupEntity shoppinggroup) {
+	public void addToBillinggroupsAndUsers(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void removeShoppinggroup(GAEShoppinggroupEntity shoppinggroup) {
+	public void removeBillinggroup(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
 		
 	}

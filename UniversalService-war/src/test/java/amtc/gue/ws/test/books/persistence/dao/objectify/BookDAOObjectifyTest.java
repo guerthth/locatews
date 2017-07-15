@@ -9,7 +9,9 @@ import java.util.List;
 import org.easymock.EasyMock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
@@ -28,6 +30,7 @@ import amtc.gue.ws.test.books.BookTest;
  * @author Thomas
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 	private static BookDAO<GAEBookEntity, GAEObjectifyBookEntity, String> failureBookObjectifyDAO;
 

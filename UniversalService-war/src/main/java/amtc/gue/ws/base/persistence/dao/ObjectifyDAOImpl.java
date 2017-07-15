@@ -78,7 +78,7 @@ public abstract class ObjectifyDAOImpl<S extends PersistenceEntity, E extends S,
 		Object foundObject;
 		try {
 			Key key;
-			Long longID;
+			long longID;
 			key = Key.create(entityClass, (String) id);
 			foundObject = ofy().load().key(key).now();
 			if (foundObject == null) {

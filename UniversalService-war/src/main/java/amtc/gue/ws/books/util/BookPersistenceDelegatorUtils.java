@@ -33,7 +33,7 @@ public class BookPersistenceDelegatorUtils {
 		int numberOfUnsuccessfullyAddedEntities = (unSuccessfullyAddedBookEntities != null)
 				? unSuccessfullyAddedBookEntities.size() : 0;
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.ADD_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.ADD_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(successfullyAddedBookEntities));
 		sb.append("'.");
@@ -42,7 +42,7 @@ public class BookPersistenceDelegatorUtils {
 		if (numberOfUnsuccessfullyAddedEntities > 0) {
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'");
-			sb.append(BookServiceErrorConstants.ADD_BOOK_FAILURE_MSG);
+			sb.append(BooksErrorConstants.ADD_BOOK_FAILURE_MSG);
 			sb.append(
 					BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(unSuccessfullyAddedBookEntities));
 			sb.append("'.");
@@ -64,7 +64,7 @@ public class BookPersistenceDelegatorUtils {
 	 */
 	public static String buildGetBooksByTagSuccessStatusMessage(Tags searchTags, List<GAEBookEntity> foundBooks) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.RETRIEVE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(searchTags.getTags().toString());
 		sb.append("': '");
@@ -85,7 +85,7 @@ public class BookPersistenceDelegatorUtils {
 	 */
 	public static String buildRemoveBooksSuccessStatusMessage(List<GAEBookEntity> removedBookEntities) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(BookServiceErrorConstants.DELETE_BOOK_SUCCESS_MSG);
+		sb.append(BooksErrorConstants.DELETE_BOOK_SUCCESS_MSG);
 		sb.append(" '");
 		sb.append(BookServiceEntityMapper.mapBookEntityListToConsolidatedJSONString(removedBookEntities));
 		sb.append("'. ");
