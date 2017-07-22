@@ -14,6 +14,7 @@ import com.googlecode.objectify.annotation.Parent;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
 
 /**
@@ -107,6 +108,13 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 	}
 
 	@Override
+	public void setUser(GAEUserEntity userEntity) {
+		if (userEntity != null) {
+			user = Ref.create(Key.create(GAEObjectifyUserEntity.class, userEntity.getKey()));
+		}
+	}
+
+	@Override
 	public GAEShopEntity getShop() {
 		GAEShopEntity shopEntity = null;
 		if (shop != null) {
@@ -114,6 +122,31 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 			shopEntity = shop.get();
 		}
 		return shopEntity;
+	}
+
+	@Override
+	public void setShop(GAEShopEntity shopEntity) {
+		if (shopEntity != null) {
+			shop = Ref.create(Key.create(GAEObjectifyShopEntity.class, Long.valueOf(shopEntity.getKey()).longValue()));
+		}
+	}
+
+	@Override
+	public GAEBillinggroupEntity getBillinggroup() {
+		GAEBillinggroupEntity billinggoupEntity = null;
+		if (billinggroup != null) {
+			billinggoupEntity = new GAEObjectifyBillinggroupEntity();
+			billinggoupEntity = billinggroup.get();
+		}
+		return billinggoupEntity;
+	}
+
+	@Override
+	public void setBillinggroup(GAEBillinggroupEntity billinggroupEntity) {
+		if (billinggroupEntity != null) {
+			billinggroup = Ref.create(Key.create(GAEObjectifyBillinggroupEntity.class,
+					Long.valueOf(billinggroupEntity.getKey()).longValue()));
+		}
 	}
 
 	/**

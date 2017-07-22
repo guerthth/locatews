@@ -4,6 +4,7 @@ import java.util.Date;
 
 import amtc.gue.ws.base.persistence.model.PersistenceEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
+import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
 /**
  * Bill Persistence Entity for GAE datastore
@@ -56,15 +57,45 @@ public abstract class GAEBillEntity extends PersistenceEntity {
 	public abstract GAEUserEntity getUser();
 
 	/**
+	 * Setter for the User Entity
+	 * 
+	 * @param userEntity
+	 *            user the bill belongs to
+	 */
+	public abstract void setUser(GAEUserEntity userEntity);
+
+	/**
 	 * Getter for the Shop Entity
 	 * 
 	 * @return shop that is associated with the bill
 	 */
 	public abstract GAEShopEntity getShop();
-	
+
+	/**
+	 * Setter for the Shop Entity
+	 * 
+	 * @param shopEntity
+	 *            shop that is associated with the bill
+	 */
+	public abstract void setShop(GAEShopEntity shopEntity);
+
+	/**
+	 * Getter for the Billinggroup Entity
+	 * 
+	 * @return billinggroup that is associated with the bill
+	 */
+	public abstract GAEBillinggroupEntity getBillinggroup();
+
+	/**
+	 * Setter for the Billinggroup Entity
+	 * 
+	 * @param billinggroupEntity
+	 *            that is associated with the bill
+	 */
+	public abstract void setBillinggroup(GAEBillinggroupEntity billinggroupEntity);
+
 	@Override
 	public String toString() {
-		// TODO implement
-		return null;
+		return ShoppingServiceEntityMapper.mapBillEntityToJSONString(this);
 	}
 }

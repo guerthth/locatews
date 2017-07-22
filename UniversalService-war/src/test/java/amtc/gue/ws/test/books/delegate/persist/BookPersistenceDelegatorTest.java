@@ -37,7 +37,8 @@ import amtc.gue.ws.books.persistence.model.tag.GAETagEntity;
 import amtc.gue.ws.books.persistence.model.tag.jpa.GAEJPATagEntity;
 import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
 import amtc.gue.ws.books.util.BooksErrorConstants;
-import amtc.gue.ws.test.base.delegate.persist.IBasePersistenceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.persist.IJPAPersistenceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.persist.IObjectifyPersistenceDelegatorTest;
 import amtc.gue.ws.test.books.BookTest;
 
 /**
@@ -47,7 +48,8 @@ import amtc.gue.ws.test.books.BookTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class BookPersistenceDelegatorTest extends BookTest implements IBasePersistenceDelegatorTest {
+public class BookPersistenceDelegatorTest extends BookTest
+		implements IJPAPersistenceDelegatorTest, IObjectifyPersistenceDelegatorTest {
 	private static DelegatorInput addBookDelegatorInput;
 	private static DelegatorInput addBookDelegatorInputForTagTesting;
 	private static DelegatorInput deleteBookDelegatorInput;

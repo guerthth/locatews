@@ -16,7 +16,8 @@ import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.ErrorConstants;
-import amtc.gue.ws.test.base.delegate.persist.IBasePersistenceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.persist.IJPAPersistenceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.persist.IObjectifyPersistenceDelegatorTest;
 import amtc.gue.ws.test.tournament.TournamentTest;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.persistence.dao.player.PlayerDAO;
@@ -34,7 +35,8 @@ import amtc.gue.ws.tournament.util.TournamentServiceErrorConstants;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PlayerPersistenceDelegatorTest extends TournamentTest implements IBasePersistenceDelegatorTest {
+public class PlayerPersistenceDelegatorTest extends TournamentTest
+		implements IJPAPersistenceDelegatorTest, IObjectifyPersistenceDelegatorTest {
 	private static DelegatorInput addPlayerDelegatorInput;
 	private static DelegatorInput deletePlayerDelegatorInput;
 	private static DelegatorInput deletePlayerDelegatorInputWithId;

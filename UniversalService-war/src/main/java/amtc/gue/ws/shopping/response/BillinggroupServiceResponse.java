@@ -1,6 +1,5 @@
 package amtc.gue.ws.shopping.response;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,12 +8,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import amtc.gue.ws.base.response.ServiceResponse;
-import amtc.gue.ws.shopping.inout.Shop;
+import amtc.gue.ws.shopping.inout.Billinggroup;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * JAXB object for the ShopServiceResponse complex type
+ * JAXB object for the BillinggroupServiceResponse complex type
  * 
  * @author Thomas
  *
@@ -22,20 +21,17 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class ShopServiceResponse extends ServiceResponse {
-	@XmlElement(name = "shops")
-	private List<Shop> shops;
+public class BillinggroupServiceResponse extends ServiceResponse {
+	@XmlElement(name = "billinggroups")
+	private List<Billinggroup> billinggroups;
 
 	// Getters and Setters
-	public List<Shop> getShops() {
-		if (shops == null) {
-			shops = new ArrayList<>();
-		}
-		return shops;
+	public List<Billinggroup> getBillinggroups() {
+		return billinggroups;
 	}
 
-	@ApiModelProperty(position = 1, required = true, value = "List of shops")
-	public void setShops(List<Shop> shops) {
-		this.shops = shops;
+	@ApiModelProperty(position = 1, required = true, value = "List of billinggoups")
+	public void setBillinggroups(List<Billinggroup> billinggroups) {
+		this.billinggroups = billinggroups;
 	}
 }

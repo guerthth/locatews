@@ -1,4 +1,4 @@
-package amtc.gue.ws.base.inout;
+package amtc.gue.ws.shopping.inout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,25 +8,25 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * JAXB object for the Users complex type
+ * JAXB object for the Bills complex type
  * 
  * @author Thomas
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-public class Users {
+public class Bills {
 	@XmlElement
-	private List<User> users;
+	private List<Bill> bills;
 
 	// Getters and Setters
-	public List<User> getUsers() {
-		if (this.users == null) {
-			this.users = new ArrayList<>();
+	public List<Bill> getBills() {
+		if (this.bills == null) {
+			this.bills = new ArrayList<>();
 		}
-		return this.users;
+		return this.bills;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setBills(List<Bill> bills) {
+		this.bills = bills;
 	}
 }

@@ -22,7 +22,7 @@ public class ShopPersistenceDelegatorUtils {
 	 *            a list of unsuccessfully added ShopEntities
 	 * @return success status message for shop entity removal
 	 */
-	public static String buildPersistShopSuccessStatusMessage(List<GAEShopEntity> successfullyAddedShopEntities,
+	public static String buildPersistShopsSuccessStatusMessage(List<GAEShopEntity> successfullyAddedShopEntities,
 			List<GAEShopEntity> unsuccessfullyAddedShopEntities) {
 		int numberOfSuccessfullyAddedEntities = (successfullyAddedShopEntities != null)
 				? successfullyAddedShopEntities.size() : 0;
@@ -67,17 +67,32 @@ public class ShopPersistenceDelegatorUtils {
 	 * Method building the String status message for successful retrieval of a
 	 * specific ShopEntity from the datastore
 	 * 
-	 * @param foundShop
+	 * @param foundShops
 	 *            the shop that was found
 	 * @return the created status message
 	 */
-	public static String buildGetShopsByIdSuccessStatusMessage(String shopId, GAEShopEntity foundShop) {
+	public static String buildGetShopsSuccessStatusMessage(List<GAEShopEntity> foundShops) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(ShoppingServiceErrorConstants.RETRIEVE_SHOP_BY_ID_SUCCESS_MSG);
-		sb.append(" '");
-		sb.append(shopId);
-		sb.append("': '");
-		sb.append(ShoppingServiceEntityMapper.mapShopEntityToJSONString(foundShop));
+		sb.append(ShoppingServiceErrorConstants.RETRIEVE_SHOP_SUCCESS_MSG);
+		sb.append(" : '");
+		sb.append(ShoppingServiceEntityMapper.mapShopEntityListToConsolidatedJSONString(foundShops));
+		sb.append("'.");
+		return sb.toString();
+	}
+
+	/**
+	 * Method building the String status message for successful update
+	 * shopEntities
+	 * 
+	 * @param updatedShops
+	 *            the shops that were successfully updated
+	 * @return the created status message
+	 */
+	public static String buildUpdateShopsSuccessStatusMessage(List<GAEShopEntity> updatedShops) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ShoppingServiceErrorConstants.UPDATE_SHOP_SUCCESS_MSG);
+		sb.append(" : '");
+		sb.append(ShoppingServiceEntityMapper.mapShopEntityListToConsolidatedJSONString(updatedShops));
 		sb.append("'.");
 		return sb.toString();
 	}

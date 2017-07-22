@@ -16,6 +16,10 @@ import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
 import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
+import amtc.gue.ws.shopping.inout.Bill;
+import amtc.gue.ws.shopping.inout.Billinggroup;
+import amtc.gue.ws.shopping.inout.Billinggroups;
+import amtc.gue.ws.shopping.inout.Bills;
 import amtc.gue.ws.shopping.inout.Shop;
 import amtc.gue.ws.shopping.inout.Shops;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
@@ -35,7 +39,7 @@ import amtc.gue.ws.shopping.util.mapper.objectify.ShoppingServiceObjectifyEntity
 import amtc.gue.ws.test.base.BaseTest;
 
 /**
- * Class holding common data for all ShoppingService Tests
+ * Class holding common data for all ShopService Tests
  * 
  * @author Thomas
  *
@@ -54,6 +58,16 @@ public class ShoppingTest extends BaseTest {
 	protected static Shops shops;
 	protected static Shops shopsWithoutContent;
 
+	protected static Billinggroup billinggroup1;
+	protected static Billinggroup billinggroup2;
+	protected static Billinggroups billinggroups;
+	protected static Billinggroups billinggroupsWithoutContent;
+
+	protected static Bill bill1;
+	protected static Bill bill2;
+	protected static Bills bills;
+	protected static Bills billsWithoutContent;
+
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity1;
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity2;
 	protected static GAEObjectifyUserEntity objectifyUserEntity1;
@@ -66,13 +80,21 @@ public class ShoppingTest extends BaseTest {
 
 	protected static List<GAEShopEntity> objectifyShopEntityList;
 	protected static List<GAEShopEntity> objectifyShopEntityEmptyList;
+	protected static List<GAEBillinggroupEntity> objectifyBillinggroupEntityList;
+	protected static List<GAEBillinggroupEntity> objectifyBillinggroupEntityEmptyList;
+	protected static List<GAEBillEntity> objectifyBillEntityList;
+	protected static List<GAEBillEntity> objectifyBillEntityEmptyList;
 
 	protected static final String EMAIL = "test@test.com";
 	protected static final String EMAIL_B = "testB@test.com";
 	protected static final String SHOPID = "1";
 	protected static final String SHOPNAME = "ShopName";
-	
+	protected static final String DESCRIPTION = "description";
+	protected static final String BILLID = "1";
+	protected static final String BILLINGGROUPID = "1";
+
 	protected static ShoppingServiceEntityMapper objectifyShopEntityMapper;
+	protected static ShoppingServiceEntityMapper objectifyBillEntityMapper;
 
 	// TODO
 
@@ -112,8 +134,10 @@ public class ShoppingTest extends BaseTest {
 		shopObjectifyDAO = new ShopObjectifyDAOImpl();
 
 		setupShops();
-		setupBillinggroupEntities();
+		setupBillinggroups();
+		setupBills();
 		setupShopEntities();
+		setupBillinggroupEntities();
 		setupBillEntities();
 		setupEntityMappers();
 	}
@@ -144,6 +168,30 @@ public class ShoppingTest extends BaseTest {
 	}
 
 	/**
+	 * Setting up Billinggroups
+	 */
+	private static void setupBillinggroups() {
+		billinggroup1 = new Billinggroup();
+		billinggroup1.setDescription(DESCRIPTION);
+		billinggroup2 = new Billinggroup();
+		billinggroup2.setBillinggroupId(BILLINGGROUPID);
+		billinggroups = new Billinggroups();
+		billinggroups.getBillinggroups().add(billinggroup1);
+		billinggroupsWithoutContent = new Billinggroups();
+	}
+
+	/**
+	 * Setting up Billss
+	 */
+	private static void setupBills() {
+		bill1 = new Bill();
+		bill2 = new Bill();
+		bills = new Bills();
+		bills.getBills().add(bill1);
+		billsWithoutContent = new Bills();
+	}
+
+	/**
 	 * Setting up UserEntities for testing
 	 */
 	private void setupUserEntities() {
@@ -159,7 +207,13 @@ public class ShoppingTest extends BaseTest {
 	private static void setupBillinggroupEntities() {
 		// Objectify Billinggroup Entities
 		objectifyBillinggroupEntity1 = new GAEObjectifyBillinggroupEntity();
+		objectifyBillinggroupEntity1.setDescription(DESCRIPTION);
 		objectifyBillinggroupEntity2 = new GAEObjectifyBillinggroupEntity();
+
+		objectifyBillinggroupEntityList = new ArrayList<>();
+		objectifyBillinggroupEntityList.add(objectifyBillinggroupEntity1);
+
+		objectifyBillinggroupEntityEmptyList = new ArrayList<>();
 	}
 
 	/**
@@ -169,6 +223,11 @@ public class ShoppingTest extends BaseTest {
 		// Objectify Bill Entities
 		objectifyBillEntity1 = new GAEObjectifyBillEntity();
 		objectifyBillEntity2 = new GAEObjectifyBillEntity();
+
+		objectifyBillEntityList = new ArrayList<>();
+		objectifyBillEntityList.add(objectifyBillEntity1);
+
+		objectifyBillEntityEmptyList = new ArrayList<>();
 	}
 
 	/**
@@ -188,11 +247,12 @@ public class ShoppingTest extends BaseTest {
 
 		objectifyShopEntityEmptyList = new ArrayList<>();
 	}
-	
+
 	/**
 	 * Method setting up entity mappers
 	 */
 	private static void setupEntityMappers() {
 		objectifyShopEntityMapper = new ShoppingServiceObjectifyEntityMapper();
+		objectifyBillEntityMapper = new ShoppingServiceObjectifyEntityMapper();
 	}
 }

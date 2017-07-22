@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.shopping.inout.Shop;
 import amtc.gue.ws.shopping.inout.Shops;
@@ -57,7 +58,7 @@ public class ShopPersistenceDelegator extends AbstractPersistenceDelegator {
 
 			// set delegatorOutput
 			if (!successfullyAddedShopEntities.isEmpty()) {
-				delegatorOutput.setStatusMessage(ShopPersistenceDelegatorUtils.buildPersistShopSuccessStatusMessage(
+				delegatorOutput.setStatusMessage(ShopPersistenceDelegatorUtils.buildPersistShopsSuccessStatusMessage(
 						successfullyAddedShopEntities, unsuccessfullyAddedShopEntities));
 				delegatorOutput.setOutputObject(
 						ShoppingServiceEntityMapper.transformShopEntitiesToShops(successfullyAddedShopEntities));
@@ -116,14 +117,61 @@ public class ShopPersistenceDelegator extends AbstractPersistenceDelegator {
 
 	@Override
 	protected void retrieveEntities() {
-		// TODO Auto-generated method stub
-
+		log.info("READ Shop action triggered");
+		delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_SHOP_SUCCESS_CODE);
+		try {
+			List<GAEShopEntity> foundShops = shopDAOImpl.findAllEntities();
+			delegatorOutput
+					.setStatusMessage(ShopPersistenceDelegatorUtils.buildGetShopsSuccessStatusMessage(foundShops));
+			delegatorOutput.setOutputObject(ShoppingServiceEntityMapper.transformShopEntitiesToShops(foundShops));
+		} catch (EntityRetrievalException e) {
+			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_SHOP_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.RETRIEVE_SHOP_FAILURE_MSG);
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
+			log.log(Level.SEVERE, "Error while trying to retrieve shops", e);
+		}
 	}
 
 	@Override
 	protected void updateEntities() {
-		// TODO Auto-generated method stub
+		log.info("UPDATE Shop action triggered");
+		if (delegatorInput.getInputObject() instanceof Shops) {
+			Shops shopsToUpdate = (Shops) delegatorInput.getInputObject();
+			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_SHOP_SUCCESS_CODE);
+			List<GAEShopEntity> successfullyUpdatedShopEntities = new ArrayList<>();
+			List<GAEShopEntity> unsuccessfullyUpdatedShopEntities = new ArrayList<>();
+			StringBuilder sb = new StringBuilder();
+			// update ShopEntities
+			for (Shop shop : shopsToUpdate.getShops()) {
+				GAEShopEntity shopEntity = shoppingEntityMapper.mapShopToEntity(shop, DelegatorTypeEnum.UPDATE);
+				String shopEntityJSON = ShoppingServiceEntityMapper.mapShopEntityToJSONString(shopEntity);
+				try {
+					GAEShopEntity updatedShopEntity = shopDAOImpl.updateEntity(shopEntity);
+					successfullyUpdatedShopEntities.add(updatedShopEntity);
+					log.info(shopEntityJSON + " added to DB");
+				} catch (Exception e) {
+					unsuccessfullyUpdatedShopEntities.add(shopEntity);
+					sb.append(e.getMessage());
+					log.log(Level.SEVERE, "Error while trying to update: " + shopEntityJSON, e);
+				}
+			}
 
+			// set delegatorOutput
+			if (!successfullyUpdatedShopEntities.isEmpty()) {
+				delegatorOutput.setStatusMessage(ShopPersistenceDelegatorUtils
+						.buildUpdateShopsSuccessStatusMessage(successfullyUpdatedShopEntities));
+				delegatorOutput.setOutputObject(
+						ShoppingServiceEntityMapper.transformShopEntitiesToShops(successfullyUpdatedShopEntities));
+			} else {
+				delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_SHOP_FAILURE_CODE);
+				delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.UPDATE_SHOP_FAILURE_MSG);
+				delegatorOutput.setStatusReason(sb.toString());
+				delegatorOutput.setOutputObject(null);
+			}
+		} else {
+			setUnrecognizedDelegatorOutput();
+		}
 	}
 
 	/**
@@ -141,9 +189,9 @@ public class ShopPersistenceDelegator extends AbstractPersistenceDelegator {
 	 * Setter for the Shopping entity mapper
 	 * 
 	 * @param shoppingEntityMapper
-	 *            the ShopinigEntityMapper instance used by the delegator
+	 *            the ShoppingEntityMapper instance used by the delegator
 	 */
-	public void setShopEntityMapper(ShoppingServiceEntityMapper shoppingEntityMapper) {
+	public void setShoppingEntityMapper(ShoppingServiceEntityMapper shoppingEntityMapper) {
 		this.shoppingEntityMapper = shoppingEntityMapper;
 	}
 }

@@ -25,7 +25,7 @@ import amtc.gue.ws.shopping.persistence.dao.objectify.ShopObjectifyDAOImpl;
 import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
 import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyShopEntity;
 import amtc.gue.ws.shopping.util.ShoppingServiceErrorConstants;
-import amtc.gue.ws.test.base.delegate.persist.IBasePersistenceDelegatorTest;
+import amtc.gue.ws.test.base.delegate.persist.IObjectifyPersistenceDelegatorTest;
 import amtc.gue.ws.test.shopping.ShoppingTest;
 
 /**
@@ -35,7 +35,7 @@ import amtc.gue.ws.test.shopping.ShoppingTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBasePersistenceDelegatorTest {
+public class ShopPersistenceDelegatorTest extends ShoppingTest implements IObjectifyPersistenceDelegatorTest {
 	private static ShopPersistenceDelegator shopPersistenceDelegator;
 
 	private static DelegatorInput addShopDelegatorInput;
@@ -66,9 +66,13 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 
 	@AfterClass
 	public static void finalTearDown() {
-		// TODO
-		// EasyMock.verify(shopObjectifyDAOImpl);
-		// EasyMock.verify(shopObjectifyDAOImplGeneralFail);
+		EasyMock.verify(shopObjectifyDAOImpl);
+		EasyMock.verify(shopObjectifyDAOImplNoFoundShops);
+		EasyMock.verify(shopObjectifyDAOImplNullShops);
+		EasyMock.verify(shopObjectifyDAOImplGeneralFail);
+		EasyMock.verify(shopObjectifyDAOImplDeletionFail);
+		EasyMock.verify(shopObjectifyDAOImplSpecificEntityFound);
+		EasyMock.verify(shopObjectifyDAOImplRetrievalFail);
 	}
 
 	@Override
@@ -91,16 +95,11 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	}
 
 	@Override
-	public void testDelegateJPAAddUsingCorrectInput() {
-		// JPA functionality not implemented for Shops
-	}
-
-	@Override
 	@Test
 	public void testDelegateObjectifyAddUsingCorrectInput() {
 		shopPersistenceDelegator.initialize(addShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.ADD_SHOP_SUCCESS_CODE, delegatorOutput.getStatusCode());
 		assertTrue(delegatorOutput.getStatusMessage().startsWith(ShoppingServiceErrorConstants.ADD_SHOP_SUCCESS_MSG));
@@ -108,23 +107,13 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	}
 
 	@Override
-	public void testDelegateJPAAddUsingIncorrectDAOSetup() {
-		// JPA functionality not implemented for Shops
-	}
-
-	@Override
 	@Test
 	public void testDelegateObjectifyAddUsingIncorrectDAOSetup() {
 		shopPersistenceDelegator.initialize(addShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.ADD_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
-	}
-
-	@Override
-	public void testDelegateJPAAddUsingInvalidInput() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -132,14 +121,9 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyAddUsingInvalidInput() {
 		shopPersistenceDelegator.initialize(invalidAddDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
-	}
-
-	@Override
-	public void testDelegateJPADeleteUsingCorrectIdInput() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -147,15 +131,9 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteUsingCorrectIdInput() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_SUCCESS_CODE, delegatorOutput.getStatusCode());
-
-	}
-
-	@Override
-	public void testDelegateJPADeleteUsingNonExistingObjects() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -163,15 +141,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteUsingNonExistingObjects() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPADeleteUsingNullObjects() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -179,15 +152,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteUsingNullObjects() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPADeleteUsingIncorrectDAOSetup() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -195,15 +163,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteUsingIncorrectDAOSetup() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPADeleteDeletionFail() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -211,15 +174,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteDeletionFail() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplDeletionFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPADeleteRetrievalFail() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -227,15 +185,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteRetrievalFail() {
 		shopPersistenceDelegator.initialize(deleteShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.DELETE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPADeleteUsingInvalidInput() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -243,15 +196,10 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyDeleteUsingInvalidInput() {
 		shopPersistenceDelegator.initialize(invalidDeleteDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_MSG, delegatorOutput.getStatusMessage());
-	}
-
-	@Override
-	public void testDelegateJPAReadUsingCorrectInput() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -259,14 +207,9 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyReadUsingCorrectInput() {
 		shopPersistenceDelegator.initialize(readShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.RETRIEVE_SHOP_SUCCESS_CODE, delegatorOutput.getStatusCode());
-	}
-
-	@Override
-	public void testDelegateJPAReadUsingIncorrectDAOSetup() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
@@ -274,30 +217,17 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyReadUsingIncorrectDAOSetup() {
 		shopPersistenceDelegator.initialize(readShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.RETRIEVE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.RETRIEVE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
-	public void testDelegateJPAReadUsingInvalidInput() {
-		// JPA functionality not implemented for Shops
-	}
-
-	@Override
 	@Test
 	public void testDelegateObjectifyReadUsingInvalidInput() {
-		shopPersistenceDelegator.initialize(invalidReadDelegatorInput);
-		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
-		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
-	}
-
-	@Override
-	public void testDelegateJPAUpdateUsingCorrectInput() {
-		// JPA functionality not implemented for Shops
+		// all inputs are ok
+		assertTrue(true);
 	}
 
 	@Override
@@ -305,38 +235,28 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 	public void testDelegateObjectifyUpdateUsingCorrectInput() {
 		shopPersistenceDelegator.initialize(updateShopDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplSpecificEntityFound);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.UPDATE_SHOP_SUCCESS_CODE, delegatorOutput.getStatusCode());
-	}
-
-	@Override
-	public void testDelegateJPAUpdateUsingIncorrectDAOSetup() {
-		// JPA functionality not implemented for Shops
 	}
 
 	@Override
 	@Test
 	public void testDelegateObjectifyUpdateUsingIncorrectDAOSetup() {
 		shopPersistenceDelegator.initialize(updateShopDelegatorInput);
-		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplRetrievalFail);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImplGeneralFail);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.UPDATE_SHOP_FAILURE_CODE, delegatorOutput.getStatusCode());
 		assertEquals(ShoppingServiceErrorConstants.UPDATE_SHOP_FAILURE_MSG, delegatorOutput.getStatusMessage());
 	}
 
 	@Override
-	public void testDelegateJPAUpdateUsingInvalidInput() {
-		// JPA functionality not implemented for Shops
-	}
-
-	@Override
 	@Test
 	public void testDelegateObjectifyUpdateUsingInvalidInput() {
-		shopPersistenceDelegator.initialize(invalidReadDelegatorInput);
+		shopPersistenceDelegator.initialize(invalidUpdateDelegatorInput);
 		shopPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
-		shopPersistenceDelegator.setShopEntityMapper(objectifyShopEntityMapper);
+		shopPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		IDelegatorOutput delegatorOutput = shopPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
 	}
@@ -385,15 +305,21 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 		shopPersistenceDelegator = new ShopPersistenceDelegator();
 	}
 
+	/**
+	 * Method setting up DAOs for testing
+	 * 
+	 * @throws EntityRetrievalException
+	 *             when issue occurs while trying to retrieve an entity
+	 * @throws EntityRemovalException
+	 *             when issue occurs while trying to remove an entity
+	 * @throws EntityPersistenceException
+	 *             when issue occurs while trying to persist an entity
+	 */
 	private static void setUpDAOMocks()
 			throws EntityRetrievalException, EntityRemovalException, EntityPersistenceException {
 		// objectify DAO mocks
 		shopObjectifyDAOImpl = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
 		EasyMock.expect(shopObjectifyDAOImpl.findAllEntities()).andReturn(objectifyShopEntityList);
-		EasyMock.expect(shopObjectifyDAOImpl.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyShopEntity1);
-		EasyMock.expect(shopObjectifyDAOImpl.findSpecificEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
-				.andReturn(objectifyShopEntityList);
 		EasyMock.expect(shopObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
 				.andReturn(objectifyShopEntity1);
 		EasyMock.expect(shopObjectifyDAOImpl.removeEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
@@ -401,47 +327,35 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IBaseP
 		EasyMock.replay(shopObjectifyDAOImpl);
 
 		shopObjectifyDAOImplSpecificEntityFound = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
-		EasyMock.expect(shopObjectifyDAOImplSpecificEntityFound.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyShopEntity1);
 		EasyMock.replay(shopObjectifyDAOImplSpecificEntityFound);
 
 		// negative scenario fails everytime
 		shopObjectifyDAOImplGeneralFail = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
 		EasyMock.expect(shopObjectifyDAOImplGeneralFail.findAllEntities()).andThrow(new EntityRetrievalException());
-		EasyMock.expect(shopObjectifyDAOImplGeneralFail.findEntityById(EasyMock.isA(String.class)))
-				.andThrow(new EntityRetrievalException());
-		EasyMock.expect(shopObjectifyDAOImplGeneralFail.findSpecificEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
-				.andThrow(new EntityRetrievalException());
 		EasyMock.expect(shopObjectifyDAOImplGeneralFail.persistEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
 				.andThrow(new EntityPersistenceException());
 		EasyMock.expect(shopObjectifyDAOImplGeneralFail.removeEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
 				.andThrow(new EntityRemovalException()).times(4);
+		EasyMock.expect(shopObjectifyDAOImplGeneralFail.updateEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
+				.andThrow(new EntityPersistenceException());
 		EasyMock.replay(shopObjectifyDAOImplGeneralFail);
 
 		// negative scenario no found shop when trying to delete
 		shopObjectifyDAOImplNoFoundShops = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
-		EasyMock.expect(shopObjectifyDAOImplNoFoundShops.findSpecificEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
-				.andReturn(objectifyShopEntityEmptyList);
-		EasyMock.expect(shopObjectifyDAOImplNoFoundShops.findEntityById(EasyMock.isA(String.class))).andReturn(null);
 		EasyMock.replay(shopObjectifyDAOImplNoFoundShops);
 
 		// Positive scenario (null returned after shop retrieval)
 		shopObjectifyDAOImplNullShops = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
-		EasyMock.expect(shopObjectifyDAOImplNullShops.findEntityById(EasyMock.isA(String.class))).andReturn(null);
 		EasyMock.replay(shopObjectifyDAOImplNullShops);
 
 		// negative scenario mock for ShopDAO (removeEntity() call fails)
 		shopObjectifyDAOImplDeletionFail = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
-		EasyMock.expect(shopObjectifyDAOImplDeletionFail.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyShopEntity1);
 		EasyMock.expect(shopObjectifyDAOImplDeletionFail.removeEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
 				.andThrow(new EntityRemovalException());
 		EasyMock.replay(shopObjectifyDAOImplDeletionFail);
 
 		// negative scenario (entity retrieval fails)
 		shopObjectifyDAOImplRetrievalFail = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
-		EasyMock.expect(shopObjectifyDAOImplRetrievalFail.findEntityById(EasyMock.isA(String.class)))
-				.andThrow(new EntityRetrievalException()).times(2);
 		EasyMock.replay(shopObjectifyDAOImplRetrievalFail);
 	}
 }

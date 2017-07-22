@@ -9,12 +9,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import amtc.gue.ws.base.response.ServiceResponse;
-import amtc.gue.ws.shopping.inout.Shop;
+import amtc.gue.ws.shopping.inout.Bill;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 /**
- * JAXB object for the ShopServiceResponse complex type
+ * JAXB object for the BillServiceResponse complex type
  * 
  * @author Thomas
  *
@@ -22,20 +21,19 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class ShopServiceResponse extends ServiceResponse {
-	@XmlElement(name = "shops")
-	private List<Shop> shops;
+public class BillServiceResponse extends ServiceResponse {
+	@XmlElement
+	private List<Bill> bills;
 
 	// Getters and Setters
-	public List<Shop> getShops() {
-		if (shops == null) {
-			shops = new ArrayList<>();
+	public List<Bill> getBills() {
+		if (bills == null) {
+			bills = new ArrayList<>();
 		}
-		return shops;
+		return bills;
 	}
 
-	@ApiModelProperty(position = 1, required = true, value = "List of shops")
-	public void setShops(List<Shop> shops) {
-		this.shops = shops;
+	public void setBills(List<Bill> bills) {
+		this.bills = bills;
 	}
 }

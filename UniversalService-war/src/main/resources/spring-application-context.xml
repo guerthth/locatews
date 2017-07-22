@@ -167,4 +167,36 @@
 	<!-- VCS Service relevant declarations -->
 	<!-- GithubAPIDelegator -->
 	<bean id="githubAPIDelegator" class="amtc.gue.ws.vcsapi.delegate.GithubAPIDelegator"></bean>
+
+	<!-- ShoppingService relevant declarations -->
+	<!-- Objectify ShopDAOImpl -->
+	<bean id="shopObjectifyDAOImpl"
+		class="amtc.gue.ws.shopping.persistence.dao.objectify.ShopObjectifyDAOImpl">
+	</bean>
+
+	<!-- Objectify BillinggroupDAOImpl -->
+	<bean id="billinggoupObjectifyDAOImpl"
+		class="amtc.gue.ws.shopping.persistence.dao.objectify.BillinggroupObjectifyDAOImpl">
+	</bean>
+
+	<!-- ShopServiceObjectifyEntityMapper -->
+	<bean id="shoppingObjectifyEntityMapper"
+		class="amtc.gue.ws.shopping.util.mapper.objectify.ShoppingServiceObjectifyEntityMapper">
+	</bean>
+
+	<!-- ShopPersistenceDelegator -->
+	<bean id="shopPersistenceDelegator"
+		class="amtc.gue.ws.shopping.delegate.persist.ShopPersistenceDelegator">
+		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
+		<property name="shopDAO" ref="shopObjectifyDAOImpl"></property>
+		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- BillinggroupPersistenceDelegator -->
+	<bean id="billinggroupPersistenceDelegator"
+		class="amtc.gue.ws.shopping.delegate.persist.BillinggroupPersistenceDelegator">
+		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
+		<property name="billinggroupDAO" ref="billinggoupObjectifyDAOImpl"></property>
+		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
+	</bean>
 </beans>

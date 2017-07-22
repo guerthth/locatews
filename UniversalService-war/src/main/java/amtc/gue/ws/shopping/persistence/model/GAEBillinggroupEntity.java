@@ -4,6 +4,7 @@ import java.util.Set;
 
 import amtc.gue.ws.base.persistence.model.PersistenceEntity;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
+import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
 /**
  * Billinggroup Persistence Entity for GAE datastore
@@ -123,7 +124,6 @@ public abstract class GAEBillinggroupEntity extends PersistenceEntity {
 
 	@Override
 	public String toString() {
-		// TODO implement
-		return null;
+		return ShoppingServiceEntityMapper.mapBillinggroupEntityToJSONString(this);
 	}
 }

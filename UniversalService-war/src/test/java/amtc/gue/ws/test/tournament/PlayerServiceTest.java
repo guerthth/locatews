@@ -108,7 +108,7 @@ public class PlayerServiceTest extends TournamentTest {
 		userDelegatorOutput = new DelegatorOutput();
 		userDelegatorOutput.setOutputObject(serviceUser);
 		failureUserDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(invalidServiceUser);
+		failureUserDelegatorOutput.setOutputObject(invalidServiceUser);
 	}
 
 	private static void setUpDelegatorMocks() {

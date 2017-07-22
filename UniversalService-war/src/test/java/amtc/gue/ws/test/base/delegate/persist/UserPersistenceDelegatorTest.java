@@ -41,7 +41,7 @@ import amtc.gue.ws.test.base.UserTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserPersistenceDelegatorTest extends UserTest implements IBasePersistenceDelegatorTest {
+public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersistenceDelegatorTest, IObjectifyPersistenceDelegatorTest {
 	private static DelegatorInput addUserDelegatorInput;
 	private static DelegatorInput addUserDelegatorInputForRoleTesting;
 	private static DelegatorInput deleteUserDelegatorInput;
