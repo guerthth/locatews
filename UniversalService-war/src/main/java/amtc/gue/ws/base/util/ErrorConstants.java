@@ -39,8 +39,10 @@ public class ErrorConstants {
 
 	public static final String RETRIEVE_USER_FOR_ROLES_SUCCESS_MSG = "OK. Retrieved users for role(s)";
 
-	public static final String RETRIEVE_USER_BY_ID_SUCCESS_MSG = "OK. Retrieved user for userName";
+	public static final String RETRIEVE_USER_BY_ID_SUCCESS_MSG = "OK. Retrieved user for userId";
 
+	public static final String RETRIEVE_USER_BY_EMAIL_SUCCESS_MSG = "OK. Retrieved user for email";
+	
 	public static final String RETRIEVE_USER_FAILURE_MSG = "Not Found. Retrieving users failed";
 
 	public static final int UPDATE_USER_SUCCESS_CODE = 201;

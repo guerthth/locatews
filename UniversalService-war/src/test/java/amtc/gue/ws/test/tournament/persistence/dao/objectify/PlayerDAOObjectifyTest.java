@@ -97,7 +97,7 @@ public class PlayerDAOObjectifyTest extends TournamentTest implements IBaseDAOTe
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		playerObjectifyDAO.persistEntity(objectifyPlayerEntity1);
-		GAEPlayerEntity playerEntity = playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getKey());
+		GAEPlayerEntity playerEntity = playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getWebsafeKey());
 		assertNotNull(playerEntity);
 	}
 
@@ -151,10 +151,11 @@ public class PlayerDAOObjectifyTest extends TournamentTest implements IBaseDAOTe
 	@Test
 	public void testUpdateSimpleEntity() throws EntityRetrievalException, EntityPersistenceException {
 		playerObjectifyDAO.persistEntity(objectifyPlayerEntity1);
-		assertNull(playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getKey()).getDescription());
+		assertNull(playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getWebsafeKey()).getDescription());
 		objectifyPlayerEntity1.setDescription(DESCRIPTION);
 		playerObjectifyDAO.updateEntity(objectifyPlayerEntity1);
-		assertEquals(DESCRIPTION, playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getKey()).getDescription());
+		assertEquals(DESCRIPTION,
+				playerObjectifyDAO.findEntityById(objectifyPlayerEntity1.getWebsafeKey()).getDescription());
 	}
 
 	@Override

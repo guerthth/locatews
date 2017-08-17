@@ -101,4 +101,9 @@ public class GAEJPATagEntity extends GAETagEntity {
 			book.removeTag(this);
 		}
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return tagname;
+	}
 }

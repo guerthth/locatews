@@ -285,7 +285,7 @@ public class UserServiceEntityMapperTest extends UserTest {
 	 */
 	private static void setUpBdOutputs() {
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(users);
+		userDelegatorOutput.setOutputObject(objectifyUserEntityList);
 		unrecognizedUserDelegatorOutput = new DelegatorOutput();
 		unrecognizedUserDelegatorOutput.setOutputObject(null);
 	}

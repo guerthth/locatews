@@ -45,4 +45,9 @@ public class GAEJPAPlayerEntity extends GAEPlayerEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return playerName;
+	}
 }

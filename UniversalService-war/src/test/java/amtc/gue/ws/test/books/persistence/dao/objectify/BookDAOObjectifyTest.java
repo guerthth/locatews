@@ -78,11 +78,11 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		assertEquals(1, tagObjectifyDAO.findAllEntities().size());
 		assertEquals(1, userObjectifyDAO.findAllEntities().size());
 		assertEquals(1, bookObjectifyDAO.findAllEntities().size());
-		assertEquals(1, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey()).getBooks().size());
-		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getBooks().size());
+		assertEquals(1, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey()).getBooks().size());
+		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getWebsafeKey()).getBooks().size());
 		assertNotNull(bookObjectifyDAO.findSpecificEntity(objectifyBookEntity1));
-		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getUsers().size());
-		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getTags().size());
+		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getUsers().size());
+		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getTags().size());
 	}
 
 	/**
@@ -106,11 +106,11 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		assertEquals(2, tagObjectifyDAO.findAllEntities().size());
 		assertEquals(1, userObjectifyDAO.findAllEntities().size());
 		assertEquals(1, bookObjectifyDAO.findAllEntities().size());
-		assertEquals(1, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey()).getBooks().size());
-		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getBooks().size());
+		assertEquals(1, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey()).getBooks().size());
+		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getWebsafeKey()).getBooks().size());
 		assertNotNull(bookObjectifyDAO.findSpecificEntity(objectifyBookEntity1));
-		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getUsers().size());
-		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getTags().size());
+		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getUsers().size());
+		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getTags().size());
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		bookObjectifyDAO.persistEntity(objectifyBookEntity1);
-		GAEBookEntity bookEntity = bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey());
+		GAEBookEntity bookEntity = bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey());
 		assertNotNull(bookEntity);
 	}
 
@@ -197,7 +197,7 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		objectifyBookEntity1.addToUsersOnly(objectifyUserEntity1);
 		bookObjectifyDAO.persistEntity(objectifyBookEntity1);
 
-		GAEBookEntity bookEntity = bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey());
+		GAEBookEntity bookEntity = bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey());
 		assertNotNull(bookEntity);
 	}
 
@@ -275,10 +275,11 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 	@Test
 	public void testUpdateSimpleEntity() throws EntityRetrievalException, EntityPersistenceException {
 		bookObjectifyDAO.persistEntity(objectifyBookEntity2);
-		assertNull(bookObjectifyDAO.findEntityById(objectifyBookEntity2.getKey()).getDescription());
+		assertNull(bookObjectifyDAO.findEntityById(objectifyBookEntity2.getWebsafeKey()).getDescription());
 		objectifyBookEntity2.setDescription(DESCRIPTION);
 		bookObjectifyDAO.updateEntity(objectifyBookEntity2);
-		assertEquals(DESCRIPTION, bookObjectifyDAO.findEntityById(objectifyBookEntity2.getKey()).getDescription());
+		assertEquals(DESCRIPTION,
+				bookObjectifyDAO.findEntityById(objectifyBookEntity2.getWebsafeKey()).getDescription());
 	}
 
 	/**
@@ -299,12 +300,12 @@ public class BookDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		objectifyBookEntity1.addToTagsAndBooks(objectifyTagEntity2);
 		objectifyBookEntity1.addToUsersAndBooks(objectifyUserEntity1);
 
-		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getTags().size());
-		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getUsers().size());
+		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getTags().size());
+		assertEquals(1, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getUsers().size());
 		objectifyBookEntity1.setUsers(null, false);
 		bookObjectifyDAO.updateEntity(objectifyBookEntity1);
-		assertEquals(0, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getUsers().size());
-		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getKey()).getTags().size());
+		assertEquals(0, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getUsers().size());
+		assertEquals(2, bookObjectifyDAO.findEntityById(objectifyBookEntity1.getWebsafeKey()).getTags().size());
 	}
 
 	@Override

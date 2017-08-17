@@ -14,12 +14,13 @@ import amtc.gue.ws.base.inout.Status;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ServiceResponse {
-	
+
 	@XmlElement(name = "status", required = true, nillable = true)
-	public Status status;
+	private Status status;
 
 	/**
 	 * Getter for the status
+	 * 
 	 * @return response status
 	 */
 	public Status getStatus() {
@@ -28,11 +29,12 @@ public class ServiceResponse {
 
 	/**
 	 * Setter for the status
-	 * @param status responsestatus
+	 * 
+	 * @param status
+	 *            responsestatus
 	 */
 	public void setStatus(Status status) {
 		this.status = status;
 	}
-	
-	
+
 }

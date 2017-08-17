@@ -103,4 +103,9 @@ public class GAEObjectifyRoleEntity extends GAERoleEntity {
 			addToUsersOnly(user);
 		}
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyRoleEntity.class, role).getString();
+	}
 }

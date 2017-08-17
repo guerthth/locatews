@@ -1,5 +1,6 @@
 package amtc.gue.ws.tournament.persistence.model.player.objectify;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
@@ -43,5 +44,10 @@ public class GAEObjectifyPlayerEntity extends GAEPlayerEntity {
 	@Override
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyPlayerEntity.class, playerName).getString();
 	}
 }

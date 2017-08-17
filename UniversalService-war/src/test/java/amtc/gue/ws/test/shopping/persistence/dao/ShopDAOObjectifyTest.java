@@ -94,7 +94,7 @@ public class ShopDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
-		assertNotNull(shopObjectifyDAO.findEntityById(objectifyShopEntity1.getKey()));
+		assertNotNull(shopObjectifyDAO.findEntityById(objectifyShopEntity1.getWebsafeKey()));
 	}
 
 	@Override

@@ -1,8 +1,6 @@
 package amtc.gue.ws.test.base.delegate.persist;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMock;
 import org.junit.AfterClass;
@@ -41,13 +39,16 @@ import amtc.gue.ws.test.base.UserTest;
  *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersistenceDelegatorTest, IObjectifyPersistenceDelegatorTest {
+public class UserPersistenceDelegatorTest extends UserTest
+		implements IJPAPersistenceDelegatorTest, IObjectifyPersistenceDelegatorTest {
 	private static DelegatorInput addUserDelegatorInput;
 	private static DelegatorInput addUserDelegatorInputForRoleTesting;
+	private static DelegatorInput addUserDelegatorInputForUserTesting;
 	private static DelegatorInput deleteUserDelegatorInput;
 	private static DelegatorInput deleteUserDelegatorInputWithId;
 	private static DelegatorInput readUserDelegatorInput;
 	private static DelegatorInput readUserByIdDelegatorInput;
+	private static DelegatorInput readUserByEmailDelegatorInput;
 	private static DelegatorInput updateUserDelegatorInput;
 
 	private static UserPersistenceDelegator userPersistenceDelegator;
@@ -291,6 +292,7 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.initialize(deleteUserDelegatorInputWithId);
 		userPersistenceDelegator.setUserDAO(userJPADAOImpl);
 		userPersistenceDelegator.setRoleDAO(roleJPADAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.DELETE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
@@ -301,6 +303,7 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.initialize(deleteUserDelegatorInputWithId);
 		userPersistenceDelegator.setUserDAO(userObjectifyDAOImpl);
 		userPersistenceDelegator.setRoleDAO(roleObjectifyDAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.DELETE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
@@ -546,12 +549,63 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
+	/**
+	 * Method testing retrieving user entity by email using JPA DAO
+	 */
+	@Test
+	public void testDelegateJPAReadUsingSearchByEmail() {
+		userPersistenceDelegator.initialize(readUserByEmailDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userJPADAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
+	}
+
+	/**
+	 * Method testing retrieving user entity by email using Objectify DAO
+	 */
+	@Test
+	public void testDelegateObjectifyReadUsingSearchByEmail() {
+		userPersistenceDelegator.initialize(readUserByEmailDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userObjectifyDAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
+	}
+
+	/**
+	 * Method testing retrieving user entity by email when Entity retrieval
+	 * fails using JPA DAO
+	 */
+	@Test
+	public void testDelegateJPAReadUsingSearchByEmailRetrievalFail() {
+		userPersistenceDelegator.initialize(readUserByEmailDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userJPADAOImplRetrievalFail);
+		userPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
+	}
+
+	/**
+	 * Method testing retrieving user entity by email when Entity retrieval
+	 * fails using Objectify DAO
+	 */
+	@Test
+	public void testDelegateObjectifyReadUsingSearchByEmailRetrievalFail() {
+		userPersistenceDelegator.initialize(readUserByEmailDelegatorInput);
+		userPersistenceDelegator.setUserDAO(userObjectifyDAOImplRetrievalFail);
+		userPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
+		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
+		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
+	}
+
 	@Override
 	@Test
 	public void testDelegateJPAUpdateUsingCorrectInput() {
 		userPersistenceDelegator.initialize(updateUserDelegatorInput);
 		userPersistenceDelegator.setUserDAO(userJPADAOImplSpecificEntityFound);
 		userPersistenceDelegator.setRoleDAO(roleJPADAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(JPAUserEntityMapper);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UPDATE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
@@ -562,6 +616,7 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.initialize(updateUserDelegatorInput);
 		userPersistenceDelegator.setUserDAO(userObjectifyDAOImplSpecificEntityFound);
 		userPersistenceDelegator.setRoleDAO(roleObjectifyDAOImpl);
+		userPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.UPDATE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
@@ -576,7 +631,7 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.setUserDAO(userJPADAOImplNoFoundUsers);
 		userPersistenceDelegator.setRoleDAO(roleJPADAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(ErrorConstants.UPDATE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -589,18 +644,17 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.setUserDAO(userObjectifyDAOImplNoFoundUsers);
 		userPersistenceDelegator.setRoleDAO(roleObjectifyDAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(ErrorConstants.UPDATE_USER_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Override
 	@Test
 	public void testDelegateJPAUpdateUsingIncorrectDAOSetup() {
 		userPersistenceDelegator.initialize(updateUserDelegatorInput);
-		userPersistenceDelegator.setUserDAO(userJPADAOImplRetrievalFail);
+		userPersistenceDelegator.setUserDAO(userJPADAOImplGeneralFail);
 		userPersistenceDelegator.setRoleDAO(roleJPADAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertNotNull(delegatorOutput);
 	}
 
 	@Override
@@ -610,8 +664,7 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userPersistenceDelegator.setUserDAO(userObjectifyDAOImplRetrievalFail);
 		userPersistenceDelegator.setRoleDAO(roleObjectifyDAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.UPDATE_USER_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertNotNull(delegatorOutput);
 	}
 
 	@Override
@@ -647,6 +700,10 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		addUserDelegatorInputForRoleTesting.setInputObject(usersWithRole);
 		addUserDelegatorInputForRoleTesting.setType(DelegatorTypeEnum.ADD);
 
+		addUserDelegatorInputForUserTesting = new DelegatorInput();
+		addUserDelegatorInputForUserTesting.setInputObject(user1);
+		addUserDelegatorInputForUserTesting.setType(DelegatorTypeEnum.ADD);
+
 		// DelegatorInput for user entity deletion
 		deleteUserDelegatorInput = new DelegatorInput();
 		deleteUserDelegatorInput.setInputObject(users);
@@ -667,9 +724,14 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		readUserByIdDelegatorInput.setInputObject(USERNAME);
 		readUserByIdDelegatorInput.setType(DelegatorTypeEnum.READ);
 
+		// DelegatorInput for user entity read by email
+		readUserByEmailDelegatorInput = new DelegatorInput();
+		readUserByEmailDelegatorInput.setInputObject(user1);
+		readUserByEmailDelegatorInput.setType(DelegatorTypeEnum.READ);
+
 		// DelegatorInput for user entity update
 		updateUserDelegatorInput = new DelegatorInput();
-		updateUserDelegatorInput.setInputObject(usersWithId);
+		updateUserDelegatorInput.setInputObject(JPAUserEntity1);
 		updateUserDelegatorInput.setType(DelegatorTypeEnum.UPDATE);
 	}
 
@@ -695,6 +757,8 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		// positive scenario (all calls return values)
 		userJPADAOImpl = EasyMock.createNiceMock(UserJPADAOImpl.class);
 		EasyMock.expect(userJPADAOImpl.findEntityById(EasyMock.isA(String.class))).andReturn(JPAUserEntity1);
+		EasyMock.expect(userJPADAOImpl.findSpecificEntity(EasyMock.isA(GAEJPAUserEntity.class)))
+				.andReturn(JPAUserEntityList);
 		EasyMock.expect(userJPADAOImpl.getUserEntitiesByRoles(roles)).andReturn(JPAUserEntityList);
 		EasyMock.expect(userJPADAOImpl.persistEntity(EasyMock.isA(GAEJPAUserEntity.class))).andReturn(JPAUserEntity1);
 		EasyMock.expect(userJPADAOImpl.removeEntity(EasyMock.isA(GAEJPAUserEntity.class))).andReturn(JPAUserEntity1);
@@ -703,6 +767,8 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		userObjectifyDAOImpl = EasyMock.createNiceMock(UserObjectifyDAOImpl.class);
 		EasyMock.expect(userObjectifyDAOImpl.findEntityById(EasyMock.isA(String.class)))
 				.andReturn(objectifyUserEntity1);
+		EasyMock.expect(userObjectifyDAOImpl.findSpecificEntity(EasyMock.isA(GAEObjectifyUserEntity.class)))
+				.andReturn(objectifyUserEntityList);
 		EasyMock.expect(userObjectifyDAOImpl.getUserEntitiesByRoles(roles)).andReturn(JPAUserEntityList);
 		EasyMock.expect(userObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyUserEntity.class)))
 				.andReturn(objectifyUserEntity1);
@@ -711,17 +777,12 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		EasyMock.replay(userObjectifyDAOImpl);
 
 		userJPADAOImplSpecificEntityFound = EasyMock.createNiceMock(UserJPADAOImpl.class);
-		EasyMock.expect(userJPADAOImplSpecificEntityFound.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(JPAUserEntity1);
 		EasyMock.replay(userJPADAOImplSpecificEntityFound);
 
 		userObjectifyDAOImplSpecificEntityFound = EasyMock.createNiceMock(UserObjectifyDAOImpl.class);
-		EasyMock.expect(userObjectifyDAOImplSpecificEntityFound.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyUserEntity1);
 		EasyMock.replay(userObjectifyDAOImplSpecificEntityFound);
 
 		roleJPADAOImpl = EasyMock.createNiceMock(RoleJPADAOImpl.class);
-		EasyMock.expect(roleJPADAOImpl.findEntityById(EasyMock.isA(String.class))).andReturn(JPARoleEntity4);
 		EasyMock.expect(roleJPADAOImpl.findSpecificEntity(EasyMock.isA(GAEJPARoleEntity.class)))
 				.andReturn(JPARoleEntityList);
 		EasyMock.replay(roleJPADAOImpl);
@@ -766,25 +827,24 @@ public class UserPersistenceDelegatorTest extends UserTest implements IJPAPersis
 		// negative scenario. Entity retrieval fails
 		userJPADAOImplRetrievalFail = EasyMock.createNiceMock(UserJPADAOImpl.class);
 		EasyMock.expect(userJPADAOImplRetrievalFail.findEntityById(EasyMock.isA(String.class)))
-				.andThrow(new EntityRetrievalException()).times(2);
+				.andThrow(new EntityRetrievalException());
+		EasyMock.expect(userJPADAOImplRetrievalFail.findSpecificEntity(EasyMock.isA(GAEJPAUserEntity.class)))
+				.andThrow(new EntityRetrievalException());
 		EasyMock.replay(userJPADAOImplRetrievalFail);
 
 		userObjectifyDAOImplRetrievalFail = EasyMock.createNiceMock(UserObjectifyDAOImpl.class);
 		EasyMock.expect(userObjectifyDAOImplRetrievalFail.findEntityById(EasyMock.isA(String.class)))
-				.andThrow(new EntityRetrievalException()).times(2);
+				.andThrow(new EntityRetrievalException());
+		EasyMock.expect(
+				userObjectifyDAOImplRetrievalFail.findSpecificEntity(EasyMock.isA(GAEObjectifyUserEntity.class)))
+				.andThrow(new EntityRetrievalException());
 		EasyMock.replay(userObjectifyDAOImplRetrievalFail);
 
 		// positive scenario. No Users found
 		userJPADAOImplNoFoundUsers = EasyMock.createNiceMock(UserJPADAOImpl.class);
-		EasyMock.expect(userJPADAOImplNoFoundUsers.findSpecificEntity(EasyMock.isA(GAEJPAUserEntity.class)))
-				.andReturn(JPAUserEntityEmptyList);
-		EasyMock.expect(userJPADAOImplNoFoundUsers.findEntityById(EasyMock.isA(String.class))).andReturn(null);
 		EasyMock.replay(userJPADAOImplNoFoundUsers);
 
 		userObjectifyDAOImplNoFoundUsers = EasyMock.createNiceMock(UserObjectifyDAOImpl.class);
-		EasyMock.expect(userObjectifyDAOImplNoFoundUsers.findSpecificEntity(EasyMock.isA(GAEObjectifyUserEntity.class)))
-				.andReturn(objectifyUserEntityEmptyList);
-		EasyMock.expect(userObjectifyDAOImplNoFoundUsers.findEntityById(EasyMock.isA(String.class))).andReturn(null);
 		EasyMock.replay(userObjectifyDAOImplNoFoundUsers);
 
 		// Positive scenario (null returned after user retrieval)

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "bill", propOrder = { "billId", "" })
+@XmlType(name = "bill", propOrder = { "billId", "date", "amount", "shop", "billinggroup" })
 public class Bill {
 	@XmlElement(name = "billId", required = false, nillable = true)
 	private String billId;
@@ -64,7 +64,7 @@ public class Bill {
 		return billinggroup;
 	}
 
-	public void setBillinggoup(Billinggroup billinggoup) {
+	public void setBillinggroup(Billinggroup billinggoup) {
 		this.billinggroup = billinggoup;
 	}
 

@@ -75,8 +75,8 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
 		assertEquals(1, userObjectifyDAO.findAllEntities().size());
 		assertEquals(1, roleObjectifyDAO.findAllEntities().size());
-		assertEquals(1, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getUsers().size());
-		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getRoles().size());
+		assertEquals(1, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getUsers().size());
+		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getWebsafeKey()).getRoles().size());
 	}
 
 	/**
@@ -96,9 +96,9 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
 		assertEquals(2, userObjectifyDAO.findAllEntities().size());
 		assertEquals(1, roleObjectifyDAO.findAllEntities().size());
-		assertEquals(2, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getUsers().size());
-		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getKey()).getRoles().size());
-		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity2.getKey()).getRoles().size());
+		assertEquals(2, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getUsers().size());
+		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity1.getWebsafeKey()).getRoles().size());
+		assertEquals(1, userObjectifyDAO.findEntityById(objectifyUserEntity2.getWebsafeKey()).getRoles().size());
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
-		GAERoleEntity roleEntity = roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey());
+		GAERoleEntity roleEntity = roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey());
 		assertNotNull(roleEntity);
 	}
 
@@ -175,7 +175,7 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 		userObjectifyDAO.persistEntity(objectifyUserEntity1);
 		objectifyRoleEntity1.addToUsersAndRoles(objectifyUserEntity1);
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
-		GAERoleEntity roleEntity = roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey());
+		GAERoleEntity roleEntity = roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey());
 		assertNotNull(roleEntity);
 	}
 
@@ -252,10 +252,11 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 	@Test
 	public void testUpdateSimpleEntity() throws EntityRetrievalException, EntityPersistenceException {
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
-		assertNull(roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getDescription());
+		assertNull(roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getDescription());
 		objectifyRoleEntity1.setDescription(DESCRIPTION);
 		roleObjectifyDAO.updateEntity(objectifyRoleEntity1);
-		assertEquals(DESCRIPTION, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getDescription());
+		assertEquals(DESCRIPTION,
+				roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getDescription());
 	}
 
 	/**
@@ -271,10 +272,10 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 		userObjectifyDAO.persistEntity(objectifyUserEntity1);
 		objectifyRoleEntity1.addToUsersAndRoles(objectifyUserEntity1);
 		roleObjectifyDAO.persistEntity(objectifyRoleEntity1);
-		assertEquals(1, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getUsers().size());
+		assertEquals(1, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getUsers().size());
 		objectifyRoleEntity1.setUsers(null, false);
 		roleObjectifyDAO.updateEntity(objectifyRoleEntity1);
-		assertEquals(0, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getKey()).getUsers().size());
+		assertEquals(0, roleObjectifyDAO.findEntityById(objectifyRoleEntity1.getWebsafeKey()).getUsers().size());
 	}
 
 	@Override
@@ -359,7 +360,7 @@ public class RoleDAOObjectifyTest extends UserTest implements IBaseDAOTest {
 	 * @throws EntityPersistenceException
 	 *             when issue occurs while trying to persist an entity
 	 * @throws EntityRemovalException
-	 *              when issue occurs while trying to removal an entity
+	 *             when issue occurs while trying to removal an entity
 	 */
 	private static void setUpDAOMocks()
 			throws EntityRetrievalException, EntityPersistenceException, EntityRemovalException {

@@ -31,7 +31,7 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private Long billiggroupId;
+	private Long billinggroupId;
 	private String description;
 	@Index
 	private List<Ref<GAEObjectifyUserEntity>> users = new ArrayList<>();
@@ -40,22 +40,28 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 
 	@Override
 	public String getKey() {
-		if (billiggroupId != null) {
-			return String.valueOf(billiggroupId);
+		if (billinggroupId != null) {
+			// TODO return getWebsafeKey();
+			return String.valueOf(billinggroupId);
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public void setKey(String billiggroupId) {
-		if (billiggroupId != null) {
-			this.billiggroupId = Long.valueOf(billiggroupId);
+	public void setKey(String billinggroupId) {
+		if (billinggroupId != null) {
+			// TODO this.billinggroupId = Key.valueOf(billinggroupId).getId();
+			try{
+				this.billinggroupId = Long.valueOf(billinggroupId);
+			} catch(NumberFormatException e){
+				this.billinggroupId = Key.valueOf(billinggroupId).getId();
+			}	
 		} else {
-			this.billiggroupId = null;
+			this.billinggroupId = null;
 		}
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return description;
@@ -182,5 +188,10 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 				bills.remove(billRefToRemove);
 			}
 		}
+	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyBillinggroupEntity.class, billinggroupId).getString();
 	}
 }

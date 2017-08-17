@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import amtc.gue.ws.shopping.inout.Billinggroup;
+
 /**
  * JAXB object for the User complex type
  * 
@@ -15,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "user", propOrder = {"id","userName","password","roles"})
+@XmlType(name = "user", propOrder = { "id", "userName", "password", "roles" })
 public class User extends Item {
 	@XmlElement(name = "userName", required = true, nillable = false)
 	private String userName;
@@ -23,6 +25,8 @@ public class User extends Item {
 	private String password;
 	@XmlElement(name = "roles")
 	private List<String> roles;
+	@XmlElement(name = "billinggroups")
+	private List<Billinggroup> billinggroups;
 
 	// Getters and Setters
 	public String getUserName() {
@@ -32,7 +36,7 @@ public class User extends Item {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -40,9 +44,9 @@ public class User extends Item {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public List<String> getRoles() {
-		if(this.roles == null){
+		if (this.roles == null) {
 			this.roles = new ArrayList<String>();
 		}
 		return roles;
@@ -50,5 +54,16 @@ public class User extends Item {
 
 	public void setRoles(List<String> roles) {
 		this.roles = roles;
+	}
+
+	public List<Billinggroup> getBillinggroups() {
+		if (billinggroups == null) {
+			billinggroups = new ArrayList<>();
+		}
+		return billinggroups;
+	}
+
+	public void setBillinggroups(List<Billinggroup> billinggroups) {
+		this.billinggroups = billinggroups;
 	}
 }

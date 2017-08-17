@@ -1,6 +1,5 @@
 package amtc.gue.ws.shopping.response;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -11,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import amtc.gue.ws.base.response.ServiceResponse;
 import amtc.gue.ws.shopping.inout.Bill;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * JAXB object for the BillServiceResponse complex type
@@ -22,17 +22,15 @@ import io.swagger.annotations.ApiModel;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class BillServiceResponse extends ServiceResponse {
-	@XmlElement
+	@XmlElement(name = "bills")
 	private List<Bill> bills;
 
 	// Getters and Setters
 	public List<Bill> getBills() {
-		if (bills == null) {
-			bills = new ArrayList<>();
-		}
 		return bills;
 	}
 
+	@ApiModelProperty(position = 1, required = true, value = "List of bills")
 	public void setBills(List<Bill> bills) {
 		this.bills = bills;
 	}

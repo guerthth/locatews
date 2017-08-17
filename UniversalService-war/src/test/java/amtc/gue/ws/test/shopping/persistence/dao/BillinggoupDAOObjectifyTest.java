@@ -166,7 +166,7 @@ public class BillinggoupDAOObjectifyTest extends ShoppingTest implements IBaseDA
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
-		assertNotNull(billinggroupObjectifyDAO.findEntityById(objectifyBillinggroupEntity1.getKey()));
+		assertNotNull(billinggroupObjectifyDAO.findEntityById(objectifyBillinggroupEntity1.getWebsafeKey()));
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class BillinggoupDAOObjectifyTest extends ShoppingTest implements IBaseDA
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
 		objectifyBillinggroupEntity1.addToUsersAndBillinggroups(objectifyUserEntity1);
 		objectifyBillinggroupEntity1.addToUsersAndBillinggroups(objectifyUserEntity2);
-		assertNotNull(billinggroupObjectifyDAO.findEntityById(objectifyBillinggroupEntity1.getKey()));
+		assertNotNull(billinggroupObjectifyDAO.findEntityById(objectifyBillinggroupEntity1.getWebsafeKey()));
 	}
 
 	@Override

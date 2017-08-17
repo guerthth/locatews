@@ -45,18 +45,23 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 	@Index
 	private Ref<GAEObjectifyBillinggroupEntity> billinggroup;
 
-	// TODO bill form?
-
 	public GAEObjectifyBillEntity() {
 	}
 
-	public GAEObjectifyBillEntity(final String userEmail, final Long shopId, final Long billinggroupId) {
-		if (userEmail != null)
-			user = Ref.create(Key.create(GAEObjectifyUserEntity.class, userEmail));
-		if (shopId != null)
-			shop = Ref.create(Key.create(GAEObjectifyShopEntity.class, shopId));
-		if (billinggroupId != null)
-			billinggroup = Ref.create(Key.create(GAEObjectifyBillinggroupEntity.class, billinggroupId));
+	public GAEObjectifyBillEntity(final String websafeUserEmail, final String websafeShopId,
+			final String websafeBillinggroupId) {
+		if (websafeUserEmail != null) {
+			Key<GAEObjectifyUserEntity> userKey = Key.create(websafeUserEmail);
+			user = Ref.create(userKey);
+		}
+		if (websafeShopId != null) {
+			Key<GAEObjectifyShopEntity> shopKey = Key.create(websafeShopId);
+			shop = Ref.create(shopKey);
+		}
+		if (websafeBillinggroupId != null) {
+			Key<GAEObjectifyBillinggroupEntity> billinggroupKey = Key.create(websafeBillinggroupId);
+			billinggroup = Ref.create(billinggroupKey);
+		}
 	}
 
 	@Override
@@ -149,12 +154,8 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 		}
 	}
 
-	/**
-	 * Method returning a websafe representation of the GAEObjectifyBillEntity
-	 * 
-	 * @return websafe representation of the GAEObjectifyBillEntity
-	 */
-	public String getWebSafeKey() {
-		return Key.create(user.getKey(), GAEObjectifyBillEntity.class, billId).toString();
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(user.getKey(), GAEObjectifyBillEntity.class, billId).getString();
 	}
 }

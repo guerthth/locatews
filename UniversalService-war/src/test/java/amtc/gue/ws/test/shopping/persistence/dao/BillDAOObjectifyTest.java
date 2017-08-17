@@ -82,8 +82,8 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 		userObjectifyDAO.persistEntity(objectifyUserEntity2);
 		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
-		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyShopEntity1.getKey(),
-				Long.valueOf(objectifyShopEntity1.getKey()), Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
 		billObjectifyDAO.persistEntity(billEntity);
 
 		// postcheck DB status
@@ -130,8 +130,12 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 	@Override
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
-		billObjectifyDAO.persistEntity(objectifyBillEntity1);
-		assertNotNull(billObjectifyDAO.findEntityById(objectifyBillEntity1.getKey()));
+		userObjectifyDAO.persistEntity(objectifyUserEntity1);
+		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(), null,
+				objectifyBillinggroupEntity1.getWebsafeKey());
+		billObjectifyDAO.persistEntity(billEntity);
+		assertNotNull(billObjectifyDAO.findEntityById(billEntity.getWebsafeKey()));
 	}
 
 	/**
@@ -149,8 +153,8 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 		userObjectifyDAO.persistEntity(objectifyUserEntity2);
 		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
-		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getKey(), null,
-				Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(), null,
+				objectifyBillinggroupEntity1.getWebsafeKey());
 		billEntity.setDate(new Date());
 		billEntity.setAmount(22.0);
 		billObjectifyDAO.persistEntity(billEntity);
@@ -174,10 +178,15 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 	@Override
 	@Test
 	public void testDeleteEntity() throws EntityRetrievalException, EntityRemovalException, EntityPersistenceException {
+		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
+		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
+		userObjectifyDAO.persistEntity(objectifyUserEntity1);
 		billObjectifyDAO.persistEntity(objectifyBillEntity1);
-		billObjectifyDAO.persistEntity(objectifyBillEntity2);
+		GAEObjectifyBillEntity objectifyBillEntity3 = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
+		billObjectifyDAO.persistEntity(objectifyBillEntity3);
 		assertEquals(2, billObjectifyDAO.findAllEntities().size());
-		billObjectifyDAO.removeEntity(objectifyBillEntity1);
+		billObjectifyDAO.removeEntity(objectifyBillEntity3);
 		assertEquals(1, billObjectifyDAO.findAllEntities().size());
 	}
 
@@ -239,13 +248,13 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 		userObjectifyDAO.persistEntity(objectifyUserEntity2);
 		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
-		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getKey(),
-				Long.valueOf(objectifyShopEntity1.getKey()), Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
 		billEntity.setDate(date);
 		billEntity.setAmount(22.0);
 		billObjectifyDAO.persistEntity(billEntity);
-		GAEObjectifyBillEntity searchBillEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getKey(), null,
-				Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity searchBillEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(), null,
+				objectifyBillinggroupEntity1.getWebsafeKey());
 		searchBillEntity.setDate(date);
 		searchBillEntity.setAmount(22.0);
 		assertEquals(1, billObjectifyDAO.findSpecificEntity(searchBillEntity).size());
@@ -278,13 +287,13 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
 		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
 		// adding first bill for user
-		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getKey(),
-				Long.valueOf(objectifyShopEntity1.getKey()), Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
 		billObjectifyDAO.persistEntity(billEntity);
 		assertEquals(1, billObjectifyDAO.getBillsForUser(serviceUser).size());
 		// adding second bill for user
-		GAEObjectifyBillEntity billEntity2 = new GAEObjectifyBillEntity(objectifyUserEntity1.getKey(),
-				Long.valueOf(objectifyShopEntity1.getKey()), Long.valueOf(objectifyBillinggroupEntity1.getKey()));
+		GAEObjectifyBillEntity billEntity2 = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
 		billObjectifyDAO.persistEntity(billEntity2);
 		assertEquals(2, billObjectifyDAO.getBillsForUser(serviceUser).size());
 	}

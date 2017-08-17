@@ -225,4 +225,9 @@ public class GAEJPABookEntity extends GAEBookEntity {
 			}
 		}
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return bookId;
+	}
 }

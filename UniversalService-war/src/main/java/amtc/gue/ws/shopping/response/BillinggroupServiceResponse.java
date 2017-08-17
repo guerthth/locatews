@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import amtc.gue.ws.base.response.ServiceResponse;
-import amtc.gue.ws.shopping.inout.Billinggroup;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,15 +23,15 @@ import io.swagger.annotations.ApiModelProperty;
 @XmlAccessorType(XmlAccessType.NONE)
 public class BillinggroupServiceResponse extends ServiceResponse {
 	@XmlElement(name = "billinggroups")
-	private List<Billinggroup> billinggroups;
+	private List<GAEBillinggroupEntity> billinggroups;
 
-	// Getters and Setters
-	public List<Billinggroup> getBillinggroups() {
+	// Getters and Setter
+	public List<GAEBillinggroupEntity> getBillinggroups() {
 		return billinggroups;
 	}
 
 	@ApiModelProperty(position = 1, required = true, value = "List of billinggoups")
-	public void setBillinggroups(List<Billinggroup> billinggroups) {
+	public void setBillinggroups(List<GAEBillinggroupEntity> billinggroups) {
 		this.billinggroups = billinggroups;
 	}
 }

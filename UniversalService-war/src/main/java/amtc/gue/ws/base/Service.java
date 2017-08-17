@@ -33,8 +33,10 @@ public class Service {
 		if (isUserAdmin()) {
 			return true;
 		} else {
-			log.info("Trying to retrieve User with Id " + user.getUserId() + " and email " + user.getEmail());
-			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, user.getEmail());
+			log.info("Trying to retrieve User with Id '" + user.getEmail() + "'");
+			amtc.gue.ws.base.inout.User searchUser = new amtc.gue.ws.base.inout.User();
+			searchUser.setId(user.getEmail());
+			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
 			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
 				amtc.gue.ws.base.inout.User foundUser = (amtc.gue.ws.base.inout.User) dOutput.getOutputObject();
@@ -50,8 +52,10 @@ public class Service {
 		if (isUserAdmin()) {
 			return true;
 		} else {
-			log.info("Trying to retrieve User with Id " + user.getUserId() + " and email " + user.getEmail());
-			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, user.getEmail());
+			log.info("Trying to retrieve User with Id '" + user.getEmail() + "'");
+			amtc.gue.ws.base.inout.User searchUser = new amtc.gue.ws.base.inout.User();
+			searchUser.setId(user.getEmail());
+			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
 			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
 				amtc.gue.ws.base.inout.User foundUser = (amtc.gue.ws.base.inout.User) dOutput.getOutputObject();

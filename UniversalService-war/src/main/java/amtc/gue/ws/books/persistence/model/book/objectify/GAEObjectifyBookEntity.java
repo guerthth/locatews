@@ -233,4 +233,9 @@ public class GAEObjectifyBookEntity extends GAEBookEntity {
 			}
 		}
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyBookEntity.class, bookId).getString();
+	}
 }

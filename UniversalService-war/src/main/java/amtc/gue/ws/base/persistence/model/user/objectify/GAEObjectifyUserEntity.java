@@ -218,8 +218,13 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	@Override
 	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
 		if (billinggroup != null) {
+			// TODO Check websafe
+			// Ref<GAEObjectifyBillinggroupEntity> referenceToAdd = Ref.create(
+			// Key.create(GAEObjectifyBillinggroupEntity.class,
+			// Long.valueOf(billinggroup.getKey()).longValue()));
+			// TODO Check if this websafe version is working
 			Ref<GAEObjectifyBillinggroupEntity> referenceToAdd = Ref.create(
-					Key.create(GAEObjectifyBillinggroupEntity.class, Long.valueOf(billinggroup.getKey()).longValue()));
+					Key.create(GAEObjectifyBillinggroupEntity.class, Key.create(billinggroup.getWebsafeKey()).getId()));
 			billinggroups.add(referenceToAdd);
 		}
 	}
@@ -248,5 +253,10 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 				billinggroup.removeUser(this);
 			}
 		}
+	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyUserEntity.class, email).getString();
 	}
 }

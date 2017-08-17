@@ -56,7 +56,13 @@
 		<servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
 		<init-param>
 			<param-name>services</param-name>
-			<param-value>amtc.gue.ws.base.UserService,amtc.gue.ws.books.BookService,amtc.gue.ws.books.TagService,amtc.gue.ws.tournament.PlayerService</param-value>
+			<param-value>
+				amtc.gue.ws.base.UserService,
+				amtc.gue.ws.books.BookService,
+				amtc.gue.ws.books.TagService,
+				amtc.gue.ws.tournament.PlayerService,
+				amtc.gue.ws.shopping.BillinggroupService
+			</param-value>
 		</init-param>
 	</servlet>
 

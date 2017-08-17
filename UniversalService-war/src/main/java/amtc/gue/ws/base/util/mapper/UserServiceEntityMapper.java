@@ -189,14 +189,15 @@ public abstract class UserServiceEntityMapper {
 	 *            delegatoroOutput that should be included in the response
 	 * @return mapped UserServiceReponse
 	 */
+	@SuppressWarnings("unchecked")
 	public static UserServiceResponse mapBdOutputToUserServiceResponse(IDelegatorOutput dOutput) {
 		UserServiceResponse userServiceResponse = null;
 		if (dOutput != null) {
 			userServiceResponse = new UserServiceResponse();
 			userServiceResponse.setStatus(StatusMapper.buildStatusForDelegatorOutput(dOutput));
-			if (dOutput.getOutputObject() instanceof Users) {
-				List<User> userList = ((Users) dOutput.getOutputObject()).getUsers();
-				userServiceResponse.setUsers(userList);
+			if (dOutput.getOutputObject() instanceof List<?>) {
+				List<GAEUserEntity> users = (List<GAEUserEntity>) dOutput.getOutputObject();
+				userServiceResponse.setUsers(users);
 			} else {
 				userServiceResponse.setUsers(null);
 			}

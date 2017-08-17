@@ -42,14 +42,14 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	private String userName;
 	@Column(name = "password")
 	private String password;
-	
+
 	@Unowned
 	@ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	private Set<GAEJPARoleEntity> roles = new HashSet<>();
 	@Unowned
 	@ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	private Set<GAEJPABookEntity> books = new HashSet<>();
-
+	
 	@Override
 	public String getKey() {
 		return email;
@@ -59,7 +59,7 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	public void setKey(String email) {
 		this.email = email;
 	}
-	
+
 	@Override
 	public String getUserName() {
 		return userName;
@@ -195,24 +195,29 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	@Override
 	public void setBillinggroups(Set<GAEBillinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addToBillinggroupsAndUsers(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeBillinggroup(GAEBillinggroupEntity billinggroup) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public String getWebsafeKey() {
+		return userName;
 	}
 }

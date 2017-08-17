@@ -179,6 +179,11 @@
 		class="amtc.gue.ws.shopping.persistence.dao.objectify.BillinggroupObjectifyDAOImpl">
 	</bean>
 
+	<!-- Objectify BillDAOImpl -->
+	<bean id="billObjectifyDAOImpl"
+		class="amtc.gue.ws.shopping.persistence.dao.objectify.BillObjectifyDAOImpl">
+	</bean>
+
 	<!-- ShopServiceObjectifyEntityMapper -->
 	<bean id="shoppingObjectifyEntityMapper"
 		class="amtc.gue.ws.shopping.util.mapper.objectify.ShoppingServiceObjectifyEntityMapper">
@@ -197,6 +202,14 @@
 		class="amtc.gue.ws.shopping.delegate.persist.BillinggroupPersistenceDelegator">
 		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
 		<property name="billinggroupDAO" ref="billinggoupObjectifyDAOImpl"></property>
+		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
+	</bean>
+
+	<!-- ShopPersistenceDelegator -->
+	<bean id="billPersistenceDelegator"
+		class="amtc.gue.ws.shopping.delegate.persist.BillPersistenceDelegator">
+		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
+		<property name="billDAO" ref="billObjectifyDAOImpl"></property>
 		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
 	</bean>
 </beans>

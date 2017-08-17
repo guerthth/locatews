@@ -102,4 +102,25 @@ public class BillinggroupPersistenceDelegatorUtils {
 		sb.append("'.");
 		return sb.toString();
 	}
+
+	/**
+	 * Method building the String status message for successful retrieval of a
+	 * Billinggroup by ID
+	 * 
+	 * @param billinggroupKey
+	 *            the Key of the Billinggroup that is searched for
+	 * @param foundBillinggroupEntity
+	 *            the BillinggroupEntity that was found
+	 * @return the created status message
+	 */
+	public static String buildGetBillinggroupsByIdSuccessStatusMessage(String billinggroupKey,
+			GAEBillinggroupEntity foundBillinggroupEntity) {
+		// TODO test
+		StringBuilder sb = new StringBuilder();
+		sb.append(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_BY_ID_SUCCESS_MSG);
+		sb.append(" : '");
+		sb.append(ShoppingServiceEntityMapper.mapBillinggroupEntityToJSONString(foundBillinggroupEntity));
+		sb.append("'.");
+		return sb.toString();
+	}
 }

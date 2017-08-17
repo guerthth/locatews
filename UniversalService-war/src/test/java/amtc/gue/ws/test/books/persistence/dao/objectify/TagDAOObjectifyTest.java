@@ -67,7 +67,7 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		bookObjectifyDAO.persistEntity(objectifyBookEntity1);
 		objectifyTagEntity1.addToBooksAndTags(objectifyBookEntity1);
 		tagObjectifyDAO.persistEntity(objectifyTagEntity1);
-		GAETagEntity foundTagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey());
+		GAETagEntity foundTagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey());
 		assertEquals(1, foundTagEntity.getBooks().size());
 		GAEBookEntity foundBookForTag = foundTagEntity.getBooks().iterator().next();
 		assertEquals(objectifyBookEntity1.getKey(), foundBookForTag.getKey());
@@ -133,7 +133,7 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 	@Test
 	public void testGetEntityById() throws EntityRetrievalException, EntityPersistenceException {
 		tagObjectifyDAO.persistEntity(objectifyTagEntity1);
-		GAETagEntity tagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey());
+		GAETagEntity tagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey());
 		assertNotNull(tagEntity);
 	}
 
@@ -153,7 +153,7 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		objectifyTagEntity1.addToBooksAndTags(objectifyBookEntity2);
 		tagObjectifyDAO.persistEntity(objectifyTagEntity1);
 
-		GAETagEntity tagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey());
+		GAETagEntity tagEntity = tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey());
 		assertNotNull(tagEntity);
 	}
 
@@ -245,7 +245,7 @@ public class TagDAOObjectifyTest extends BookTest implements IBaseDAOTest {
 		tagObjectifyDAO.updateEntity(objectifyTagEntity1);
 		assertEquals(1, tagObjectifyDAO.findAllEntities().size());
 		assertEquals(1, bookObjectifyDAO.findAllEntities().size());
-		assertEquals(0, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getKey()).getBooks().size());
+		assertEquals(0, tagObjectifyDAO.findEntityById(objectifyTagEntity1.getWebsafeKey()).getBooks().size());
 	}
 
 	@Override

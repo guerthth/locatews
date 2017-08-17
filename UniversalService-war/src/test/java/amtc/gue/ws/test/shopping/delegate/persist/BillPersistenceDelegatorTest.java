@@ -62,7 +62,12 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 
 	@AfterClass
 	public static void finalTearDown() {
-		// TODO
+		EasyMock.verify(billObjectifyDAOImpl);
+		EasyMock.verify(billObjectifyDAOImplGeneralFail);
+		EasyMock.verify(billObjectifyDAOImplRetrievalFail);
+		EasyMock.verify(billObjectifyDAOImplNoFoundBills);
+		EasyMock.verify(billObjectifyDAOImplNullBills);
+		EasyMock.verify(billObjectifyDAOImplSpecificEntityFound);
 	}
 
 	@Override
@@ -319,7 +324,7 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.persistEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
 				.andThrow(new EntityPersistenceException());
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.removeEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
-				.andThrow(new EntityRemovalException()).times(4);
+				.andThrow(new EntityRemovalException()).times(5);
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.updateEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
 				.andThrow(new EntityPersistenceException());
 		EasyMock.replay(billObjectifyDAOImplGeneralFail);

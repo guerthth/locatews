@@ -33,6 +33,14 @@ public abstract class PersistenceEntity implements Serializable {
 	public abstract void setKey(String key);
 
 	/**
+	 * Method returning a websafe representation of the
+	 * GAEObjectifyBillinggroupEntity
+	 * 
+	 * @return websafe representation of the GAEObjectifyBillinggroupEntity
+	 */
+	public abstract String getWebsafeKey();
+	
+	/**
 	 * Method clearing a set
 	 * 
 	 * @param set

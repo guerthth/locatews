@@ -103,4 +103,9 @@ public class GAEObjectifyTagEntity extends GAETagEntity {
 			}
 		}
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyTagEntity.class, tagname).getString();
+	}
 }

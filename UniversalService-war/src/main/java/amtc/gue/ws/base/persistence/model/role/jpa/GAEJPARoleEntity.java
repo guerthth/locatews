@@ -106,4 +106,9 @@ public class GAEJPARoleEntity extends GAERoleEntity {
 		// not implemented
 		addToUsersOnly(user);
 	}
+
+	@Override
+	public String getWebsafeKey() {
+		return role;
+	}
 }

@@ -24,6 +24,8 @@ import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.UserPersistenceDelegatorUtils;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
+import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
+import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
 /**
  * Persistence Delegator that handles all database actions for User resources
@@ -164,8 +166,10 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void retrieveEntities() {
 		if (delegatorInput.getInputObject() instanceof Roles) {
 			retrieveUsersByRoles((Roles) delegatorInput.getInputObject());
+		} else if (delegatorInput.getInputObject() instanceof User) {
+			retrieveUserByUserMail((User) delegatorInput.getInputObject());
 		} else if (delegatorInput.getInputObject() instanceof String) {
-			retrieveUserByUsername((String) delegatorInput.getInputObject());
+			retrieveUserByUserKey((String) delegatorInput.getInputObject());
 		} else {
 			setUnrecognizedDelegatorOutput();
 		}
@@ -188,7 +192,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 					foundUsers);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUsers));
+			delegatorOutput.setOutputObject(foundUsers);
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE,
 					"Error while trying to retrieve users with role: '" + roles.getRoles().toString() + "'", e);
@@ -199,27 +203,59 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	}
 
 	/**
-	 * Method retrieving a userEntity from the database by userName
+	 * Method retrieving an userEntity from the database using User object and
+	 * the email address that is associated with the User
+	 * 
+	 * @param inputObject
+	 *            the user object that is searched for
+	 */
+	private void retrieveUserByUserMail(User user) {
+		log.info("READ User by User email triggered");
+		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
+		User foundUser = null;
+		try {
+			GAEUserEntity searchUser = userEntityMapper.mapUserToEntity(user, DelegatorTypeEnum.READ);
+			List<GAEUserEntity> foundUserEntities = userDAOImpl.findSpecificEntity(searchUser);
+			if (foundUserEntities != null && foundUserEntities.size() == 1) {
+				foundUser = userEntityMapper.mapUserEntityToUser(foundUserEntities.get(0));
+				delegatorOutput.setStatusMessage(
+						ErrorConstants.RETRIEVE_USER_BY_EMAIL_SUCCESS_MSG + " '" + foundUser.getUserName() + "'");
+				delegatorOutput.setOutputObject(foundUser);
+			} else {
+				throw new EntityRetrievalException();
+			}
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE, "Error while trying to retrieve users with userMail: '" + user.getId() + "'", e);
+			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
+			delegatorOutput.setOutputObject(foundUser);
+		}
+	}
+
+	/**
+	 * Method retrieving an userEntity from the database by userName
 	 * 
 	 * @param userName
 	 *            the userName that is searched for
 	 */
-	private void retrieveUserByUsername(String userName) {
+	private void retrieveUserByUserKey(String userKey) {
 		log.info("READ User by userName action triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
 		GAEUserEntity foundUser = null;
 		try {
-			foundUser = userDAOImpl.findEntityById(userName);
-			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByIdSuccessStatusMessage(userName,
+			foundUser = userDAOImpl.findEntityById(userKey);
+			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByIdSuccessStatusMessage(userKey,
 					foundUser);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
+			// TODO
+			// delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
+			delegatorOutput.setOutputObject(foundUser);
 		} catch (EntityRetrievalException e) {
-			log.log(Level.SEVERE, "Error while trying to retrieve users with userName: '" + userName + "'", e);
+			log.log(Level.SEVERE, "Error while trying to retrieve users with userKey: '" + userKey + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
+			delegatorOutput.setOutputObject(foundUser);
 		}
 	}
 
@@ -253,8 +289,10 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 						persistedRoleEntity = roleDAOImpl.persistEntity(roleEntity);
 					} else {
 						persistedRoleEntity = foundRoleEntities.get(0);
-						String foundKey = persistedRoleEntity.getKey();
-						persistedRoleEntity = roleDAOImpl.findEntityById(foundKey);
+						// TODO Check String foundKey =
+						// persistedRoleEntity.getKey();
+						// TODO Check persistedRoleEntity =
+						// roleDAOImpl.findEntityById(foundKey);
 					}
 					userEntity.addToRolesAndUsers(persistedRoleEntity);
 				} catch (EntityRetrievalException e) {
@@ -272,38 +310,32 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void updateEntities() {
 		// for users this method just updates the users password
 		log.info("UPDATE User action triggered");
-		if (delegatorInput.getInputObject() instanceof Users) {
-			Users users = (Users) delegatorInput.getInputObject();
+		// TODO if (delegatorInput.getInputObject() instanceof Users) {
+		if (delegatorInput.getInputObject() instanceof GAEUserEntity) {
+			GAEUserEntity userEntityToUpdate = (GAEUserEntity) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ErrorConstants.UPDATE_USER_SUCCESS_CODE);
-			List<GAEUserEntity> userEntityList = userEntityMapper.transformUsersToUserEntities(users,
-					DelegatorTypeEnum.UPDATE);
+			// TODO
+			// List<GAEUserEntity> userEntityList =
+			// userEntityMapper.transformUsersToUserEntities(users,
+			// DelegatorTypeEnum.UPDATE);
 			List<GAEUserEntity> successfullyUpdatedUserEntities = new ArrayList<>();
 			List<GAEUserEntity> unsuccessfullyUpdatedUserEntities = new ArrayList<>();
+			StringBuilder sb = new StringBuilder();
+			String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntityToUpdate);
 
-			// reset password for the UserEntities
-			for (GAEUserEntity userEntity : userEntityList) {
-				String userEntityJSON;
-				GAEUserEntity updatedUserEntitiy = null;
-				GAEUserEntity foundUser = null;
-				try {
-					foundUser = userDAOImpl.findEntityById(userEntity.getKey());
-					if (foundUser != null) {
-						if (userEntity.getPassword() != null)
-							foundUser.setPassword(userEntity.getPassword());
-						updatedUserEntitiy = userDAOImpl.updateEntity(foundUser);
-						userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(updatedUserEntitiy);
-						successfullyUpdatedUserEntities.add(updatedUserEntitiy);
-						log.log(Level.INFO, ErrorConstants.UPDATE_USER_SUCCESS_MSG + " '" + userEntityJSON + "'");
-					} else {
-						unsuccessfullyUpdatedUserEntities.add(userEntity);
-						log.log(Level.SEVERE, ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-					}
-				} catch (Exception e) {
-					userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(updatedUserEntitiy);
-					unsuccessfullyUpdatedUserEntities.add(updatedUserEntitiy);
-					log.log(Level.SEVERE, "Error while trying to update password for: " + userEntityJSON, e);
-				}
+			// update UserEntitiy
+			// TODO for (GAEUserEntity userEntity : userEntityList) {
+
+			try {
+				GAEUserEntity updatedUserEntity = userDAOImpl.updateEntity(userEntityToUpdate);
+				successfullyUpdatedUserEntities.add(updatedUserEntity);
+				log.info(userEntityJSON + " added to DB");
+			} catch (Exception e) {
+				unsuccessfullyUpdatedUserEntities.add(userEntityToUpdate);
+				sb.append(e.getMessage());
+				log.log(Level.SEVERE, "Error while trying to update: " + userEntityJSON, e);
 			}
+			// TODO }
 
 			// set delegatorOutput
 			if (!successfullyUpdatedUserEntities.isEmpty()) {

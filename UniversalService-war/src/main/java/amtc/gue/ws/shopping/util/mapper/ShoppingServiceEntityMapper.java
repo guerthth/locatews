@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.StatusMapper;
 import amtc.gue.ws.shopping.inout.Bill;
@@ -242,12 +243,25 @@ public abstract class ShoppingServiceEntityMapper {
 		sb.append("{");
 		if (billinggroupEntity != null) {
 			sb.append("billinggroupId: ");
-			String id = billinggroupEntity.getKey() != null ? billinggroupEntity.getKey() + ", " : "null, ";
-			sb.append(id);
+			String id = billinggroupEntity.getKey() != null ? billinggroupEntity.getKey() + ", " : "null";
+			sb.append(id).append(", ");
 			sb.append("description: ");
 			String billinggroupDescription = billinggroupEntity.getDescription() != null
 					? billinggroupEntity.getDescription() : "null";
-			sb.append(billinggroupDescription);
+			sb.append(billinggroupDescription).append(", ");
+			sb.append("users: ");
+			sb.append("[");
+			if (billinggroupEntity.getUsers() != null) {
+				for (int i = 0; i < billinggroupEntity.getUsers().size(); i++) {
+					GAEUserEntity userEntity = (new ArrayList<>(billinggroupEntity.getUsers())).get(i);
+					String user = userEntity != null ? userEntity.getKey() : "null";
+					sb.append(user);
+					if (i != billinggroupEntity.getUsers().size() - 1) {
+						sb.append(", ");
+					}
+				}
+			}
+			sb.append("]");
 		}
 		sb.append("}");
 		return sb.toString();
@@ -282,19 +296,20 @@ public abstract class ShoppingServiceEntityMapper {
 	/**
 	 * Method mapping a delegatoroutput to a BillinggroupServiceResponse
 	 * 
-	 * @param bdOutput
+	 * @param bdOutput7
 	 *            delegatoroutput that should be included in the response
 	 * @return mapped BillinggroupServiceResponse
 	 */
+	@SuppressWarnings("unchecked")
 	public static BillinggroupServiceResponse mapBdOutputToBillinggroupServiceResponse(IDelegatorOutput bdOutput) {
 		BillinggroupServiceResponse billinggroupServiceResponse = null;
 
 		if (bdOutput != null) {
 			billinggroupServiceResponse = new BillinggroupServiceResponse();
 			billinggroupServiceResponse.setStatus(StatusMapper.buildStatusForDelegatorOutput(bdOutput));
-			if (bdOutput.getOutputObject() instanceof Billinggroups) {
-				List<Billinggroup> billinggroupList = ((Billinggroups) bdOutput.getOutputObject()).getBillinggroups();
-				billinggroupServiceResponse.setBillinggroups(billinggroupList);
+			if (bdOutput.getOutputObject() instanceof List<?>) {
+				List<GAEBillinggroupEntity> billinggroups = (List<GAEBillinggroupEntity>) bdOutput.getOutputObject();
+				billinggroupServiceResponse.setBillinggroups(billinggroups);
 			} else {
 				billinggroupServiceResponse.setBillinggroups(null);
 			}
@@ -346,7 +361,7 @@ public abstract class ShoppingServiceEntityMapper {
 			bill.setDate(billEntity.getDate());
 			bill.setAmount(billEntity.getAmount());
 			bill.setShop(mapShopEntityToShop(billEntity.getShop()));
-			bill.setBillinggoup(mapBillinggroupEntityToBillinggroup(billEntity.getBillinggroup()));
+			bill.setBillinggroup(mapBillinggroupEntityToBillinggroup(billEntity.getBillinggroup()));
 		}
 		return bill;
 	}
@@ -382,20 +397,20 @@ public abstract class ShoppingServiceEntityMapper {
 		sb.append("{");
 		if (billEntity != null) {
 			sb.append("billId: ");
-			String id = billEntity.getKey() != null ? billEntity.getKey() + ", " : "null, ";
-			sb.append(id);
+			String id = billEntity.getKey() != null ? billEntity.getKey() + ", " : "null";
+			sb.append(id).append(", ");
 			sb.append("date: ");
-			String billDate = billEntity.getDate() != null ? billEntity.getDate().toString() : "null, ";
-			sb.append(billDate);
+			String billDate = billEntity.getDate() != null ? billEntity.getDate().toString() : "null";
+			sb.append(billDate).append(", ");
 			sb.append("amount: ");
-			String amount = billEntity.getAmount() != null ? billEntity.getAmount().toString() : "null, ";
-			sb.append(amount);
+			String amount = billEntity.getAmount() != null ? billEntity.getAmount().toString() : "null";
+			sb.append(amount).append(", ");
 			sb.append("user: ");
-			String user = billEntity.getUser() != null ? billEntity.getUser().toString() : "null, ";
-			sb.append(user);
+			String user = billEntity.getUser() != null ? billEntity.getUser().toString() : "null";
+			sb.append(user).append(", ");
 			sb.append("shop: ");
-			String shop = billEntity.getShop() != null ? billEntity.getShop().toString() : "null, ";
-			sb.append(shop);
+			String shop = billEntity.getShop() != null ? billEntity.getShop().toString() : "null";
+			sb.append(shop).append(", ");
 			sb.append("billinggroup: ");
 			String billinggroup = billEntity.getBillinggroup() != null ? billEntity.getBillinggroup().toString()
 					: "null";

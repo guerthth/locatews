@@ -96,8 +96,6 @@ public class ShoppingTest extends BaseTest {
 	protected static ShoppingServiceEntityMapper objectifyShopEntityMapper;
 	protected static ShoppingServiceEntityMapper objectifyBillEntityMapper;
 
-	// TODO
-
 	@Before
 	public void setUp() {
 		setupDBHelpers();

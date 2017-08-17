@@ -1,5 +1,6 @@
 package amtc.gue.ws.shopping.persistence.model.objectify;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
@@ -24,8 +25,6 @@ public class GAEObjectifyShopEntity extends GAEShopEntity {
 	private Long shopId;
 	@Index
 	private String shopName;
-
-	// TODO shop form?
 
 	@Override
 	public String getKey() {
@@ -53,5 +52,10 @@ public class GAEObjectifyShopEntity extends GAEShopEntity {
 	@Override
 	public void setShopName(String shopName) {
 		this.shopName = shopName;
+	}
+
+	@Override
+	public String getWebsafeKey() {
+		return Key.create(GAEObjectifyShopEntity.class, shopId).getString();
 	}
 }

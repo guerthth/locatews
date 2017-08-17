@@ -292,7 +292,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 
 		// DelegatorInputs for billinggroupentity update
 		updateBillinggroupDelegatorInput = new DelegatorInput();
-		updateBillinggroupDelegatorInput.setInputObject(billinggroups);
+		updateBillinggroupDelegatorInput.setInputObject(objectifyBillinggroupEntity1);
 		updateBillinggroupDelegatorInput.setType(DelegatorTypeEnum.UPDATE);
 
 		nullUpdateBillinggroupDelegatorInput = new DelegatorInput();
