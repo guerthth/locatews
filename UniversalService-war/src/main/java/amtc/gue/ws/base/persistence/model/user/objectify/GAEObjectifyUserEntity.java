@@ -218,11 +218,6 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	@Override
 	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
 		if (billinggroup != null) {
-			// TODO Check websafe
-			// Ref<GAEObjectifyBillinggroupEntity> referenceToAdd = Ref.create(
-			// Key.create(GAEObjectifyBillinggroupEntity.class,
-			// Long.valueOf(billinggroup.getKey()).longValue()));
-			// TODO Check if this websafe version is working
 			Ref<GAEObjectifyBillinggroupEntity> referenceToAdd = Ref.create(
 					Key.create(GAEObjectifyBillinggroupEntity.class, Key.create(billinggroup.getWebsafeKey()).getId()));
 			billinggroups.add(referenceToAdd);
@@ -258,5 +253,35 @@ public class GAEObjectifyUserEntity extends GAEUserEntity {
 	@Override
 	public String getWebsafeKey() {
 		return Key.create(GAEObjectifyUserEntity.class, email).getString();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (other == this)
+			return true;
+		if (other instanceof GAEObjectifyUserEntity) {
+			GAEObjectifyUserEntity otherEntity = (GAEObjectifyUserEntity) other;
+			if (this.getKey().equals(otherEntity.getKey())) {
+				return true;
+			} else
+				return false;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 17;
+		if (this.getKey() != null) {
+			for (int i = 0; i < this.getKey().length(); i++) {
+				result = 31 * result + this.getKey().charAt(i);
+			}
+		} else {
+			result = 0;
+		}
+		return result;
 	}
 }

@@ -41,7 +41,6 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 	@Override
 	public String getKey() {
 		if (billinggroupId != null) {
-			// TODO return getWebsafeKey();
 			return String.valueOf(billinggroupId);
 		} else {
 			return null;
@@ -51,7 +50,6 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 	@Override
 	public void setKey(String billinggroupId) {
 		if (billinggroupId != null) {
-			// TODO this.billinggroupId = Key.valueOf(billinggroupId).getId();
 			try{
 				this.billinggroupId = Long.valueOf(billinggroupId);
 			} catch(NumberFormatException e){

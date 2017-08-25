@@ -80,15 +80,6 @@ public abstract class ObjectifyDAOImpl<S extends PersistenceEntity, E extends S,
 			Key key;
 			key = Key.create((String) id);
 			foundObject = ofy().load().key(key).now();
-			// TODO check
-			// long longID;
-			// key = Key.create(entityClass, (String) id);
-			// foundObject = ofy().load().key(key).now();
-			// if (foundObject == null) {
-			// longID = Long.valueOf((String) id).longValue();
-			// key = Key.create(entityClass, longID);
-			// foundObject = ofy().load().key(key).now();
-			// }
 		} catch (Exception e) {
 			throw new EntityRetrievalException("Retrieval of " + entityClass.getName() + " with id: " + id + " failed.",
 					e);

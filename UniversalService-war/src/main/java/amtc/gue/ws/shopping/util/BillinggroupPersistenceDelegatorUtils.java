@@ -115,7 +115,6 @@ public class BillinggroupPersistenceDelegatorUtils {
 	 */
 	public static String buildGetBillinggroupsByIdSuccessStatusMessage(String billinggroupKey,
 			GAEBillinggroupEntity foundBillinggroupEntity) {
-		// TODO test
 		StringBuilder sb = new StringBuilder();
 		sb.append(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_BY_ID_SUCCESS_MSG);
 		sb.append(" : '");

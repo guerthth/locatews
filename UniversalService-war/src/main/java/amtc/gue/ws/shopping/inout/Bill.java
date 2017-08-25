@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import amtc.gue.ws.base.inout.User;
+
 /**
  * JAXB object for the Bill complex type
  * 
@@ -26,6 +28,8 @@ public class Bill {
 	private Shop shop;
 	@XmlElement(name = "billinggroup", required = false, nillable = true)
 	private Billinggroup billinggroup;
+	@XmlElement(name = "user", required = false, nillable = true)
+	private User user;
 
 	// Getters and Setters
 	public String getBillId() {
@@ -68,4 +72,11 @@ public class Bill {
 		this.billinggroup = billinggoup;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 }

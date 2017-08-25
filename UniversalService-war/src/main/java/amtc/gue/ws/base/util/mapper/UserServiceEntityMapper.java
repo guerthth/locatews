@@ -35,6 +35,22 @@ public abstract class UserServiceEntityMapper {
 	public abstract GAEUserEntity mapUserToEntity(User user, DelegatorTypeEnum type);
 
 	/**
+	 * Method mapping Google Authentication User Object to User
+	 * 
+	 * @param user
+	 *            the Google Authentication User object that should be
+	 *            transformed
+	 * @param type
+	 *            the database action type
+	 * @return the mapped User
+	 */
+	public static User mapAuthUserToUser(com.google.appengine.api.users.User authUser) {
+		User user = new User();
+		user.setId(authUser.getEmail());
+		return user;
+	}
+
+	/**
 	 * Method mapping Users to a list of GAEUserEntities
 	 * 
 	 * @param users

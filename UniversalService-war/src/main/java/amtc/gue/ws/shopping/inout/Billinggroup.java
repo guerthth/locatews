@@ -25,6 +25,8 @@ public class Billinggroup {
 	private String description;
 	@XmlElement(name = "users", required = false, nillable = true)
 	private List<User> users;
+	@XmlElement(name = "bills", required = false, nillable = true)
+	private List<Bill> bills;
 
 	public Billinggroup() {
 
@@ -66,5 +68,16 @@ public class Billinggroup {
 
 	public void setUsers(List<User> users) {
 		this.users = users;
+	}
+
+	public List<Bill> getBills() {
+		if (bills == null) {
+			bills = new ArrayList<>();
+		}
+		return bills;
+	}
+
+	public void setBills(List<Bill> bills) {
+		this.bills = bills;
 	}
 }

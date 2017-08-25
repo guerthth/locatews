@@ -1,6 +1,6 @@
 package amtc.gue.ws.test.shopping.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -72,6 +72,13 @@ public class BillinggroupPersistenceDelegatorUtilTest extends ShoppingTest {
 		String message = BillinggroupPersistenceDelegatorUtils
 				.buildUpdateBillinggroupsSuccessStatusMessage(objectifyBillinggroupEntityList);
 		assertEquals(EXPECTED_BILLINGGROUP_UPDATE_MESSAGE_RESULT, message);
+	}
+
+	@Test
+	public void testBuildGetBillinggroupsByIdSuccessStatusMessage() {
+		String message = BillinggroupPersistenceDelegatorUtils
+				.buildGetBillinggroupsByIdSuccessStatusMessage(BILLINGGROUPID, objectifyBillinggroupEntity1);
+		assertNotNull(message);
 	}
 
 	/**

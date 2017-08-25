@@ -579,7 +579,7 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 		unrecognizedBillinggroupDelegatorOutput.setOutputObject(null);
 
 		billDelegatorOutput = new DelegatorOutput();
-		billDelegatorOutput.setOutputObject(bills);
+		billDelegatorOutput.setOutputObject(objectifyBillEntityList);
 		unrecognizedBillDelegatorOutput = new DelegatorOutput();
 		unrecognizedBillDelegatorOutput.setOutputObject(null);
 	}

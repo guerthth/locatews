@@ -51,5 +51,4 @@ public class UserServiceJPAEntityMapper extends UserServiceEntityMapper {
 		}
 		return roleEntityList;
 	}
-
 }

@@ -49,7 +49,7 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 	@Unowned
 	@ManyToMany(mappedBy = "users", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	private Set<GAEJPABookEntity> books = new HashSet<>();
-	
+
 	@Override
 	public String getKey() {
 		return email;
@@ -188,36 +188,62 @@ public class GAEJPAUserEntity extends GAEUserEntity {
 
 	@Override
 	public Set<GAEBillinggroupEntity> getBillinggroups() {
-		// TODO Auto-generated method stub
+		// not implemented
 		return null;
 	}
 
 	@Override
 	public void setBillinggroups(Set<GAEBillinggroupEntity> shoppinggroups, boolean alsoSetUsers) {
-		// TODO Auto-generated method stub
-
+		// not implemented
 	}
 
 	@Override
 	public void addToBillinggroupsOnly(GAEBillinggroupEntity billinggroup) {
-		// TODO Auto-generated method stub
-
+		// not implemented
 	}
 
 	@Override
 	public void addToBillinggroupsAndUsers(GAEBillinggroupEntity billinggroup) {
-		// TODO Auto-generated method stub
-
+		// not implemented
 	}
 
 	@Override
 	public void removeBillinggroup(GAEBillinggroupEntity billinggroup) {
-		// TODO Auto-generated method stub
-
+		// not implemented
 	}
 
 	@Override
 	public String getWebsafeKey() {
 		return userName;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (other == this)
+			return true;
+		if (other instanceof GAEJPAUserEntity) {
+			GAEJPAUserEntity otherEntity = (GAEJPAUserEntity) other;
+			if (this.getKey().equals(otherEntity.getKey())) {
+				return true;
+			} else
+				return false;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode(){
+		int result = 17;
+		if(this.getKey() != null){
+			for(int i = 0; i < this.getKey().length(); i++){
+				result = 31 * result + this.getKey().charAt(i);
+			}
+		} else {
+			result = 0;
+		}
+		return result;
 	}
 }

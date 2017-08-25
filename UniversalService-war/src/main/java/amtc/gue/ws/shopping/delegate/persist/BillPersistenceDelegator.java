@@ -12,6 +12,7 @@ import amtc.gue.ws.shopping.inout.Bill;
 import amtc.gue.ws.shopping.inout.Bills;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
 import amtc.gue.ws.shopping.util.BillPersistenceDelegatorUtils;
 import amtc.gue.ws.shopping.util.ShoppingServiceErrorConstants;
 import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
@@ -44,9 +45,12 @@ public class BillPersistenceDelegator extends AbstractPersistenceDelegator {
 
 			// persist all UserEntities to the DB
 			for (Bill bill : billsToPersist.getBills()) {
+				GAEShopEntity shopEntity = (bill.getShop() != null)
+						? shoppingEntityMapper.mapShopToEntity(bill.getShop(), DelegatorTypeEnum.ADD) : null;
 				GAEBillEntity billEntity = shoppingEntityMapper.mapBillToEntity(bill, DelegatorTypeEnum.ADD);
 				String billEntityJSON = ShoppingServiceEntityMapper.mapBillEntityToJSONString(billEntity);
 				try {
+					handleShopPersistenceForBillEntity(billEntity, shopEntity);
 					GAEBillEntity persistedBillEntity = billDAOImpl.persistEntity(billEntity);
 					successfullyAddedBillEntities.add(persistedBillEntity);
 					log.info(billEntityJSON + " added to DB");
@@ -72,6 +76,11 @@ public class BillPersistenceDelegator extends AbstractPersistenceDelegator {
 		} else {
 			setUnrecognizedDelegatorOutput();
 		}
+	}
+
+	private void handleShopPersistenceForBillEntity(GAEBillEntity billEntity, GAEShopEntity shopEntity) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

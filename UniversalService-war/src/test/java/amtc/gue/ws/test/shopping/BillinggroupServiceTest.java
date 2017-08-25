@@ -105,7 +105,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 	@Test(expected = UnauthorizedException.class)
 	public void testAddBillsToBillinggroupUsingUnauthorizedUser() throws UnauthorizedException {
 		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
-				.addBillsToBillinggroup(null, billinggroup1.getBillinggroupId(), bills);
+				.addBillToBillinggroup(null, billinggroup1.getBillinggroupId(), bill1);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 	}
@@ -113,7 +113,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 	@Test
 	public void testAddBillsToBillinggroups() throws UnauthorizedException {
 		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
-				.addBillsToBillinggroup(user, billinggroup1.getBillinggroupId(), bills);
+				.addBillToBillinggroup(user, billinggroup1.getBillinggroupId(), bill1);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
 

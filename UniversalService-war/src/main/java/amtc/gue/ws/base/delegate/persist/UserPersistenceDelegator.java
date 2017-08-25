@@ -24,8 +24,6 @@ import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.UserPersistenceDelegatorUtils;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
-import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
-import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
 /**
  * Persistence Delegator that handles all database actions for User resources
@@ -248,8 +246,6 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 					foundUser);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			// TODO
-			// delegatorOutput.setOutputObject(userEntityMapper.mapUserEntityToUser(foundUser));
 			delegatorOutput.setOutputObject(foundUser);
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE, "Error while trying to retrieve users with userKey: '" + userKey + "'", e);
@@ -266,7 +262,7 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	 * @param userEntity
 	 *            the userEntity whose roles are checked
 	 * @param roleEntityList
-	 *            the Set of roleentities
+	 *            the Set of roleEntities
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve RoleEntity
 	 * @throws EntityPersistenceException
@@ -289,10 +285,6 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 						persistedRoleEntity = roleDAOImpl.persistEntity(roleEntity);
 					} else {
 						persistedRoleEntity = foundRoleEntities.get(0);
-						// TODO Check String foundKey =
-						// persistedRoleEntity.getKey();
-						// TODO Check persistedRoleEntity =
-						// roleDAOImpl.findEntityById(foundKey);
 					}
 					userEntity.addToRolesAndUsers(persistedRoleEntity);
 				} catch (EntityRetrievalException e) {
@@ -310,22 +302,13 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	protected void updateEntities() {
 		// for users this method just updates the users password
 		log.info("UPDATE User action triggered");
-		// TODO if (delegatorInput.getInputObject() instanceof Users) {
 		if (delegatorInput.getInputObject() instanceof GAEUserEntity) {
 			GAEUserEntity userEntityToUpdate = (GAEUserEntity) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ErrorConstants.UPDATE_USER_SUCCESS_CODE);
-			// TODO
-			// List<GAEUserEntity> userEntityList =
-			// userEntityMapper.transformUsersToUserEntities(users,
-			// DelegatorTypeEnum.UPDATE);
 			List<GAEUserEntity> successfullyUpdatedUserEntities = new ArrayList<>();
 			List<GAEUserEntity> unsuccessfullyUpdatedUserEntities = new ArrayList<>();
 			StringBuilder sb = new StringBuilder();
 			String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntityToUpdate);
-
-			// update UserEntitiy
-			// TODO for (GAEUserEntity userEntity : userEntityList) {
-
 			try {
 				GAEUserEntity updatedUserEntity = userDAOImpl.updateEntity(userEntityToUpdate);
 				successfullyUpdatedUserEntities.add(updatedUserEntity);
@@ -335,7 +318,6 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 				sb.append(e.getMessage());
 				log.log(Level.SEVERE, "Error while trying to update: " + userEntityJSON, e);
 			}
-			// TODO }
 
 			// set delegatorOutput
 			if (!successfullyUpdatedUserEntities.isEmpty()) {

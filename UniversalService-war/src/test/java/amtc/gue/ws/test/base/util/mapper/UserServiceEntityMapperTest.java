@@ -87,6 +87,13 @@ public class UserServiceEntityMapperTest extends UserTest {
 	}
 
 	@Test
+	public void testMapAuthUserForAddType() {
+		com.google.appengine.api.users.User authUser = new com.google.appengine.api.users.User(EMAIL, DESCRIPTION);
+		User user = objectifyUserEntityMapper.mapAuthUserToUser(authUser);
+		assertNotNull(user);
+	}
+
+	@Test
 	public void testTransformUsersToUserEntitiesUsingSimpleUsers() {
 		List<GAEUserEntity> userEntityList = JPAUserEntityMapper.transformUsersToUserEntities(users,
 				DelegatorTypeEnum.ADD);

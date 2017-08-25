@@ -14,6 +14,8 @@ import amtc.gue.ws.base.persistence.dao.user.UserDAO;
 import amtc.gue.ws.base.persistence.dao.user.objectify.UserObjectifyDAOImpl;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
+import amtc.gue.ws.base.util.mapper.objectify.UserServiceObjectifyEntityMapper;
 import amtc.gue.ws.books.persistence.model.book.objectify.GAEObjectifyBookEntity;
 import amtc.gue.ws.books.persistence.model.tag.objectify.GAEObjectifyTagEntity;
 import amtc.gue.ws.shopping.inout.Bill;
@@ -60,7 +62,9 @@ public class ShoppingTest extends BaseTest {
 
 	protected static Billinggroup billinggroup1;
 	protected static Billinggroup billinggroup2;
+	protected static Billinggroup billinggroup3;
 	protected static Billinggroups billinggroups;
+	protected static Billinggroups billinggroupsWithBills;
 	protected static Billinggroups billinggroupsWithoutContent;
 
 	protected static Bill bill1;
@@ -95,6 +99,7 @@ public class ShoppingTest extends BaseTest {
 
 	protected static ShoppingServiceEntityMapper objectifyShopEntityMapper;
 	protected static ShoppingServiceEntityMapper objectifyBillEntityMapper;
+	protected static UserServiceEntityMapper objectifyUserEntityMapper;
 
 	@Before
 	public void setUp() {
@@ -132,8 +137,8 @@ public class ShoppingTest extends BaseTest {
 		shopObjectifyDAO = new ShopObjectifyDAOImpl();
 
 		setupShops();
-		setupBillinggroups();
 		setupBills();
+		setupBillinggroups();
 		setupShopEntities();
 		setupBillinggroupEntities();
 		setupBillEntities();
@@ -173,8 +178,13 @@ public class ShoppingTest extends BaseTest {
 		billinggroup1.setDescription(DESCRIPTION);
 		billinggroup2 = new Billinggroup();
 		billinggroup2.setBillinggroupId(BILLINGGROUPID);
+		billinggroup3 = new Billinggroup();
+		billinggroup3.setBills(bills.getBills());
+		billinggroup3.getUsers().add(serviceUser);
 		billinggroups = new Billinggroups();
 		billinggroups.getBillinggroups().add(billinggroup1);
+		billinggroupsWithBills = new Billinggroups();
+		billinggroupsWithBills.getBillinggroups().add(billinggroup3);
 		billinggroupsWithoutContent = new Billinggroups();
 	}
 
@@ -252,5 +262,6 @@ public class ShoppingTest extends BaseTest {
 	private static void setupEntityMappers() {
 		objectifyShopEntityMapper = new ShoppingServiceObjectifyEntityMapper();
 		objectifyBillEntityMapper = new ShoppingServiceObjectifyEntityMapper();
+		objectifyUserEntityMapper = new UserServiceObjectifyEntityMapper();
 	}
 }

@@ -451,15 +451,16 @@ public abstract class ShoppingServiceEntityMapper {
 	 *            delegatoroutput that should be included in the response
 	 * @return mapped BillServiceResponse
 	 */
+	@SuppressWarnings("unchecked")
 	public static BillServiceResponse mapBdOutputToBillServiceResponse(IDelegatorOutput bdOutput) {
 		BillServiceResponse billServiceResponse = null;
 
 		if (bdOutput != null) {
 			billServiceResponse = new BillServiceResponse();
 			billServiceResponse.setStatus(StatusMapper.buildStatusForDelegatorOutput(bdOutput));
-			if (bdOutput.getOutputObject() instanceof Bills) {
-				List<Bill> billList = ((Bills) bdOutput.getOutputObject()).getBills();
-				billServiceResponse.setBills(billList);
+			if (bdOutput.getOutputObject() instanceof List<?>) {
+				List<GAEBillEntity> bills = (List<GAEBillEntity>) bdOutput.getOutputObject();
+				billServiceResponse.setBills(bills);
 			} else {
 				billServiceResponse.setBills(null);
 			}

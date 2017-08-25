@@ -50,6 +50,7 @@ public class ShoppingServiceObjectifyEntityMapper extends ShoppingServiceEntityM
 				billinggroupEntity.addToUsersOnly(userEntity);
 			}
 		}
+		// TODO add shops here?
 		return billinggroupEntity;
 	}
 

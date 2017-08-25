@@ -14,6 +14,7 @@ import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.SpringContext;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 
 public class Service {
 	private static final Logger log = Logger.getLogger(Service.class.getName());
@@ -34,8 +35,7 @@ public class Service {
 			return true;
 		} else {
 			log.info("Trying to retrieve User with Id '" + user.getEmail() + "'");
-			amtc.gue.ws.base.inout.User searchUser = new amtc.gue.ws.base.inout.User();
-			searchUser.setId(user.getEmail());
+			amtc.gue.ws.base.inout.User searchUser = UserServiceEntityMapper.mapAuthUserToUser(user);
 			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
 			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
@@ -53,8 +53,7 @@ public class Service {
 			return true;
 		} else {
 			log.info("Trying to retrieve User with Id '" + user.getEmail() + "'");
-			amtc.gue.ws.base.inout.User searchUser = new amtc.gue.ws.base.inout.User();
-			searchUser.setId(user.getEmail());
+			amtc.gue.ws.base.inout.User searchUser = UserServiceEntityMapper.mapAuthUserToUser(user);
 			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
 			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
