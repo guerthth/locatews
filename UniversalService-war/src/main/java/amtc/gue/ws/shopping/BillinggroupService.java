@@ -217,9 +217,11 @@ public class BillinggroupService extends Service {
 		// Call to persistence delegator only issues an update operation on an
 		// existing billinggroup
 		billinggroupDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.UPDATE, billinggroupToUpdate);
-
+		IDelegatorOutput billinggroupBdOutput = billinggroupDelegator.delegate();
+		
 		// TODO Continue here
 		
+		/*
 		// load billinggroup (websafekey needed for objectify)
 		billinggroupDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, billinggroupId);
 		IDelegatorOutput billinggroupBdOutput = billinggroupDelegator.delegate();
@@ -294,10 +296,12 @@ public class BillinggroupService extends Service {
 			log.info(response.getStatus().getStatusMessage());
 			return response;
 		}
+		*/
 
 		BillinggroupServiceResponse response = ShoppingServiceEntityMapper
 				.mapBdOutputToBillinggroupServiceResponse(billinggroupBdOutput);
 		log.info(response.getStatus().getStatusMessage());
+		
 		return response;
 	}
 

@@ -16,6 +16,7 @@ import amtc.gue.ws.shopping.inout.Billinggroup;
 import amtc.gue.ws.shopping.inout.Billinggroups;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
 import amtc.gue.ws.shopping.persistence.dao.BillinggroupDAO;
+import amtc.gue.ws.shopping.persistence.dao.ShopDAO;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
@@ -37,6 +38,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	/** DAOImplementations used by the delegator */
 	private BillinggroupDAO<GAEBillinggroupEntity, GAEBillinggroupEntity, String> billinggroupDAOImpl;
 	private BillDAO<GAEBillEntity, GAEBillEntity, String> billDAOImpl;
+	private ShopDAO<GAEShopEntity, GAEShopEntity, String> shopDAOImpl;
 
 	/** EntityMapper user by the delegator */
 	private ShoppingServiceEntityMapper shoppingEntityMapper;
@@ -161,8 +163,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	}
 
 	/**
-	 * Method retrieving a BillinggroupEntity from the database by
-	 * billinggroupKey
+	 * Method retrieving a BillinggroupEntity from the database by billinggroupKey
 	 * 
 	 * @param billinggroupKey
 	 *            the billinggroupKey that is searched for
@@ -252,7 +253,8 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 							GAEBillinggroupEntity updatedBillinggroupEntity = billinggroupDAOImpl
 									.updateEntity(foundBillinggroup);
 							successfullyUpdatedBillinggroupEntities.add(updatedBillinggroupEntity);
-							log.info(billinggroupEntityJSON + " successfully updated.");
+							log.info("Bill succesfully added to billinggroup '" + updatedBillinggroupEntity.getKey()
+									+ "'");
 						} else {
 							unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
 							String statusMessage = "User with key '" + billCreationUserEntity.getKey()
@@ -312,8 +314,8 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	 *            the billinggroupEntity that is checked for registered users
 	 * @param user
 	 *            the user that is searched for in the billinggroupEntity
-	 * @return true if the user is registered to the billinggroupEntity, false
-	 *         if not
+	 * @return true if the user is registered to the billinggroupEntity, false if
+	 *         not
 	 */
 	private boolean isUserRegisteredToBillinggroup(GAEBillinggroupEntity billinggroupEntity, GAEUserEntity userEntity) {
 		if (billinggroupEntity.getUsers().contains(userEntity)) {
@@ -323,9 +325,38 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 		}
 	}
 
-	private void handleShopPersistenceForBillEntity(GAEBillEntity billEntity, GAEShopEntity shopEntity) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Method that checks if the shop associated with the BillEntity already exists.
+	 * If not, the ShopEntity is added
+	 * 
+	 * @param billEntity
+	 *            the BillEntity whose shop is checked
+	 * @param shopEntity
+	 *            the ShopEntity
+	 * @throws EntityRetrievalException
+	 *             when issue occurs while trying to retrieve ShopEntity
+	 * @throws EntityPersistenceException
+	 *             when issue occurs while trying to persist ShopEntity
+	 */
+	private void handleShopPersistenceForBillEntity(GAEBillEntity billEntity, GAEShopEntity shopEntity)
+			throws EntityRetrievalException, EntityPersistenceException {
+		String shopEntityJSON = ShoppingServiceEntityMapper.mapShopEntityToJSONString(shopEntity);
+		GAEShopEntity persistedShopEntity;
+		try {
+			List<GAEShopEntity> foundShopEntities = shopDAOImpl.findSpecificEntity(shopEntity);
+			if (foundShopEntities.isEmpty()) {
+				persistedShopEntity = shopDAOImpl.persistEntity(shopEntity);
+			} else {
+				persistedShopEntity = foundShopEntities.get(0);
+			}
+			billEntity.setShop(persistedShopEntity);
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE, "Error while trying to retrieve shopEntity: " + shopEntityJSON, e);
+			throw new EntityRetrievalException(e.getMessage(), e);
+		} catch (EntityPersistenceException e) {
+			log.log(Level.SEVERE, "Error while trying to persist shopEntity: " + shopEntityJSON, e);
+			throw new EntityPersistenceException(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -348,6 +379,17 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setBillDAO(BillDAO billDAOImpl) {
 		this.billDAOImpl = billDAOImpl;
+	}
+
+	/**
+	 * Setter for the used shopDAOImpl
+	 * 
+	 * @param shopDAOimpl
+	 *            the ShopDAOImpl object
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void setShopDAO(ShopDAO shopDAOimpl) {
+		this.shopDAOImpl = shopDAOimpl;
 	}
 
 	/**

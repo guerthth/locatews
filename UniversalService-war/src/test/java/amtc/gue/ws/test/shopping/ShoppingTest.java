@@ -179,8 +179,8 @@ public class ShoppingTest extends BaseTest {
 		billinggroup2 = new Billinggroup();
 		billinggroup2.setBillinggroupId(BILLINGGROUPID);
 		billinggroup3 = new Billinggroup();
+		billinggroup3.setBillinggroupId(BILLINGGROUPID);
 		billinggroup3.setBills(bills.getBills());
-		billinggroup3.getUsers().add(serviceUser);
 		billinggroups = new Billinggroups();
 		billinggroups.getBillinggroups().add(billinggroup1);
 		billinggroupsWithBills = new Billinggroups();
@@ -193,6 +193,7 @@ public class ShoppingTest extends BaseTest {
 	 */
 	private static void setupBills() {
 		bill1 = new Bill();
+		bill1.setUser(serviceUser);
 		bill2 = new Bill();
 		bills = new Bills();
 		bills.getBills().add(bill1);

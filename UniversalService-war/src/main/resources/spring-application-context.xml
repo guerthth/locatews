@@ -202,6 +202,8 @@
 		class="amtc.gue.ws.shopping.delegate.persist.BillinggroupPersistenceDelegator">
 		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
 		<property name="billinggroupDAO" ref="billinggoupObjectifyDAOImpl"></property>
+		<property name="billDAO" ref="billObjectifyDAOImpl"></property>
+		<property name="shopDAO" ref="shopObjectifyDAOImpl"></property>
 		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
 	</bean>
 

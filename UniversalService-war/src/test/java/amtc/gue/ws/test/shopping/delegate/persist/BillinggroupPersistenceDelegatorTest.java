@@ -79,7 +79,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		EasyMock.verify(billinggroupObjectifyDAOImplDeletionFail);
 		EasyMock.verify(billinggroupObjectifyDAOImplSpecificEntityFound);
 		EasyMock.verify(billinggroupObjectifyDAOImplRetrievalFail);
-		//TODO EasyMock.verify(billObjectifyDAOImpl);
+		EasyMock.verify(billObjectifyDAOImpl);
 	}
 
 	@Override
@@ -271,15 +271,20 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
 	}
 
-	// TODO include again and test @Test
-	public void testDelegateObjectifyUpdateUsingBillinggroupsWithBills() {
+	@Test
+	public void testDelegateObjectifyUpdateBillinggroupWithBillUserNotRegisteredToBillinggroup() {
 		billinggroupPersistenceDelegator.initialize(updateBillinggroupBillDelegatorInput);
 		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImpl);
 		billinggroupPersistenceDelegator.setBillDAO(billObjectifyDAOImpl);
 		billinggroupPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		billinggroupPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = billinggroupPersistenceDelegator.delegate();
-		assertEquals(ErrorConstants.UNRECOGNIZED_INPUT_OBJECT_CODE, delegatorOutput.getStatusCode());
+		assertEquals(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_FAILURE_CODE, delegatorOutput.getStatusCode());
+	}
+
+	@Test
+	public void testDelegateObjectifyUpdateBillinggroupWithBillUserRegisteredToBillinggroup() {
+		// TODO
 	}
 
 	/**
@@ -346,6 +351,8 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		billinggroupObjectifyDAOImpl = EasyMock.createNiceMock(BillinggroupObjectifyDAOImpl.class);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.findAllEntities()).andReturn(objectifyBillinggroupEntityList);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
+				.andReturn(objectifyBillinggroupEntity1);
+		EasyMock.expect(billinggroupObjectifyDAOImpl.findEntityById(EasyMock.isA(String.class)))
 				.andReturn(objectifyBillinggroupEntity1);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.removeEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
 				.andReturn(objectifyBillinggroupEntity1);
