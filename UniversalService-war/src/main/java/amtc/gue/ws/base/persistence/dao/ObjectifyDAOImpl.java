@@ -104,7 +104,7 @@ public abstract class ObjectifyDAOImpl<S extends PersistenceEntity, E extends S,
 	}
 
 	@Override
-	public S mergeEntity(S entity) {
+	public S mergeEntity(E entity) {
 		// Not implemented for Objectify DAO
 		return null;
 	}

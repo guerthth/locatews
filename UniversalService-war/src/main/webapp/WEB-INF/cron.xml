@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+	<cron>
+		<url>/crons/set_billinggroup_announcements</url>
+		<description>Repopulating the announcements for billinggroups
+		</description>
+		<schedule>every 10 minutes</schedule>
+	</cron>
+	<cron>
+		<url>/crons/create_billinggroup_reports</url>
+		<description>creating weekly reports for billinggroups
+		</description>
+		<schedule>every monday 09:00</schedule>
+	</cron>
+</cronentries>

@@ -6,11 +6,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
+import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.shopping.inout.Bill;
 import amtc.gue.ws.shopping.inout.Bills;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
+import amtc.gue.ws.shopping.persistence.dao.ShopDAO;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
 import amtc.gue.ws.shopping.util.BillPersistenceDelegatorUtils;
@@ -29,6 +31,7 @@ public class BillPersistenceDelegator extends AbstractPersistenceDelegator {
 
 	/** DAOImplementations used by the delegator */
 	private BillDAO<GAEBillEntity, GAEBillEntity, String> billDAOImpl;
+	private ShopDAO<GAEShopEntity, GAEShopEntity, String> shopDAOImpl;
 
 	/** EntityMapper user by the delegator */
 	private ShoppingServiceEntityMapper shoppingEntityMapper;
@@ -78,9 +81,38 @@ public class BillPersistenceDelegator extends AbstractPersistenceDelegator {
 		}
 	}
 
-	private void handleShopPersistenceForBillEntity(GAEBillEntity billEntity, GAEShopEntity shopEntity) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * Method that checks if the shop associated with the BillEntity already
+	 * exists. If not, the ShopEntity is added
+	 * 
+	 * @param billEntity
+	 *            the BillEntity whose shop is checked
+	 * @param shopEntity
+	 *            the ShopEntity
+	 * @throws EntityRetrievalException
+	 *             when issue occurs while trying to retrieve ShopEntity
+	 * @throws EntityPersistenceException
+	 *             when issue occurs while trying to persist ShopEntity
+	 */
+	private void handleShopPersistenceForBillEntity(GAEBillEntity billEntity, GAEShopEntity shopEntity)
+			throws EntityRetrievalException, EntityPersistenceException {
+		String shopEntityJSON = ShoppingServiceEntityMapper.mapShopEntityToJSONString(shopEntity);
+		GAEShopEntity persistedShopEntity;
+		try {
+			List<GAEShopEntity> foundShopEntities = shopDAOImpl.findSpecificEntity(shopEntity);
+			if (foundShopEntities.isEmpty()) {
+				persistedShopEntity = shopDAOImpl.persistEntity(shopEntity);
+			} else {
+				persistedShopEntity = foundShopEntities.get(0);
+			}
+			billEntity.setShop(persistedShopEntity);
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE, "Error while trying to retrieve shopEntity: " + shopEntityJSON, e);
+			throw new EntityRetrievalException(e.getMessage(), e);
+		} catch (EntityPersistenceException e) {
+			log.log(Level.SEVERE, "Error while trying to persist shopEntity: " + shopEntityJSON, e);
+			throw new EntityPersistenceException(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -193,6 +225,17 @@ public class BillPersistenceDelegator extends AbstractPersistenceDelegator {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setBillDAO(BillDAO billDAOImpl) {
 		this.billDAOImpl = billDAOImpl;
+	}
+
+	/**
+	 * Setter for the used shopDAOImpl
+	 * 
+	 * @param shopDAOimpl
+	 *            the ShopDAOImpl object
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void setShopDAO(ShopDAO shopDAOImpl) {
+		this.shopDAOImpl = shopDAOImpl;
 	}
 
 	/**

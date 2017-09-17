@@ -205,13 +205,15 @@
 		<property name="billDAO" ref="billObjectifyDAOImpl"></property>
 		<property name="shopDAO" ref="shopObjectifyDAOImpl"></property>
 		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
+		<property name="userEntityMapper" ref="userObjectifyEntityMapper"></property>
 	</bean>
 
-	<!-- ShopPersistenceDelegator -->
+	<!-- BillPersistenceDelegator -->
 	<bean id="billPersistenceDelegator"
 		class="amtc.gue.ws.shopping.delegate.persist.BillPersistenceDelegator">
 		<property name="userDAO" ref="userObjectifyDAOImpl"></property>
 		<property name="billDAO" ref="billObjectifyDAOImpl"></property>
+		<property name="shopDAO" ref="shopObjectifyDAOImpl"></property>
 		<property name="shoppingEntityMapper" ref="shoppingObjectifyEntityMapper"></property>
 	</bean>
 </beans>

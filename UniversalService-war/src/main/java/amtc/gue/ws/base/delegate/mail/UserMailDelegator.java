@@ -48,7 +48,7 @@ public class UserMailDelegator extends AbstractMailDelegator {
 				msg.setFrom(new InternetAddress(EMAIL, "Admin"));
 				msg.addRecipient(Message.RecipientType.TO, new InternetAddress(foundUser.getKey(), foundUser.getUserName()));
 				msg.setSubject("Your userdata found for the universalservice");
-				msg.setContent(HtmlMapper.parseHtml(foundUser, HTMLFile), "text/html");
+				msg.setContent(HtmlMapper.parsePwResetHtml(foundUser, HTMLFile), "text/html");
 				Transport.send(msg);
 				delegatorOutput.setStatusCode(ErrorConstants.SEND_MAIL_SUCESS_CODE);
 				delegatorOutput.setStatusMessage(ErrorConstants.SEND_MAIL_SUCCESS_MSG + " '" + userName + "'");

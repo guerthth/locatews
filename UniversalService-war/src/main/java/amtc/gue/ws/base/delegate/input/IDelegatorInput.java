@@ -8,34 +8,36 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
  * @author Thomas
  *
  */
-public interface IDelegatorInput {	
-	
+public interface IDelegatorInput {
+
 	/**
 	 * Getter for the passed InputObject
 	 * 
 	 * @return used InputObject
 	 */
 	public Object getInputObject();
-	
+
 	/**
 	 * Setter for the passed InputObject
 	 * 
-	 * @param inputObject the passed inputObject
+	 * @param inputObject
+	 *            the passed inputObject
 	 */
 	public void setInputObject(Object inputObject);
-	
+
 	/**
 	 * Getter for input type
 	 * 
 	 * @return the getter type
 	 */
 	public DelegatorTypeEnum getType();
-	
+
 	/**
 	 * Setter for the input type
 	 * 
-	 * @param type the getter type
+	 * @param type
+	 *            the getter type
 	 */
 	public void setType(DelegatorTypeEnum type);
-	
+
 }

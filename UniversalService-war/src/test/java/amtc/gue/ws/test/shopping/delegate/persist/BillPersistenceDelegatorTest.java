@@ -18,9 +18,13 @@ import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.shopping.delegate.persist.BillPersistenceDelegator;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
+import amtc.gue.ws.shopping.persistence.dao.ShopDAO;
 import amtc.gue.ws.shopping.persistence.dao.objectify.BillObjectifyDAOImpl;
+import amtc.gue.ws.shopping.persistence.dao.objectify.ShopObjectifyDAOImpl;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
+import amtc.gue.ws.shopping.persistence.model.GAEShopEntity;
 import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyBillEntity;
+import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyShopEntity;
 import amtc.gue.ws.shopping.util.ShoppingServiceErrorConstants;
 import amtc.gue.ws.test.base.delegate.persist.IObjectifyPersistenceDelegatorTest;
 import amtc.gue.ws.test.shopping.ShoppingTest;
@@ -50,6 +54,8 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 	private static BillDAO<GAEBillEntity, GAEObjectifyBillEntity, String> billObjectifyDAOImplNullBills;
 	private static BillDAO<GAEBillEntity, GAEObjectifyBillEntity, String> billObjectifyDAOImplSpecificEntityFound;
 
+	private static ShopDAO<GAEShopEntity, GAEObjectifyShopEntity, String> shopObjectifyDAOImpl;
+
 	@BeforeClass
 	public static void oneTimeInitialSetup()
 			throws EntityRetrievalException, EntityRemovalException, EntityPersistenceException {
@@ -68,6 +74,7 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 		EasyMock.verify(billObjectifyDAOImplNoFoundBills);
 		EasyMock.verify(billObjectifyDAOImplNullBills);
 		EasyMock.verify(billObjectifyDAOImplSpecificEntityFound);
+		EasyMock.verify(shopObjectifyDAOImpl);
 	}
 
 	@Override
@@ -94,6 +101,7 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 	public void testDelegateObjectifyAddUsingCorrectInput() {
 		billPersistenceDelegator.initialize(addBillDelegatorInput);
 		billPersistenceDelegator.setBillDAO(billObjectifyDAOImpl);
+		billPersistenceDelegator.setShopDAO(shopObjectifyDAOImpl);
 		billPersistenceDelegator.setShoppingEntityMapper(objectifyBillEntityMapper);
 		IDelegatorOutput delegatorOutput = billPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.ADD_BILL_SUCCESS_CODE, delegatorOutput.getStatusCode());
@@ -306,7 +314,7 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 	 */
 	private static void setUpDAOMocks()
 			throws EntityRemovalException, EntityPersistenceException, EntityRetrievalException {
-		// objectify DAO mocks
+		// bill objectify DAO mocks
 		billObjectifyDAOImpl = EasyMock.createNiceMock(BillObjectifyDAOImpl.class);
 		EasyMock.expect(billObjectifyDAOImpl.findAllEntities()).andReturn(objectifyBillEntityList);
 		EasyMock.expect(billObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
@@ -321,8 +329,6 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 		// negative scenario fails everytime
 		billObjectifyDAOImplGeneralFail = EasyMock.createNiceMock(BillObjectifyDAOImpl.class);
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.findAllEntities()).andThrow(new EntityRetrievalException());
-		EasyMock.expect(billObjectifyDAOImplGeneralFail.persistEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
-				.andThrow(new EntityPersistenceException());
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.removeEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
 				.andThrow(new EntityRemovalException()).times(5);
 		EasyMock.expect(billObjectifyDAOImplGeneralFail.updateEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
@@ -346,5 +352,10 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 		// negative scenario (entity retrieval fails)
 		billObjectifyDAOImplRetrievalFail = EasyMock.createNiceMock(BillObjectifyDAOImpl.class);
 		EasyMock.replay(billObjectifyDAOImplRetrievalFail);
+
+		// shop objectify DAO mocks
+		shopObjectifyDAOImpl = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
+		EasyMock.expect(shopObjectifyDAOImpl.findSpecificEntity(null)).andReturn(objectifyShopEntityList);
+		EasyMock.replay(shopObjectifyDAOImpl);
 	}
 }

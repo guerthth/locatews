@@ -44,38 +44,40 @@ public class UserObjectifyDAOImpl extends ObjectifyDAOImpl<GAEUserEntity, GAEObj
 	public List<GAEUserEntity> findSpecificEntity(GAEUserEntity entity) throws EntityRetrievalException {
 		GAEObjectifyUserEntity specificEntity = (GAEObjectifyUserEntity) entity;
 		List<GAEUserEntity> foundEntities = new ArrayList<>();
-		if (specificEntity != null && specificEntity.getKey() != null) {
-			// if entity has an ID, search by ID
-			GAEObjectifyUserEntity foundEntity = (GAEObjectifyUserEntity) ofy().load().entity(specificEntity).now();
-			if (foundEntity != null) {
-				foundEntities.add(foundEntity);
-			}
-		} else {
-			// if not, search for similar attributes
-			Query<GAEObjectifyUserEntity> query = ofy().load().type(GAEObjectifyUserEntity.class);
-			if (specificEntity.getUserName() != null) {
-				query = query.filter("userName", specificEntity.getUserName());
-			}
-			if (specificEntity.getPassword() != null) {
-				query = query.filter("password", specificEntity.getPassword());
-			}
-			if (specificEntity.getRoles() != null) {
-				for (GAERoleEntity role : specificEntity.getRoles()) {
-					Ref<GAEObjectifyRoleEntity> roleReferenceToQuery = Ref
-							.create(Key.create(GAEObjectifyRoleEntity.class, role.getKey()));
-					query = query.filter("roles", roleReferenceToQuery);
+		if (specificEntity != null) {
+			if (specificEntity.getKey() != null) {
+				// if entity has an ID, search by ID
+				GAEObjectifyUserEntity foundEntity = (GAEObjectifyUserEntity) ofy().load().entity(specificEntity).now();
+				if (foundEntity != null) {
+					foundEntities.add(foundEntity);
 				}
-			}
-			if (specificEntity.getBooks() != null) {
-				for (GAEBookEntity book : specificEntity.getBooks()) {
-					Ref<GAEObjectifyBookEntity> bookReferenceToQuery = Ref
-							.create(Key.create(GAEObjectifyBookEntity.class, Long.valueOf(book.getKey()).longValue()));
-					query = query.filter("books", bookReferenceToQuery);
+			} else {
+				// if not, search for similar attributes
+				Query<GAEObjectifyUserEntity> query = ofy().load().type(GAEObjectifyUserEntity.class);
+				if (specificEntity.getUserName() != null) {
+					query = query.filter("userName", specificEntity.getUserName());
 				}
-			}
-			List<GAEObjectifyUserEntity> userEntities = query.list();
-			for (GAEObjectifyUserEntity userEntity : userEntities) {
-				foundEntities.add(userEntity);
+				if (specificEntity.getPassword() != null) {
+					query = query.filter("password", specificEntity.getPassword());
+				}
+				if (specificEntity.getRoles() != null) {
+					for (GAERoleEntity role : specificEntity.getRoles()) {
+						Ref<GAEObjectifyRoleEntity> roleReferenceToQuery = Ref
+								.create(Key.create(GAEObjectifyRoleEntity.class, role.getKey()));
+						query = query.filter("roles", roleReferenceToQuery);
+					}
+				}
+				if (specificEntity.getBooks() != null) {
+					for (GAEBookEntity book : specificEntity.getBooks()) {
+						Ref<GAEObjectifyBookEntity> bookReferenceToQuery = Ref
+								.create(Key.create(GAEObjectifyBookEntity.class, Long.parseLong(book.getKey())));
+						query = query.filter("books", bookReferenceToQuery);
+					}
+				}
+				List<GAEObjectifyUserEntity> userEntities = query.list();
+				for (GAEObjectifyUserEntity userEntity : userEntities) {
+					foundEntities.add(userEntity);
+				}
 			}
 		}
 		return foundEntities;

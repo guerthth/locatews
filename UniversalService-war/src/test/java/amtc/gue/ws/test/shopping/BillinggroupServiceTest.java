@@ -16,7 +16,6 @@ import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
 import amtc.gue.ws.shopping.BillinggroupService;
-import amtc.gue.ws.shopping.delegate.persist.BillPersistenceDelegator;
 import amtc.gue.ws.shopping.delegate.persist.BillinggroupPersistenceDelegator;
 import amtc.gue.ws.shopping.response.BillinggroupServiceResponse;
 
@@ -33,7 +32,6 @@ public class BillinggroupServiceTest extends ShoppingTest {
 	private static IDelegatorOutput failureUserDelegatorOutput;
 
 	private static AbstractPersistenceDelegator billinggroupDelegator;
-	private static AbstractPersistenceDelegator billDelegator;
 	private static AbstractPersistenceDelegator userDelegator;
 
 	@BeforeClass
@@ -45,9 +43,8 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@AfterClass
 	public static void checkMocks() {
-		// TODO CHeck
-		// EasyMock.verify(billinggroupDelegator);
-		// EasyMock.verify(userDelegator);
+		EasyMock.verify(billinggroupDelegator);
+		EasyMock.verify(userDelegator);
 	}
 
 	@Test(expected = UnauthorizedException.class)
@@ -57,7 +54,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test
 	public void testAddBillinggroups() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.addBillinggroups(user, billinggroups);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -70,7 +67,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test
 	public void testGetBillinggroups() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.getBillinggroups(user);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -83,7 +80,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test
 	public void testRemoveBillinggroup() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.removeBillinggroup(user, billinggroup1.getBillinggroupId());
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -96,7 +93,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test
 	public void testUpdateBillinggroups() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.updateBillinggroups(user, billinggroups);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -104,7 +101,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test(expected = UnauthorizedException.class)
 	public void testAddBillsToBillinggroupUsingUnauthorizedUser() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.addBillToBillinggroup(null, billinggroup1.getBillinggroupId(), bill1);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -112,7 +109,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	@Test
 	public void testAddBillsToBillinggroups() throws UnauthorizedException {
-		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator, billDelegator)
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
 				.addBillToBillinggroup(user, billinggroup1.getBillinggroupId(), bill1);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
@@ -132,10 +129,6 @@ public class BillinggroupServiceTest extends ShoppingTest {
 		billinggroupDelegator = EasyMock.createNiceMock(BillinggroupPersistenceDelegator.class);
 		EasyMock.expect(billinggroupDelegator.delegate()).andReturn(delegatorOutput).times(5);
 		EasyMock.replay(billinggroupDelegator);
-
-		billDelegator = EasyMock.createNiceMock(BillPersistenceDelegator.class);
-		EasyMock.expect(billDelegator.delegate()).andReturn(delegatorOutput).times(1);
-		EasyMock.replay(billDelegator);
 
 		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
 		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(5);

@@ -39,7 +39,7 @@ public abstract class PersistenceEntity implements Serializable {
 	 * @return websafe representation of the GAEObjectifyBillinggroupEntity
 	 */
 	public abstract String getWebsafeKey();
-	
+
 	/**
 	 * Method clearing a set
 	 * 

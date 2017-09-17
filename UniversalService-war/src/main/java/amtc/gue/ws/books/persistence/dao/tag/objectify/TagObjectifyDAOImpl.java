@@ -43,26 +43,28 @@ public class TagObjectifyDAOImpl extends ObjectifyDAOImpl<GAETagEntity, GAEObjec
 		GAEObjectifyTagEntity specificEntity = (GAEObjectifyTagEntity) entity;
 		List<GAETagEntity> foundEntities = new ArrayList<>();
 		try {
-			if (specificEntity != null && specificEntity.getKey() != null) {
-				// if entity has an ID, search by ID
-				GAEObjectifyTagEntity foundEntity = (GAEObjectifyTagEntity) ofy().load().entity(specificEntity).now();
-				if (foundEntity != null) {
-					foundEntities.add(foundEntity);
-				}
-			} else {
-				Query<GAEObjectifyTagEntity> query = ofy().load().type(GAEObjectifyTagEntity.class);
-				if (specificEntity.getBooks() != null) {
-					for (GAEBookEntity book : specificEntity.getBooks()) {
-						Ref<GAEObjectifyBookEntity> bookReferenceToQuery = Ref.create(
-								Key.create(GAEObjectifyBookEntity.class, Long.valueOf(book.getKey()).longValue()));
-						query = query.filter("books", bookReferenceToQuery);
+			if(specificEntity != null){
+				if (specificEntity.getKey() != null) {
+					// if entity has an ID, search by ID
+					GAEObjectifyTagEntity foundEntity = (GAEObjectifyTagEntity) ofy().load().entity(specificEntity).now();
+					if (foundEntity != null) {
+						foundEntities.add(foundEntity);
+					}
+				} else {
+					Query<GAEObjectifyTagEntity> query = ofy().load().type(GAEObjectifyTagEntity.class);
+					if (specificEntity.getBooks() != null) {
+						for (GAEBookEntity book : specificEntity.getBooks()) {
+							Ref<GAEObjectifyBookEntity> bookReferenceToQuery = Ref.create(
+									Key.create(GAEObjectifyBookEntity.class, Long.valueOf(book.getKey()).longValue()));
+							query = query.filter("books", bookReferenceToQuery);
+						}
+					}
+					List<GAEObjectifyTagEntity> tagEntities = query.list();
+					for (GAEObjectifyTagEntity tagEntity : tagEntities) {
+						foundEntities.add(tagEntity);
 					}
 				}
-				List<GAEObjectifyTagEntity> tagEntities = query.list();
-				for (GAEObjectifyTagEntity tagEntity : tagEntities) {
-					foundEntities.add(tagEntity);
-				}
-			}
+			}		
 		} catch (Exception e) {
 			throw new EntityRetrievalException("Retrieval of specific TagEntity failed.", e);
 		}

@@ -65,10 +65,54 @@
 			</param-value>
 		</init-param>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>SystemServiceServlet</servlet-name>
 		<url-pattern>/_ah/spi/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>appstats</servlet-name>
+		<servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>appstats</servlet-name>
+		<url-pattern>/appstats/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SendNewUserEmailServlet</servlet-name>
+		<servlet-class>amtc.gue.ws.base.service.rest.SendNewUserEmailServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SendNewUserEmailServlet</servlet-name>
+		<url-pattern>/tasks/send_newuserinbillinggroup_email</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SendNewBillEmailServlet</servlet-name>
+		<servlet-class>amtc.gue.ws.base.service.rest.SendNewBillEmailServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SendNewBillEmailServlet</servlet-name>
+		<url-pattern>/tasks/send_newbillinbillinggroup_email</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>SetBillinggroupAnnouncementServlet</servlet-name>
+		<servlet-class>amtc.gue.ws.base.service.rest.SetBillinggroupAnnouncementServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SetBillinggroupAnnouncementServlet</servlet-name>
+		<url-pattern>/crons/set_billinggroup_announcements</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>CreateBillinggroupReportsServlet</servlet-name>
+		<servlet-class>amtc.gue.ws.base.service.rest.CreateBillinggroupReportsServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CreateBillinggroupReportsServlet</servlet-name>
+		<url-pattern>/crons/create_billinggroup_reports</url-pattern>
 	</servlet-mapping>
 
 	<security-constraint>
@@ -80,21 +124,28 @@
 			<transport-guarantee>CONFIDENTIAL</transport-guarantee>
 		</user-data-constraint>
 	</security-constraint>
-
-	<servlet>
-		<servlet-name>appstats</servlet-name>
-		<servlet-class>com.google.appengine.tools.appstats.AppstatsServlet</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>appstats</servlet-name>
-		<url-pattern>/appstats/*</url-pattern>
-	</servlet-mapping>
-
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>appstats</web-resource-name>
 			<url-pattern>/appstats/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>tasks</web-resource-name>
+			<url-pattern>/tasks/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>admin</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>crons</web-resource-name>
+			<url-pattern>/crons/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>
@@ -113,12 +164,10 @@
 			<param-value>true</param-value>
 		</init-param>
 	</filter>
-
 	<filter-mapping>
 		<filter-name>appstats</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
 	<filter>
 		<filter-name>ObjectifyFilter</filter-name>
 		<filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>

@@ -118,7 +118,7 @@ public abstract class JPADAOImpl<S extends PersistenceEntity, E extends S, K> im
 			entityManager.getTransaction().begin();
 			entityToRemove = (E) entityManager.find(entityClass, entity.getKey());
 			if (entityToRemove == null)
-				throw new Exception();
+				throw new EntityRetrievalException("Entity with key '" + entity.getKey() + "' not found.");
 			entityManager.remove(entityToRemove);
 			entityManager.getTransaction().commit();
 		} catch (Exception e) {
@@ -135,7 +135,7 @@ public abstract class JPADAOImpl<S extends PersistenceEntity, E extends S, K> im
 	}
 
 	@Override
-	public S mergeEntity(S entity) {
+	public S mergeEntity(E entity) {
 		entityManager = entityManagerFactory.createEntityManager();
 		entityManager.merge(entity);
 		closeEntityManager();

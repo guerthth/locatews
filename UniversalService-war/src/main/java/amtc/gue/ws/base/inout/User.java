@@ -47,7 +47,7 @@ public class User extends Item {
 
 	public List<String> getRoles() {
 		if (this.roles == null) {
-			this.roles = new ArrayList<String>();
+			this.roles = new ArrayList<>();
 		}
 		return roles;
 	}

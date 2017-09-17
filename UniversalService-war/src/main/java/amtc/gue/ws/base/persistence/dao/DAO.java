@@ -85,6 +85,6 @@ public interface DAO<S, E extends S, K> {
 	 *            the entity that should be merged
 	 * @return the entity that was merged to the DB
 	 */
-	S mergeEntity(S entity);
+	S mergeEntity(E entity);
 
 }

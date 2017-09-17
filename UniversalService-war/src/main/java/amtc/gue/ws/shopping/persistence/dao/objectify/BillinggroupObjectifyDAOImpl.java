@@ -42,28 +42,30 @@ public class BillinggroupObjectifyDAOImpl
 			throws EntityRetrievalException {
 		GAEObjectifyBillinggroupEntity specificEntity = (GAEObjectifyBillinggroupEntity) entity;
 		List<GAEBillinggroupEntity> foundEntities = new ArrayList<>();
-		if (specificEntity != null && specificEntity.getKey() != null) {
-			// if entity has an ID, search by ID
-			GAEObjectifyBillinggroupEntity foundEntity = (GAEObjectifyBillinggroupEntity) ofy().load()
-					.entity(specificEntity).now();
-			if (foundEntity != null) {
-				foundEntities.add(foundEntity);
-			}
-		} else {
-			// if not, search for similar attributes
-			Query<GAEObjectifyBillinggroupEntity> query = ofy().load().type(GAEObjectifyBillinggroupEntity.class);
-			if (specificEntity.getUsers() != null) {
-				for (GAEUserEntity user : specificEntity.getUsers()) {
-					Ref<GAEObjectifyUserEntity> userReferenceToQuery = Ref
-							.create(Key.create(GAEObjectifyUserEntity.class, user.getKey()));
-					query = query.filter("users", userReferenceToQuery);
+		if(specificEntity != null){
+			if (specificEntity.getKey() != null) {
+				// if entity has an ID, search by ID
+				GAEObjectifyBillinggroupEntity foundEntity = (GAEObjectifyBillinggroupEntity) ofy().load()
+						.entity(specificEntity).now();
+				if (foundEntity != null) {
+					foundEntities.add(foundEntity);
+				}
+			} else {
+				// if not, search for similar attributes
+				Query<GAEObjectifyBillinggroupEntity> query = ofy().load().type(GAEObjectifyBillinggroupEntity.class);
+				if (specificEntity.getUsers() != null) {
+					for (GAEUserEntity user : specificEntity.getUsers()) {
+						Ref<GAEObjectifyUserEntity> userReferenceToQuery = Ref
+								.create(Key.create(GAEObjectifyUserEntity.class, user.getKey()));
+						query = query.filter("users", userReferenceToQuery);
+					}
+				}
+				List<GAEObjectifyBillinggroupEntity> billinggroupEntities = query.list();
+				for (GAEObjectifyBillinggroupEntity billinggroupEntity : billinggroupEntities) {
+					foundEntities.add(billinggroupEntity);
 				}
 			}
-			List<GAEObjectifyBillinggroupEntity> billinggroupEntities = query.list();
-			for (GAEObjectifyBillinggroupEntity billinggroupEntity : billinggroupEntities) {
-				foundEntities.add(billinggroupEntity);
-			}
-		}
+		}	
 		return foundEntities;
 	}
 

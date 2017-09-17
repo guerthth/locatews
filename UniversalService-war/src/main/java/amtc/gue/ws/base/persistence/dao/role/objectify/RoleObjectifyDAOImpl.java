@@ -43,28 +43,30 @@ public class RoleObjectifyDAOImpl extends ObjectifyDAOImpl<GAERoleEntity, GAEObj
 	public List<GAERoleEntity> findSpecificEntity(GAERoleEntity entity) throws EntityRetrievalException {
 		GAEObjectifyRoleEntity specificEntity = (GAEObjectifyRoleEntity) entity;
 		List<GAERoleEntity> foundEntities = new ArrayList<>();
-		if (specificEntity != null && specificEntity.getKey() != null) {
-			// if entity has an ID, search by ID
-			Key key = Key.create(entityClass, (String) specificEntity.getKey());
-			GAEObjectifyRoleEntity foundEntity = (GAEObjectifyRoleEntity) ofy().load().key(key).now();
-			if (foundEntity != null) {
-				foundEntities.add(foundEntity);
-			}
-		} else {
-			Query<GAEObjectifyRoleEntity> query = ofy().load().type(GAEObjectifyRoleEntity.class);
-			if (specificEntity.getDescription() != null) {
-				query = query.filter("description", specificEntity.getDescription());
-			}
-			if (specificEntity.getUsers() != null) {
-				for (GAEUserEntity user : specificEntity.getUsers()) {
-					Ref<GAEObjectifyUserEntity> userReferenceToQuery = Ref
-							.create(Key.create(GAEObjectifyUserEntity.class, user.getKey()));
-					query = query.filter("users", userReferenceToQuery);
+		if (specificEntity != null) {
+			if (specificEntity.getKey() != null) {
+				// if entity has an ID, search by ID
+				Key key = Key.create(entityClass, (String) specificEntity.getKey());
+				GAEObjectifyRoleEntity foundEntity = (GAEObjectifyRoleEntity) ofy().load().key(key).now();
+				if (foundEntity != null) {
+					foundEntities.add(foundEntity);
 				}
-			}
-			List<GAEObjectifyRoleEntity> roleEntities = query.list();
-			for (GAEObjectifyRoleEntity roleEntitiy : roleEntities) {
-				foundEntities.add(roleEntitiy);
+			} else {
+				Query<GAEObjectifyRoleEntity> query = ofy().load().type(GAEObjectifyRoleEntity.class);
+				if (specificEntity.getDescription() != null) {
+					query = query.filter("description", specificEntity.getDescription());
+				}
+				if (specificEntity.getUsers() != null) {
+					for (GAEUserEntity user : specificEntity.getUsers()) {
+						Ref<GAEObjectifyUserEntity> userReferenceToQuery = Ref
+								.create(Key.create(GAEObjectifyUserEntity.class, user.getKey()));
+						query = query.filter("users", userReferenceToQuery);
+					}
+				}
+				List<GAEObjectifyRoleEntity> roleEntities = query.list();
+				for (GAEObjectifyRoleEntity roleEntitiy : roleEntities) {
+					foundEntities.add(roleEntitiy);
+				}
 			}
 		}
 		return foundEntities;

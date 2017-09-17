@@ -32,20 +32,23 @@ public class ShopObjectifyDAOImpl extends ObjectifyDAOImpl<GAEShopEntity, GAEObj
 		GAEObjectifyShopEntity specificEntity = (GAEObjectifyShopEntity) entity;
 		List<GAEShopEntity> foundEntities = new ArrayList<>();
 		try {
-			if (specificEntity != null && specificEntity.getKey() != null) {
-				// if entity has an ID, search by ID
-				GAEObjectifyShopEntity foundEntity = (GAEObjectifyShopEntity) ofy().load().entity(specificEntity).now();
-				if (foundEntity != null) {
-					foundEntities.add(foundEntity);
-				}
-			} else {
-				Query<GAEObjectifyShopEntity> query = ofy().load().type(GAEObjectifyShopEntity.class);
-				if (specificEntity.getShopName() != null) {
-					query = query.filter("shopName", specificEntity.getShopName());
-				}
-				List<GAEObjectifyShopEntity> shopEntities = query.list();
-				for (GAEObjectifyShopEntity shopEntity : shopEntities) {
-					foundEntities.add(shopEntity);
+			if (specificEntity != null) {
+				if (specificEntity.getKey() != null) {
+					// if entity has an ID, search by ID
+					GAEObjectifyShopEntity foundEntity = (GAEObjectifyShopEntity) ofy().load().entity(specificEntity)
+							.now();
+					if (foundEntity != null) {
+						foundEntities.add(foundEntity);
+					}
+				} else {
+					Query<GAEObjectifyShopEntity> query = ofy().load().type(GAEObjectifyShopEntity.class);
+					if (specificEntity.getShopName() != null) {
+						query = query.filter("shopName", specificEntity.getShopName());
+					}
+					List<GAEObjectifyShopEntity> shopEntities = query.list();
+					for (GAEObjectifyShopEntity shopEntity : shopEntities) {
+						foundEntities.add(shopEntity);
+					}
 				}
 			}
 		} catch (Exception e) {

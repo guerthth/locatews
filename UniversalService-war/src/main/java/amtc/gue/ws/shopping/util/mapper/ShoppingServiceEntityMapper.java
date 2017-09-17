@@ -261,6 +261,19 @@ public abstract class ShoppingServiceEntityMapper {
 					}
 				}
 			}
+			sb.append("]").append(",");
+			sb.append("bills: ");
+			sb.append("[");
+			if (billinggroupEntity.getBills() != null) {
+				for (int i = 0; i < billinggroupEntity.getBills().size(); i++) {
+					GAEBillEntity billEntity = (new ArrayList<>(billinggroupEntity.getBills())).get(i);
+					String bill = billEntity != null ? billEntity.getKey() : "null";
+					sb.append(bill);
+					if (i != billinggroupEntity.getBills().size() - 1) {
+						sb.append(", ");
+					}
+				}
+			}
 			sb.append("]");
 		}
 		sb.append("}");

@@ -89,7 +89,7 @@ public class UserServiceEntityMapperTest extends UserTest {
 	@Test
 	public void testMapAuthUserForAddType() {
 		com.google.appengine.api.users.User authUser = new com.google.appengine.api.users.User(EMAIL, DESCRIPTION);
-		User user = objectifyUserEntityMapper.mapAuthUserToUser(authUser);
+		User user = UserServiceObjectifyEntityMapper.mapAuthUserToUser(authUser);
 		assertNotNull(user);
 	}
 

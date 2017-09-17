@@ -57,14 +57,17 @@ public class ShoppingTest extends BaseTest {
 	protected static amtc.gue.ws.base.inout.User invalidServiceUser;
 
 	protected static Shop shop1;
+	protected static Shop shop2;
 	protected static Shops shops;
 	protected static Shops shopsWithoutContent;
 
 	protected static Billinggroup billinggroup1;
 	protected static Billinggroup billinggroup2;
 	protected static Billinggroup billinggroup3;
+	protected static Billinggroup billinggroup4;
 	protected static Billinggroups billinggroups;
 	protected static Billinggroups billinggroupsWithBills;
+	protected static Billinggroups billinggroupsWithUsers;
 	protected static Billinggroups billinggroupsWithoutContent;
 
 	protected static Bill bill1;
@@ -74,6 +77,7 @@ public class ShoppingTest extends BaseTest {
 
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity1;
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity2;
+	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity3;
 	protected static GAEObjectifyUserEntity objectifyUserEntity1;
 	protected static GAEObjectifyUserEntity objectifyUserEntity2;
 	protected static GAEObjectifyShopEntity objectifyShopEntity1;
@@ -121,6 +125,7 @@ public class ShoppingTest extends BaseTest {
 	 */
 	protected static void setUpBasicShoppingEnvironment() {
 		setupUsers();
+		setupUserEntities();
 
 		// Objectify setup
 		ObjectifyService.setFactory(new ObjectifyFactory());
@@ -165,6 +170,7 @@ public class ShoppingTest extends BaseTest {
 		shop1 = new Shop();
 		shop1.setShopId(SHOPID);
 		shop1.setShopName(SHOPNAME);
+		shop2 = new Shop();
 		shops = new Shops();
 		shops.getShops().add(shop1);
 		shopsWithoutContent = new Shops();
@@ -181,15 +187,22 @@ public class ShoppingTest extends BaseTest {
 		billinggroup3 = new Billinggroup();
 		billinggroup3.setBillinggroupId(BILLINGGROUPID);
 		billinggroup3.setBills(bills.getBills());
+		billinggroup3.setUsers(null);
+		billinggroup4 = new Billinggroup();
+		billinggroup4.setBillinggroupId(BILLINGGROUPID);
+		billinggroup4.setBills(null);
+		billinggroup4.getUsers().add(serviceUser);
 		billinggroups = new Billinggroups();
 		billinggroups.getBillinggroups().add(billinggroup1);
 		billinggroupsWithBills = new Billinggroups();
 		billinggroupsWithBills.getBillinggroups().add(billinggroup3);
+		billinggroupsWithUsers = new Billinggroups();
+		billinggroupsWithUsers.getBillinggroups().add(billinggroup4);
 		billinggroupsWithoutContent = new Billinggroups();
 	}
 
 	/**
-	 * Setting up Billss
+	 * Setting up Bills
 	 */
 	private static void setupBills() {
 		bill1 = new Bill();
@@ -203,7 +216,7 @@ public class ShoppingTest extends BaseTest {
 	/**
 	 * Setting up UserEntities for testing
 	 */
-	private void setupUserEntities() {
+	private static void setupUserEntities() {
 		objectifyUserEntity1 = new GAEObjectifyUserEntity();
 		objectifyUserEntity1.setKey(EMAIL);
 		objectifyUserEntity2 = new GAEObjectifyUserEntity();
@@ -218,6 +231,9 @@ public class ShoppingTest extends BaseTest {
 		objectifyBillinggroupEntity1 = new GAEObjectifyBillinggroupEntity();
 		objectifyBillinggroupEntity1.setDescription(DESCRIPTION);
 		objectifyBillinggroupEntity2 = new GAEObjectifyBillinggroupEntity();
+		objectifyBillinggroupEntity3 = new GAEObjectifyBillinggroupEntity();
+		objectifyBillinggroupEntity3.setDescription(DESCRIPTION);
+		objectifyBillinggroupEntity3.getUsers().add(objectifyUserEntity1);
 
 		objectifyBillinggroupEntityList = new ArrayList<>();
 		objectifyBillinggroupEntityList.add(objectifyBillinggroupEntity1);

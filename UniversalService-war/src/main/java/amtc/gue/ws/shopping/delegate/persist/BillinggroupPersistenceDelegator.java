@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 import amtc.gue.ws.shopping.inout.Bill;
 import amtc.gue.ws.shopping.inout.Billinggroup;
 import amtc.gue.ws.shopping.inout.Billinggroups;
@@ -163,7 +168,8 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	}
 
 	/**
-	 * Method retrieving a BillinggroupEntity from the database by billinggroupKey
+	 * Method retrieving a BillinggroupEntity from the database by
+	 * billinggroupKey
 	 * 
 	 * @param billinggroupKey
 	 *            the billinggroupKey that is searched for
@@ -206,7 +212,6 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 
 	@Override
 	protected void updateEntities() {
-		log.info("UPDATE Billinggroup action triggered");
 		if (delegatorInput.getInputObject() instanceof Billinggroups) {
 			Billinggroups billinggroupsToUpdate = (Billinggroups) delegatorInput.getInputObject();
 			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_SUCCESS_CODE);
@@ -214,7 +219,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 			List<GAEBillinggroupEntity> unsuccessfullyUpdatedBillinggroupEntities = new ArrayList<>();
 			StringBuilder sb = new StringBuilder();
 
-			// remove Billinggroup Entities from DB
+			// update Billinggroup Entities in DB
 			for (Billinggroup billinggroupToUpdate : billinggroupsToUpdate.getBillinggroups()) {
 				GAEBillinggroupEntity billinggroupEntity = shoppingEntityMapper
 						.mapBillinggroupToEntity(billinggroupToUpdate, DelegatorTypeEnum.UPDATE);
@@ -222,9 +227,52 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 						.mapBillinggroupEntityToJSONString(billinggroupEntity);
 				// differ between adding users to billinggroups and adding bills
 				// to billinggroups
-				if (billinggroupToUpdate.getUsers() != null && billinggroupToUpdate.getUsers().size() == 1) {
-					// TODO add user to billinggroup functionality
-				} else if (billinggroupToUpdate.getBills() != null && billinggroupToUpdate.getBills().size() == 1) {
+				if (billinggroupToUpdate.getUsers() != null && billinggroupToUpdate.getUsers().size() == 1
+						&& billinggroupToUpdate.getBills().isEmpty() && billinggroupToUpdate.getDescription() == null) {
+					// add user to billinggroup
+					log.info("UPDATE Billinggroup with new user action triggered");
+					User userToAdd = billinggroupToUpdate.getUsers().get(0);
+					try {
+						// load billinggroup
+						GAEBillinggroupEntity foundBillinggroup = retrieveBillinggroupsByBillinggroupKey(
+								billinggroupToUpdate.getBillinggroupId());
+						// check if user is not yet included in billinggroup
+						GAEUserEntity userEntityToAdd = userDAOImpl.findEntityById(userToAdd.getId());
+						if (!isUserRegisteredToBillinggroup(foundBillinggroup, userEntityToAdd)) {
+							// add user to billinggroup
+							foundBillinggroup.addToUsersOnly(userEntityToAdd);
+							// update bill and billinggroup
+							GAEUserEntity newUserEntity = userDAOImpl.updateEntity(userEntityToAdd);
+							GAEBillinggroupEntity updatedBillinggroupEntity = billinggroupDAOImpl
+									.updateEntity(foundBillinggroup);
+							successfullyUpdatedBillinggroupEntities.add(updatedBillinggroupEntity);
+							log.info("User succesfully added to billinggroup '" + updatedBillinggroupEntity.getKey()
+									+ "'");
+							// trigger mail notification
+							sendAddedUserEmail(updatedBillinggroupEntity, newUserEntity);
+						} else {
+							unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
+							String statusMessage = "User with key '" + userToAdd.getId()
+									+ "' is already registered in billinggroup with key '" + foundBillinggroup.getKey()
+									+ "'.";
+							sb.append(statusMessage);
+							log.log(Level.SEVERE, statusMessage);
+						}
+					} catch (EntityRetrievalException e) {
+						unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
+						sb.append(e.getMessage());
+						log.log(Level.SEVERE, "Failed to retrieve user '" + userToAdd.getId() + "' for billinggroup '"
+								+ billinggroupToUpdate.getBillinggroupId() + "'.", e);
+					} catch (EntityPersistenceException e) {
+						unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
+						sb.append(e.getMessage());
+						log.log(Level.SEVERE, "Failed to update billinggroup with key'"
+								+ billinggroupToUpdate.getBillinggroupId() + "'.");
+					}
+				} else if (billinggroupToUpdate.getBills() != null && billinggroupToUpdate.getBills().size() == 1
+						&& billinggroupToUpdate.getUsers().isEmpty() && billinggroupToUpdate.getDescription() == null) {
+					// add bill to billinggroup
+					log.info("UPDATE Billinggroup with new bill action triggered");
 					try {
 						// load billinggroup
 						GAEBillinggroupEntity foundBillinggroup = retrieveBillinggroupsByBillinggroupKey(
@@ -242,6 +290,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 							GAEBillEntity billEntityToPersist = shoppingEntityMapper.mapBillToEntity(billToCreate,
 									DelegatorTypeEnum.ADD);
 							handleShopPersistenceForBillEntity(billEntityToPersist, shopEntityToPersist);
+							addUserForBillEntity(billEntityToPersist, billCreationUserEntity);
 							GAEBillEntity persistedBillEntity = billDAOImpl.persistEntity(billEntityToPersist);
 							String billEntityJSON = ShoppingServiceEntityMapper
 									.mapBillEntityToJSONString(persistedBillEntity);
@@ -249,12 +298,14 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 							// add bill to billinggroup
 							foundBillinggroup.addToBillsOnly(persistedBillEntity);
 							// update bill and billinggroup
-							billDAOImpl.updateEntity(persistedBillEntity);
+							GAEBillEntity newBillEntity = billDAOImpl.updateEntity(persistedBillEntity);
 							GAEBillinggroupEntity updatedBillinggroupEntity = billinggroupDAOImpl
 									.updateEntity(foundBillinggroup);
 							successfullyUpdatedBillinggroupEntities.add(updatedBillinggroupEntity);
 							log.info("Bill succesfully added to billinggroup '" + updatedBillinggroupEntity.getKey()
 									+ "'");
+							// trigger mail notification
+							sendAddedBillEmail(updatedBillinggroupEntity, newBillEntity);
 						} else {
 							unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
 							String statusMessage = "User with key '" + billCreationUserEntity.getKey()
@@ -276,6 +327,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 					}
 				} else {
 					// update BillinggroupEntity
+					log.info("UPDATE Billinggroup action triggered");
 					try {
 						GAEBillinggroupEntity updatedBillinggroupEntity = billinggroupDAOImpl
 								.updateEntity(billinggroupEntity);
@@ -314,8 +366,8 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	 *            the billinggroupEntity that is checked for registered users
 	 * @param user
 	 *            the user that is searched for in the billinggroupEntity
-	 * @return true if the user is registered to the billinggroupEntity, false if
-	 *         not
+	 * @return true if the user is registered to the billinggroupEntity, false
+	 *         if not
 	 */
 	private boolean isUserRegisteredToBillinggroup(GAEBillinggroupEntity billinggroupEntity, GAEUserEntity userEntity) {
 		if (billinggroupEntity.getUsers().contains(userEntity)) {
@@ -326,8 +378,8 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	}
 
 	/**
-	 * Method that checks if the shop associated with the BillEntity already exists.
-	 * If not, the ShopEntity is added
+	 * Method that checks if the shop associated with the BillEntity already
+	 * exists. If not, the ShopEntity is added
 	 * 
 	 * @param billEntity
 	 *            the BillEntity whose shop is checked
@@ -356,6 +408,80 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 		} catch (EntityPersistenceException e) {
 			log.log(Level.SEVERE, "Error while trying to persist shopEntity: " + shopEntityJSON, e);
 			throw new EntityPersistenceException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Method trying to retrieve an UserEntity and adding it to the BillEntity
+	 * 
+	 * @param billEntity
+	 *            the BillEntity whose user is checked
+	 * @param userEntity
+	 *            the UserEntity
+	 * @throws EntityRetrievalException
+	 *             hen issue occurs while trying to retrieve UserEntity
+	 * @throws EntityPersistenceException
+	 *             hen issue occurs while trying to persist UserEntity
+	 */
+	private void addUserForBillEntity(GAEBillEntity billEntity, GAEUserEntity userEntity)
+			throws EntityRetrievalException, EntityPersistenceException {
+		String userEntityJSON = UserServiceEntityMapper.mapUserEntityToJSONString(userEntity);
+		GAEUserEntity persistedUserEntity;
+		try {
+			List<GAEUserEntity> foundUserEntities = userDAOImpl.findSpecificEntity(userEntity);
+			if (foundUserEntities.isEmpty()) {
+				persistedUserEntity = userDAOImpl.persistEntity(userEntity);
+			} else {
+				persistedUserEntity = foundUserEntities.get(0);
+			}
+			billEntity.setUser(persistedUserEntity);
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE, "Error while trying to retrieve userEntity: " + userEntityJSON, e);
+			throw new EntityRetrievalException(e.getMessage(), e);
+		} catch (EntityPersistenceException e) {
+			log.log(Level.SEVERE, "Error while trying to persist userEntity: " + userEntityJSON, e);
+			throw new EntityPersistenceException(e.getMessage(), e);
+		}
+		billEntity.setUser(persistedUserEntity);
+	}
+
+	/**
+	 * Method sending a 'new user' email notification to all users of the
+	 * billinggroup
+	 * 
+	 * @param billinggroupEntity
+	 *            the billinggroupEntity
+	 * @param newUserEntity
+	 *            the added userEntity
+	 */
+	private void sendAddedUserEmail(GAEBillinggroupEntity billinggroupEntity, GAEUserEntity newUserEntity) {
+		final Queue queue = QueueFactory.getDefaultQueue();
+		for (GAEUserEntity userEntity : billinggroupEntity.getUsers()) {
+			if (userEntity != null && !userEntity.getKey().equals(newUserEntity.getKey())) {
+				queue.add(TaskOptions.Builder.withUrl("/tasks/send_newuserinbillinggroup_email")
+						.param("receiverMail", userEntity.getKey()).param("addedUser", newUserEntity.getKey())
+						.param("billinggroupDescription", billinggroupEntity.getDescription()));
+			}
+		}
+	}
+
+	/**
+	 * Method sending a 'new bill' email notification to all users of the
+	 * billinggroup
+	 * 
+	 * @param billinggroupEntity
+	 *            the billinggroupEntity
+	 * @param newBillEntity
+	 *            the added billEntity
+	 */
+	private void sendAddedBillEmail(GAEBillinggroupEntity billinggroupEntity, GAEBillEntity newBillEntity) {
+		final Queue queue = QueueFactory.getDefaultQueue();
+		for (GAEUserEntity userEntity : billinggroupEntity.getUsers()) {
+			queue.add(TaskOptions.Builder.withUrl("/tasks/send_newbillinbillinggroup_email")
+					.param("receiverMail", userEntity.getKey())
+					.param("billAmount", newBillEntity.getAmount().toString())
+					.param("billinggroupDescription", billinggroupEntity.getDescription())
+					.param("billAdderMail", newBillEntity.getUser().getKey()));
 		}
 	}
 

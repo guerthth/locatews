@@ -59,13 +59,12 @@ public class HtmlMapper {
 	 * @param htmlFile
 	 *            the htmlFile that should be mapped to a String
 	 * @return the String representing the parsed HTML. Only the content of the
-	 *         <body> tag is returned. The placeholder {userId} is replaced by
-	 *         the actual userName
+	 *         <body> tag is replaced. The placeholders are replaced
 	 * @throws HtmlReaderException
 	 *             when an issue occures while trying to map the HTML File to a
 	 *             String
 	 */
-	public static String parseHtml(GAEUserEntity user, String htmlFile) throws HtmlReaderException {
+	public static String parsePwResetHtml(GAEUserEntity user, String htmlFile) throws HtmlReaderException {
 		String parsedHtml;
 		try {
 			URI htmlFileURI = HtmlMapper.class.getResource(htmlFile).toURI();
@@ -84,6 +83,119 @@ public class HtmlMapper {
 			}
 			if (parsedHtml.contains("{userRoles}") && user.getRoles() != null) {
 				parsedHtml = parsedHtml.replace("{userRoles}", "" + user.getRoles());
+			}
+		} catch (Exception e) {
+			throw new HtmlReaderException(htmlFile, e);
+		}
+		return parsedHtml;
+	}
+
+	/**
+	 * Method parsing the userAddingMail.html using JSOUP
+	 * 
+	 * @param userName
+	 *            the user that was added
+	 * @param billinggroupDescription
+	 *            description of the billinggroup
+	 * @param htmlFile
+	 *            the htmlFile that should be mapped to a String
+	 * @return the String representing the parsed HTML. Only the content of the
+	 *         <body> tag is replaced. The placeholders are replaced
+	 * @throws HtmlReaderException
+	 *             when an issue occurs while trying to map the HTML File to a
+	 *             String
+	 */
+	public static String parseUserAddingHtml(String userName, String billinggroupDescription, String htmlFile)
+			throws HtmlReaderException {
+		String parsedHtml;
+		try {
+			URI htmlFileURI = HtmlMapper.class.getResource(htmlFile).toURI();
+			File inputFile = new File(htmlFileURI);
+			Document doc = Jsoup.parse(inputFile, null);
+			Elements elements = doc.getElementsByTag("body");
+			parsedHtml = elements.html();
+			if (parsedHtml.contains("{userName}") && userName != null) {
+				parsedHtml = parsedHtml.replace("{userName}", userName);
+			}
+			if (parsedHtml.contains("{billinggroupDescription}") && billinggroupDescription != null) {
+				parsedHtml = parsedHtml.replace("{billinggroupDescription}", billinggroupDescription);
+			}
+		} catch (Exception e) {
+			throw new HtmlReaderException(htmlFile, e);
+		}
+		return parsedHtml;
+	}
+
+	/**
+	 * Method parsing the billAddingMail.html using JSOUP
+	 * 
+	 * @param userName
+	 *            the user that added a bill
+	 * @param billAmount
+	 *            the billamount
+	 * @param billinggroupDescription
+	 *            description of the billinggroup
+	 * @param htmlFile
+	 *            the htmlFile that should be mapped to a String
+	 * @return the String representing the parsed HTML. Only the content of the
+	 *         <body> tag is replaced. The placeholders are replaced
+	 * @throws HtmlReaderException
+	 *             when an issue occurs while trying to map the HTML File to a
+	 *             String
+	 */
+	public static String parseBillAddingHtml(String userName, String billAmount, String billinggroupDescription,
+			String htmlFile) throws HtmlReaderException {
+		String parsedHtml;
+		try {
+			URI htmlFileURI = HtmlMapper.class.getResource(htmlFile).toURI();
+			File inputFile = new File(htmlFileURI);
+			Document doc = Jsoup.parse(inputFile, null);
+			Elements elements = doc.getElementsByTag("body");
+			parsedHtml = elements.html();
+			if (parsedHtml.contains("{userName}") && userName != null) {
+				parsedHtml = parsedHtml.replace("{userName}", userName);
+			}
+			if (parsedHtml.contains("{billAmount}") && billAmount != null) {
+				parsedHtml = parsedHtml.replace("{billAmount}", billAmount);
+			}
+			if (parsedHtml.contains("{billinggroupDescription}") && billinggroupDescription != null) {
+				parsedHtml = parsedHtml.replace("{billinggroupDescription}", billinggroupDescription);
+			}
+		} catch (Exception e) {
+			throw new HtmlReaderException(htmlFile, e);
+		}
+		return parsedHtml;
+	}
+
+	/**
+	 * Method parsing the billingroupReport.html using JSOUP
+	 * 
+	 * @param billinggroupDescription
+	 *            description of the billinggroup
+	 * @param billinggroupReport
+	 *            the billinggroupreport
+	 * @param htmlFile
+	 *            the htmlFile that should be mapped to a String
+	 * @return the String representing the parsed HTML. Only the content of the
+	 *         <body> tag is replaced. The placeholders are replaced
+	 * @throws HtmlReaderException
+	 *             when an issue occurs while trying to map the HTML File to a
+	 *             String
+	 */
+	public static String parseBillinggroupResportHtml(String billinggroupDescription, String billinggroupReport,
+			String htmlFile) throws HtmlReaderException {
+		String parsedHtml;
+		try {
+			URI htmlFileURI = HtmlMapper.class.getResource(htmlFile).toURI();
+			File inputFile = new File(htmlFileURI);
+			Document doc = Jsoup.parse(inputFile, null);
+			Elements elements = doc.getElementsByTag("body");
+			parsedHtml = elements.html();
+			if (parsedHtml.contains("{billinggroupDescription}") && billinggroupDescription != null) {
+				parsedHtml = parsedHtml.replace("{billinggroupDescription}", billinggroupDescription);
+			}
+			if (parsedHtml.contains("{billinggroupReport}") && billinggroupReport != null) {
+				parsedHtml = parsedHtml.replace("{billinggroupReport}", billinggroupReport);
 			}
 		} catch (Exception e) {
 			throw new HtmlReaderException(htmlFile, e);

@@ -32,7 +32,6 @@ import amtc.gue.ws.service.soap.jaxws.AddBooks;
 import amtc.gue.ws.service.soap.jaxws.AddBooksResponse;
 import amtc.gue.ws.service.soap.jaxws.GetBooksByTag;
 import amtc.gue.ws.service.soap.jaxws.GetBooksByTagResponse;
-import amtc.gue.ws.service.soap.jaxws.GetTags;
 import amtc.gue.ws.service.soap.jaxws.GetTagsResponse;
 import amtc.gue.ws.service.soap.jaxws.RemoveBooks;
 import amtc.gue.ws.service.soap.jaxws.RemoveBooksResponse;
@@ -49,15 +48,13 @@ public class BookCalcServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger log = Logger.getLogger(BookCalcServlet.class
-			.getName());
+	private static final Logger log = Logger.getLogger(BookCalcServlet.class.getName());
 
 	/** namespace for request elements */
 	public static final String NS = "http://service.books.ws.gue.amtc/";
 	/** qualified name for sayHello operation request element */
 	public static final QName QNAME_ADD_BOOKS = new QName(NS, "addBooks");
-	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS,
-			"getBooksByTag");
+	public static final QName QNAME_GET_BOOKS_BY_TAG = new QName(NS, "getBooksByTag");
 	public static final QName QNAME_REMOVE_BOOKS = new QName(NS, "removeBooks");
 	public static final QName QNAME_GET_TAGS = new QName(NS, "getTags");
 
@@ -69,8 +66,7 @@ public class BookCalcServlet extends HttpServlet {
 	private static final MessageFactory messageFactory;
 
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
 		try {
 			MimeHeaders headers = getHeaders(request);
@@ -85,8 +81,8 @@ public class BookCalcServlet extends HttpServlet {
 			OutputStream out = response.getOutputStream();
 			soapResp.writeTo(out);
 			out.flush();
-		} catch (SOAPException | JAXBException e) {
-			throw new IOException("exception while creating SOAP message", e);
+		} catch (SOAPException | JAXBException | IOException e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 
@@ -112,8 +108,7 @@ public class BookCalcServlet extends HttpServlet {
 		return retval;
 	}
 
-	protected SOAPMessage handleSOAPRequest(SOAPMessage request)
-			throws SOAPException, JAXBException {
+	protected SOAPMessage handleSOAPRequest(SOAPMessage request) throws SOAPException, JAXBException {
 		@SuppressWarnings("rawtypes")
 		Iterator iter = request.getSOAPBody().getChildElements();
 		Object respPojo = null;
@@ -138,24 +133,19 @@ public class BookCalcServlet extends HttpServlet {
 		return soapResp;
 	}
 
-	protected Object handleSOAPRequestElement(SOAPElement reqElem)
-			throws JAXBException {
+	protected Object handleSOAPRequestElement(SOAPElement reqElem) throws JAXBException {
 
 		QName reqName = reqElem.getElementQName();
 		if (QNAME_ADD_BOOKS.equals(reqName)) {
 			log.info("Adding books webservice method called.");
-			return handleAddBooks(JAXB.unmarshal(new DOMSource(reqElem),
-					AddBooks.class));
+			return handleAddBooks(JAXB.unmarshal(new DOMSource(reqElem), AddBooks.class));
 		} else if (QNAME_GET_BOOKS_BY_TAG.equals(reqName)) {
 			log.info("getting books by tags webservice method called.");
-			return handleGetBooksByTags(JAXB.unmarshal(new DOMSource(reqElem),
-					GetBooksByTag.class));
+			return handleGetBooksByTags(JAXB.unmarshal(new DOMSource(reqElem), GetBooksByTag.class));
 		} else if (QNAME_REMOVE_BOOKS.equals(reqName)) {
-			return handleRemoveBooks(JAXB.unmarshal(new DOMSource(reqElem),
-					RemoveBooks.class));
+			return handleRemoveBooks(JAXB.unmarshal(new DOMSource(reqElem), RemoveBooks.class));
 		} else if (QNAME_GET_TAGS.equals(reqName)) {
-			return handleGetTags(JAXB.unmarshal(new DOMSource(reqElem),
-					GetTags.class));
+			return handleGetTags();
 		}
 
 		return null;
@@ -170,8 +160,7 @@ public class BookCalcServlet extends HttpServlet {
 	 */
 	protected AddBooksResponse handleAddBooks(AddBooks addBooksRequest) {
 		AddBooksResponse addBooksReesponse = new AddBooksResponse();
-		addBooksReesponse.setReturn(serviceImpl.addBooks(addBooksRequest
-				.getBooks()));
+		addBooksReesponse.setReturn(serviceImpl.addBooks(addBooksRequest.getBooks()));
 		return addBooksReesponse;
 	}
 
@@ -182,11 +171,9 @@ public class BookCalcServlet extends HttpServlet {
 	 *            the GetBooksByTag request that should be handled
 	 * @return the GetBooksByTag response
 	 */
-	protected GetBooksByTagResponse handleGetBooksByTags(
-			GetBooksByTag getBooksByTagRequest) {
+	protected GetBooksByTagResponse handleGetBooksByTags(GetBooksByTag getBooksByTagRequest) {
 		GetBooksByTagResponse getBooksByTagResponse = new GetBooksByTagResponse();
-		getBooksByTagResponse.setReturn(serviceImpl
-				.getBooksByTag(getBooksByTagRequest.getSearchTags()));
+		getBooksByTagResponse.setReturn(serviceImpl.getBooksByTag(getBooksByTagRequest.getSearchTags()));
 		return getBooksByTagResponse;
 	}
 
@@ -197,11 +184,9 @@ public class BookCalcServlet extends HttpServlet {
 	 *            the RemoveBooks request that should be handled
 	 * @return the RemoveBooks response
 	 */
-	protected RemoveBooksResponse handleRemoveBooks(
-			RemoveBooks removeBooksRequest) {
+	protected RemoveBooksResponse handleRemoveBooks(RemoveBooks removeBooksRequest) {
 		RemoveBooksResponse removeBooksResponse = new RemoveBooksResponse();
-		removeBooksResponse.setReturn(serviceImpl
-				.removeBooks(removeBooksRequest.getBooksToRemove()));
+		removeBooksResponse.setReturn(serviceImpl.removeBooks(removeBooksRequest.getBooksToRemove()));
 		return removeBooksResponse;
 	}
 
@@ -212,7 +197,7 @@ public class BookCalcServlet extends HttpServlet {
 	 *            the GetTags request that should be handled
 	 * @return the GetTags response
 	 */
-	protected GetTagsResponse handleGetTags(GetTags getTagsRequest) {
+	protected GetTagsResponse handleGetTags() {
 		GetTagsResponse getTagsResponse = new GetTagsResponse();
 		getTagsResponse.setReturn(serviceImpl.getTags());
 		return getTagsResponse;
@@ -240,8 +225,7 @@ public class BookCalcServlet extends HttpServlet {
 			soapMessageStringBuilder.append(bout.toString("UTF-8"));
 		} catch (SOAPException | IOException e) {
 			soapMessageStringBuilder = new StringBuilder();
-			soapMessageStringBuilder
-					.append("Error while processing SOAPMessage");
+			soapMessageStringBuilder.append("Error while processing SOAPMessage");
 			log.log(Level.INFO, "Error while processing SOAPMessage", e);
 		}
 		log.info(soapMessageStringBuilder.toString());
@@ -253,8 +237,7 @@ public class BookCalcServlet extends HttpServlet {
 		// browser to keep the results of this call for 1 day.
 		resp.setHeader("Access-Control-Allow-Origin", "*");
 		resp.setHeader("Access-Control-Allow-Methods", "GET, POST");
-		resp.setHeader("Access-Control-Allow-Headers",
-				"Content-Type,soapaction");
+		resp.setHeader("Access-Control-Allow-Headers", "Content-Type,soapaction");
 		resp.setHeader("Access-Control-Max-Age", "86400");
 		// Tell the browser what requests we allow.
 		resp.setHeader("Allow", "GET, HEAD, POST, TRACE, OPTIONS");
@@ -269,8 +252,7 @@ public class BookCalcServlet extends HttpServlet {
 	 */
 	protected HttpServletResponse addCORSHeaders(HttpServletResponse response) {
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Headers",
-				"Content-Type, soapaction");
+		response.addHeader("Access-Control-Allow-Headers", "Content-Type, soapaction");
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		return response;
 	}
@@ -278,10 +260,35 @@ public class BookCalcServlet extends HttpServlet {
 	static {
 		try {
 			messageFactory = MessageFactory.newInstance();
-		} catch (Exception e) {
-			throw new ServiceInitializationException(
-					"Error occired while trying to initialize MessageFactory instance",
+		} catch (final Exception e) {
+			throw new ServiceInitializationException("Error occired while trying to initialize MessageFactory instance",
 					e);
 		}
+	}
+
+	/**
+	 * Method responsible for serializing the object. Not implemented
+	 * 
+	 * @param out
+	 *            outputstream
+	 * @throws IOException
+	 *             when issue occurs while trying to write object
+	 */
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+
+	}
+
+	/**
+	 * Method responsible for deserializing the object. Not implemented
+	 * 
+	 * @param in
+	 *            inputstream
+	 * @throws IOException
+	 *             when issue occurs while trying to write object
+	 * @throws ClassNotFoundException
+	 *             when class not found
+	 */
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+
 	}
 }

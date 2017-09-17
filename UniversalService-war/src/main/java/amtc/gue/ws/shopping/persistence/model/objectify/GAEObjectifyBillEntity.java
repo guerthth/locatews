@@ -131,7 +131,7 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 
 	@Override
 	public void setShop(GAEShopEntity shopEntity) {
-		if (shopEntity != null) {
+		if (shopEntity.getKey() != null) {
 			shop = Ref.create(Key.create(GAEObjectifyShopEntity.class, Long.valueOf(shopEntity.getKey()).longValue()));
 		}
 	}

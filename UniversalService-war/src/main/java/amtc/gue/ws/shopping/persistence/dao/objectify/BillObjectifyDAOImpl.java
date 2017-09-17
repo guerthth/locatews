@@ -42,35 +42,37 @@ public class BillObjectifyDAOImpl extends ObjectifyDAOImpl<GAEBillEntity, GAEObj
 	public List<GAEBillEntity> findSpecificEntity(GAEBillEntity entity) throws EntityRetrievalException {
 		GAEObjectifyBillEntity specificEntity = (GAEObjectifyBillEntity) entity;
 		List<GAEBillEntity> foundEntities = new ArrayList<>();
-		if (specificEntity != null && specificEntity.getKey() != null) {
-			// if entity has an ID, search by ID
-			GAEObjectifyBillEntity foundEntity = (GAEObjectifyBillEntity) ofy().load().entity(specificEntity).now();
-			if (foundEntity != null) {
-				foundEntities.add(foundEntity);
-			}
-		} else {
-			// if not, search for similar attributes
-			Query<GAEObjectifyBillEntity> query;
-			if (specificEntity.getUser() != null && specificEntity.getUser().getKey() != null) {
-				query = ofy().load().type(GAEObjectifyBillEntity.class)
-						.ancestor(Key.create(GAEObjectifyUserEntity.class, specificEntity.getUser().getKey()));
+		if (specificEntity != null) {
+			if (specificEntity.getKey() != null) {
+				// if entity has an ID, search by ID
+				GAEObjectifyBillEntity foundEntity = (GAEObjectifyBillEntity) ofy().load().entity(specificEntity).now();
+				if (foundEntity != null) {
+					foundEntities.add(foundEntity);
+				}
 			} else {
-				query = ofy().load().type(GAEObjectifyBillEntity.class);
-			}
-			if (specificEntity.getShop() != null && specificEntity.getShop().getKey() != null) {
-				Ref<GAEObjectifyShopEntity> shopReferenceToQuery = Ref
-						.create(Key.create(GAEObjectifyShopEntity.class, specificEntity.getShop().getKey()));
-				query = query.filter("shop", shopReferenceToQuery);
-			}
-			if (specificEntity.getDate() != null) {
-				query = query.filter("date", specificEntity.getDate());
-			}
-			if (specificEntity.getAmount() != null) {
-				query = query.filter("amount", specificEntity.getAmount());
-			}
-			List<GAEObjectifyBillEntity> billEntities = query.list();
-			for (GAEObjectifyBillEntity billEntity : billEntities) {
-				foundEntities.add(billEntity);
+				// if not, search for similar attributes
+				Query<GAEObjectifyBillEntity> query;
+				if (specificEntity.getUser() != null && specificEntity.getUser().getKey() != null) {
+					query = ofy().load().type(GAEObjectifyBillEntity.class)
+							.ancestor(Key.create(GAEObjectifyUserEntity.class, specificEntity.getUser().getKey()));
+				} else {
+					query = ofy().load().type(GAEObjectifyBillEntity.class);
+				}
+				if (specificEntity.getShop() != null && specificEntity.getShop().getKey() != null) {
+					Ref<GAEObjectifyShopEntity> shopReferenceToQuery = Ref
+							.create(Key.create(GAEObjectifyShopEntity.class, specificEntity.getShop().getKey()));
+					query = query.filter("shop", shopReferenceToQuery);
+				}
+				if (specificEntity.getDate() != null) {
+					query = query.filter("date", specificEntity.getDate());
+				}
+				if (specificEntity.getAmount() != null) {
+					query = query.filter("amount", specificEntity.getAmount());
+				}
+				List<GAEObjectifyBillEntity> billEntities = query.list();
+				for (GAEObjectifyBillEntity billEntity : billEntities) {
+					foundEntities.add(billEntity);
+				}
 			}
 		}
 		return foundEntities;
