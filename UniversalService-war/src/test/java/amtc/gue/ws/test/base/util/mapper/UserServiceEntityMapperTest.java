@@ -88,7 +88,7 @@ public class UserServiceEntityMapperTest extends UserTest {
 
 	@Test
 	public void testMapAuthUserForAddType() {
-		com.google.appengine.api.users.User authUser = new com.google.appengine.api.users.User(EMAIL, DESCRIPTION);
+		com.google.api.server.spi.auth.common.User authUser = new com.google.api.server.spi.auth.common.User(EMAIL);
 		User user = UserServiceObjectifyEntityMapper.mapAuthUserToUser(authUser);
 		assertNotNull(user);
 	}
@@ -292,7 +292,7 @@ public class UserServiceEntityMapperTest extends UserTest {
 	 */
 	private static void setUpBdOutputs() {
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(objectifyUserEntityList);
+		userDelegatorOutput.setOutputObject(users);
 		unrecognizedUserDelegatorOutput = new DelegatorOutput();
 		unrecognizedUserDelegatorOutput.setOutputObject(null);
 	}

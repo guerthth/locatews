@@ -316,11 +316,11 @@ public class BillPersistenceDelegatorTest extends ShoppingTest implements IObjec
 			throws EntityRemovalException, EntityPersistenceException, EntityRetrievalException {
 		// bill objectify DAO mocks
 		billObjectifyDAOImpl = EasyMock.createNiceMock(BillObjectifyDAOImpl.class);
-		EasyMock.expect(billObjectifyDAOImpl.findAllEntities()).andReturn(objectifyBillEntityList);
+		EasyMock.expect(billObjectifyDAOImpl.findAllEntities()).andReturn(objectifyBillEntityList2);
 		EasyMock.expect(billObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
-				.andReturn(objectifyBillEntity1);
+				.andReturn(objectifyBillEntity3);
 		EasyMock.expect(billObjectifyDAOImpl.removeEntity(EasyMock.isA(GAEObjectifyBillEntity.class)))
-				.andReturn(objectifyBillEntity1);
+				.andReturn(objectifyBillEntity3);
 		EasyMock.replay(billObjectifyDAOImpl);
 
 		billObjectifyDAOImplSpecificEntityFound = EasyMock.createNiceMock(BillObjectifyDAOImpl.class);

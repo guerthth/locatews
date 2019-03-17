@@ -1,11 +1,14 @@
 package amtc.gue.ws.base.delegate.persist;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import amtc.gue.ws.base.delegate.AbstractDelegator;
 import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
+import amtc.gue.ws.base.util.FCMSender;
 import amtc.gue.ws.base.util.SpringContext;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 
@@ -71,5 +74,16 @@ public abstract class AbstractPersistenceDelegator extends AbstractDelegator {
 	 */
 	public void setUserEntityMapper(UserServiceEntityMapper userEntityMapper) {
 		this.userEntityMapper = userEntityMapper;
+	}
+	
+	/**
+	 * Method sending a Fcm Notification
+	 */
+	protected void sendFcmMessage(){
+		try {
+			FCMSender.sendCommonMessage();
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Error while sending notification message", e);
+		}
 	}
 }

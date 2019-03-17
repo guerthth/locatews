@@ -156,6 +156,11 @@ public class GAEObjectifyBillEntity extends GAEBillEntity {
 
 	@Override
 	public String getWebsafeKey() {
-		return Key.create(user.getKey(), GAEObjectifyBillEntity.class, billId).getString();
+		if(user != null){
+			return Key.create(user.getKey(),GAEObjectifyBillEntity.class, billId).getString();
+		} else {
+			return Key.create(GAEObjectifyBillEntity.class, billId).getString();
+		}
+		
 	}
 }

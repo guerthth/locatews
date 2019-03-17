@@ -8,11 +8,12 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
 import amtc.gue.ws.base.inout.Roles;
+import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.EMF;
 import amtc.gue.ws.base.persistence.ProductiveEMF;
 import amtc.gue.ws.base.persistence.dao.user.UserDAO;
@@ -65,6 +66,8 @@ public class BookTest extends BaseTest {
 	protected static User user;
 	protected static amtc.gue.ws.base.inout.User serviceUser;
 	protected static amtc.gue.ws.base.inout.User invalidServiceUser;
+	protected static Users serviceUsers;
+	protected static Users invalidServiceUsers;
 
 	protected static Tags tagsA;
 	protected static Tags tagsAB;
@@ -388,6 +391,11 @@ public class BookTest extends BaseTest {
 		invalidServiceUser = new amtc.gue.ws.base.inout.User();
 		invalidServiceUser.getRoles().add("books");
 		invalidServiceUser.getRoles().add("tags");
+		
+		serviceUsers = new Users();
+		serviceUsers.getUsers().add(serviceUser);
+		invalidServiceUsers = new Users();
+		invalidServiceUsers.getUsers().add(invalidServiceUser);
 	}
 
 	/**

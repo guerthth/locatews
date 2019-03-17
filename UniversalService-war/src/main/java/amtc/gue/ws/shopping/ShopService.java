@@ -5,12 +5,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.GoogleOAuth2Authenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.Constants;
 import amtc.gue.ws.base.Service;
@@ -24,8 +28,27 @@ import amtc.gue.ws.shopping.inout.Shops;
 import amtc.gue.ws.shopping.response.ShopServiceResponse;
 import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
-@Api(name = "shopping", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
-		Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Shopping backend application")
+@Api(
+		name = "shops", 
+		version = "v1", 
+		scopes = { Constants.EMAIL_SCOPE }, 
+		clientIds = { 
+				Constants.WEB_CLIENT_ID,
+				Constants.API_EXPLORER_CLIENT_ID 
+		},
+		authenticators = {GoogleOAuth2Authenticator.class, EspAuthenticator.class},
+		issuers = {
+			@ApiIssuer(
+					name = "firebase",
+		            issuer = "https://securetoken.google.com/universalservice-dcafd",
+		            jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+			)	
+		},
+		issuerAudiences = {
+				@ApiIssuerAudience(name = "firebase", audiences = {"1017704499337-8s3a0grnio4emiura8673l33qrst7nu2.apps.googleusercontent.com",
+						"1017704499337-eqts400689c87qvdcf71um5mncah57h0.apps.googleusercontent.com","universalservice-dcafd"})
+		},
+		description = "API for the Shop backend application")
 public class ShopService extends Service {
 	private static final Logger log = Logger.getLogger(ShopService.class.getName());
 	private static final String SCOPE = "shopping";

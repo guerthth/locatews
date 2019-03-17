@@ -17,6 +17,7 @@ import org.junit.runners.MethodSorters;
 import amtc.gue.ws.base.exception.EntityPersistenceException;
 import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
+import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
 import amtc.gue.ws.shopping.persistence.dao.objectify.BillObjectifyDAOImpl;
 import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
@@ -232,9 +233,19 @@ public class BillDAOObjectifyTest extends ShoppingTest implements IBaseDAOTest {
 	@Override
 	@Test
 	public void testFindSpecificEntity() throws EntityRetrievalException, EntityPersistenceException {
+		userObjectifyDAO.persistEntity(objectifyUserEntity1);
+		userObjectifyDAO.persistEntity(objectifyUserEntity2);
+		List<GAEUserEntity> userList = userObjectifyDAO.findAllEntities();
+		assertEquals(2, userList.size());
+		
+		objectifyBillEntity1.setUser(objectifyUserEntity1);
 		billObjectifyDAO.persistEntity(objectifyBillEntity1);
+		
+		objectifyBillEntity2.setUser(objectifyUserEntity2);
 		billObjectifyDAO.persistEntity(objectifyBillEntity2);
+		
 		List<GAEBillEntity> list = billObjectifyDAO.findAllEntities();
+		
 		assertEquals(2, list.size());
 		assertEquals(1, billObjectifyDAO.findSpecificEntity(objectifyBillEntity1).size());
 	}

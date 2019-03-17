@@ -24,6 +24,8 @@ public class Bill {
 	private Date date;
 	@XmlElement(name = "amount", required = false, nillable = true)
 	private Double amount;
+	@XmlElement(name = "websafeKey", required = false, nillable = true)
+	private String websafeKey;
 	@XmlElement(name = "shop", required = false, nillable = true)
 	private Shop shop;
 	@XmlElement(name = "billinggroup", required = false, nillable = true)
@@ -54,6 +56,14 @@ public class Bill {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	public String getWebsafeKey() {
+		return websafeKey;
+	}
+
+	public void setWebsafeKey(String websafeKey) {
+		this.websafeKey = websafeKey;
 	}
 
 	public Shop getShop() {

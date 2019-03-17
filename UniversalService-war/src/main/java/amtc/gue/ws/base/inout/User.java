@@ -17,12 +17,14 @@ import amtc.gue.ws.shopping.inout.Billinggroup;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "user", propOrder = { "id", "userName", "password", "roles" })
+@XmlType(name = "user", propOrder = { "id", "userName", "password","websafeKey",  "roles" })
 public class User extends Item {
 	@XmlElement(name = "userName", required = true, nillable = false)
 	private String userName;
 	@XmlElement(name = "password", required = true, nillable = false)
 	private String password;
+	@XmlElement(name="websafeKey", required = false, nillable = true)
+	private String websafeKey;
 	@XmlElement(name = "roles")
 	private List<String> roles;
 	@XmlElement(name = "billinggroups")
@@ -43,6 +45,14 @@ public class User extends Item {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getWebsafeKey() {
+		return websafeKey;
+	}
+
+	public void setWebsafeKey(String websafeKey) {
+		this.websafeKey = websafeKey;
 	}
 
 	public List<String> getRoles() {

@@ -469,7 +469,7 @@ public class UserPersistenceDelegatorTest extends UserTest
 		userPersistenceDelegator.setRoleDAO(roleJPADAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertNull(delegatorOutput.getStatusMessage());
 	}
 
 	@Override
@@ -480,7 +480,7 @@ public class UserPersistenceDelegatorTest extends UserTest
 		userPersistenceDelegator.setRoleDAO(roleObjectifyDAOImpl);
 		IDelegatorOutput delegatorOutput = userPersistenceDelegator.delegate();
 		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_CODE, delegatorOutput.getStatusCode());
-		assertEquals(ErrorConstants.RETRIEVE_USER_FAILURE_MSG, delegatorOutput.getStatusMessage());
+		assertNull(delegatorOutput.getStatusMessage());
 	}
 
 	@Override

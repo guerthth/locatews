@@ -80,4 +80,28 @@ public class BillinggroupObjectifyDAOImpl
 		}
 		return specificEntity;
 	}
+
+	@Override
+	public List<GAEBillinggroupEntity> findAllBillinggroupsForUser(String userId) throws EntityRetrievalException {
+		List<GAEBillinggroupEntity> foundEntities = new ArrayList<>();
+		try{
+			Query<GAEObjectifyBillinggroupEntity> query = 
+					ofy().load().type(GAEObjectifyBillinggroupEntity.class);
+			Ref<GAEObjectifyUserEntity> userReferenceToQuery = Ref
+					.create(Key.create(userId));
+			query = query.filter("users", userReferenceToQuery);
+			
+			List<GAEObjectifyBillinggroupEntity> billinggroupEntities = query.list();
+			for (GAEObjectifyBillinggroupEntity billinggroupEntity : billinggroupEntities) {
+				foundEntities.add(billinggroupEntity);
+			}
+			
+		} catch(Exception e){
+			throw new EntityRetrievalException("Retrieving BillinggroupEntities for user'" + userId + "' failed",e);
+		}
+		
+		return foundEntities;
+	}
+	
+	
 }

@@ -5,14 +5,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.api.server.spi.auth.EspAuthenticator;
+import com.google.api.server.spi.auth.GoogleOAuth2Authenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
+import com.google.api.server.spi.config.ApiIssuer;
+import com.google.api.server.spi.config.ApiIssuerAudience;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.Constants;
 import amtc.gue.ws.base.Service;
@@ -29,8 +33,27 @@ import amtc.gue.ws.shopping.inout.Billinggroups;
 import amtc.gue.ws.shopping.response.BillinggroupServiceResponse;
 import amtc.gue.ws.shopping.util.mapper.ShoppingServiceEntityMapper;
 
-@Api(name = "shopping", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
-		Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Shopping backend application")
+@Api(
+		name = "billinggroups", 
+		version = "v1", 
+		scopes = { Constants.EMAIL_SCOPE }, 
+		clientIds = { 
+				Constants.WEB_CLIENT_ID,
+				Constants.API_EXPLORER_CLIENT_ID 
+		},
+		authenticators = {GoogleOAuth2Authenticator.class, EspAuthenticator.class},
+		issuers = {
+			@ApiIssuer(
+					name = "firebase",
+		            issuer = "https://securetoken.google.com/universalservice-dcafd",
+		            jwksUri = "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com"
+			)	
+		},
+		issuerAudiences = {
+				@ApiIssuerAudience(name = "firebase", audiences = {"1017704499337-8s3a0grnio4emiura8673l33qrst7nu2.apps.googleusercontent.com",
+						"1017704499337-eqts400689c87qvdcf71um5mncah57h0.apps.googleusercontent.com","universalservice-dcafd"})
+		},
+		description = "API for the Billing backend application")
 public class BillinggroupService extends Service {
 	private static final Logger log = Logger.getLogger(BillinggroupService.class.getName());
 	private static final String SCOPE = "shopping";
@@ -63,13 +86,34 @@ public class BillinggroupService extends Service {
 		return response;
 	}
 
-	@ApiMethod(name = "getBillinggroups", path = "billinggoup", httpMethod = HttpMethod.GET)
+	@ApiMethod(name = "getBillinggroups", path = "billinggroup", httpMethod = HttpMethod.GET)
 	public BillinggroupServiceResponse getBillinggroups(final User user) throws UnauthorizedException {
+		log.debug("user: " + user);
 		if (user == null || !isAuthorized(user, SCOPE)) {
+			log.error("User '" + user + "' is not authorized");
 			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
 		}
 
 		billinggroupDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, null);
+		IDelegatorOutput bdOutput = billinggroupDelegator.delegate();
+		BillinggroupServiceResponse response = ShoppingServiceEntityMapper
+				.mapBdOutputToBillinggroupServiceResponse(bdOutput);
+		log.info(response.getStatus().getStatusMessage());
+		return response;
+	}
+	
+	@ApiMethod(name="getBillinggroupsForUser", path = "billinggroup/{userId}", httpMethod = HttpMethod.GET)
+	public BillinggroupServiceResponse getBillinggroupsForUser(final User user, 
+			@Named("userId") final String userId) throws UnauthorizedException{
+		if (user == null || !isAuthorized(user, SCOPE)) {
+			log.error("User '" + user + "' is not authorized");
+			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
+		}
+		
+		amtc.gue.ws.base.inout.User userToRetrieve = new amtc.gue.ws.base.inout.User();
+		userToRetrieve.setId(userId);
+		
+		billinggroupDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, userToRetrieve);
 		IDelegatorOutput bdOutput = billinggroupDelegator.delegate();
 		BillinggroupServiceResponse response = ShoppingServiceEntityMapper
 				.mapBdOutputToBillinggroupServiceResponse(bdOutput);
@@ -147,7 +191,7 @@ public class BillinggroupService extends Service {
 		if (user == null || !isAuthorized(user, SCOPE)) {
 			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);
 		}
-
+		
 		// prepare input billinggroups
 		Billinggroups billinggroupsToUpdate = new Billinggroups();
 		Billinggroup billinggroupToUpdate = new Billinggroup();
@@ -168,6 +212,7 @@ public class BillinggroupService extends Service {
 		return response;
 	}
 
+	// TODO not working from Swagger - Rermove from openapi.sjon
 	public Announcement getAnnouncement(final User user) throws UnauthorizedException {
 		if (user == null || !isAuthorized(user, SCOPE)) {
 			throw new UnauthorizedException(UNAUTHORIZEDMESSAGE);

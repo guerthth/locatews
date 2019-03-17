@@ -16,7 +16,9 @@ import amtc.gue.ws.base.exception.EntityRemovalException;
 import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.shopping.persistence.dao.BillinggroupDAO;
 import amtc.gue.ws.shopping.persistence.dao.objectify.BillinggroupObjectifyDAOImpl;
+import amtc.gue.ws.shopping.persistence.model.GAEBillEntity;
 import amtc.gue.ws.shopping.persistence.model.GAEBillinggroupEntity;
+import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyBillEntity;
 import amtc.gue.ws.shopping.persistence.model.objectify.GAEObjectifyBillinggroupEntity;
 import amtc.gue.ws.test.base.persistence.dao.IBaseDAOTest;
 import amtc.gue.ws.test.shopping.ShoppingTest;
@@ -48,6 +50,7 @@ public class BillinggoupDAOObjectifyTest extends ShoppingTest implements IBaseDA
 	public void testDAOSetup() {
 		assertNotNull(userObjectifyDAO);
 		assertNotNull(billinggroupObjectifyDAO);
+		assertNotNull(billObjectifyDAO);
 	}
 
 	@Override
@@ -199,6 +202,21 @@ public class BillinggoupDAOObjectifyTest extends ShoppingTest implements IBaseDA
 	public void testGetEntityByIdUsingInvalidEM() throws EntityRetrievalException {
 		failureBillinggroupObjectifyDAO.findEntityById(objectifyBillinggroupEntity1.getKey());
 	}
+	
+	@Test
+	public void testGetBillinggroupEntitiesForUser() throws EntityRetrievalException, EntityPersistenceException {	
+		userObjectifyDAO.persistEntity(objectifyUserEntity1);
+		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
+		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity2);
+		objectifyBillinggroupEntity1.addToUsersAndBillinggroups(objectifyUserEntity1);
+		billinggroupObjectifyDAO.updateEntity(objectifyBillinggroupEntity1);
+		
+		assertEquals(1, userObjectifyDAO.findAllEntities().size());
+		assertEquals(2, billinggroupObjectifyDAO.findAllEntities().size());
+		
+		List<GAEBillinggroupEntity> foundEntities = billinggroupObjectifyDAO.findAllBillinggroupsForUser(objectifyUserEntity1.getWebsafeKey());
+		assertEquals(1,foundEntities.size());
+	}
 
 	@Override
 	@Test
@@ -270,6 +288,46 @@ public class BillinggoupDAOObjectifyTest extends ShoppingTest implements IBaseDA
 	@Test(expected = EntityPersistenceException.class)
 	public void testUpdateEntityUsingInvalidEM() throws EntityPersistenceException {
 		failureBillinggroupObjectifyDAO.updateEntity(objectifyBillinggroupEntity1);
+	}
+	
+	/**
+	 * Testing if adding bills to an billinggroupentity works as intented
+	 * @throws EntityPersistenceException 
+	 * @throws EntityRetrievalException 
+	 */
+	@Test
+	public void testUpdateEntityWithBill() throws EntityPersistenceException, EntityRetrievalException{
+		// add user
+		userObjectifyDAO.persistEntity(objectifyUserEntity1);
+		assertNotNull(objectifyUserEntity1.getKey());
+		
+		// add shop 
+		assertNull(objectifyShopEntity1.getKey());
+		shopObjectifyDAO.persistEntity(objectifyShopEntity1);
+		assertNotNull(objectifyShopEntity1.getKey());
+		
+		// add billinggroup
+		assertNull(objectifyBillinggroupEntity1.getKey());
+		billinggroupObjectifyDAO.persistEntity(objectifyBillinggroupEntity1);
+		assertNotNull(objectifyBillinggroupEntity1.getKey());
+		
+		// add user and shop to bill
+		GAEObjectifyBillEntity billEntity = new GAEObjectifyBillEntity(objectifyUserEntity1.getWebsafeKey(),
+				objectifyShopEntity1.getWebsafeKey(), objectifyBillinggroupEntity1.getWebsafeKey());
+		billObjectifyDAO.persistEntity(billEntity);
+		
+		assertNull(objectifyBillEntity1.getShop());
+		assertNull(objectifyBillEntity1.getUser());
+		
+		GAEBillEntity retrievedBill = billObjectifyDAO.findSpecificEntity(billEntity).get(0);
+		assertEquals(retrievedBill.getUser().getUserName(), objectifyUserEntity1.getUserName());
+		retrievedBill.getWebsafeKey();
+		
+		// add bill to billinggroup
+		objectifyBillinggroupEntity1.addToBillsOnly(retrievedBill);
+		billinggroupObjectifyDAO.updateEntity(objectifyBillinggroupEntity1);
+		GAEBillinggroupEntity retrievedBillinggroup = billinggroupObjectifyDAO.findSpecificEntity(objectifyBillinggroupEntity1).get(0);
+		assertNotNull(retrievedBillinggroup.getBills());
 	}
 
 	@Override

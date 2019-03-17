@@ -3,6 +3,7 @@ package amtc.gue.ws.books.persistence.model.book.jpa;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jdo.annotations.PersistenceCapable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;

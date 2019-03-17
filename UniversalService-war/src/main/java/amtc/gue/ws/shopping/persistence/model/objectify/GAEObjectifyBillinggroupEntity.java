@@ -158,8 +158,11 @@ public class GAEObjectifyBillinggroupEntity extends GAEBillinggroupEntity {
 	@Override
 	public void addToBillsOnly(GAEBillEntity bill) {
 		if (bill != null) {
-			Ref<GAEObjectifyBillEntity> referenceToAdd = Ref
-					.create(Key.create(GAEObjectifyBillEntity.class, bill.getKey()));
+			// since user is parent of bill, 
+			// the users key has to be included during key creation
+			// the cast to long is needed in order to find the correct entity
+			Ref<GAEObjectifyBillEntity> referenceToAdd = Ref.create(Key.create(bill.getWebsafeKey()));
+			
 			bills.add(referenceToAdd);
 		}
 	}

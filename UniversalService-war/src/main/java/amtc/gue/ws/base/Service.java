@@ -3,8 +3,8 @@ package amtc.gue.ws.base;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.oauth.OAuthServiceFactory;
-import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
@@ -30,7 +30,7 @@ public class Service {
 		this.userDelegator = userDelegator;
 	}
 
-	protected boolean isAuthorized(User user, String scope) {
+	protected boolean isAuthorized(com.google.api.server.spi.auth.common.User user, String scope) {
 		if (isUserAdmin()) {
 			return true;
 		} else {
@@ -38,8 +38,9 @@ public class Service {
 			amtc.gue.ws.base.inout.User searchUser = UserServiceEntityMapper.mapAuthUserToUser(user);
 			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
-			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
-				amtc.gue.ws.base.inout.User foundUser = (amtc.gue.ws.base.inout.User) dOutput.getOutputObject();
+			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.Users) {
+				amtc.gue.ws.base.inout.User foundUser = 
+						((amtc.gue.ws.base.inout.Users) dOutput.getOutputObject()).getUsers().get(0);
 				if (foundUser.getRoles().contains(scope)) {
 					return true;
 				}
@@ -56,9 +57,10 @@ public class Service {
 			amtc.gue.ws.base.inout.User searchUser = UserServiceEntityMapper.mapAuthUserToUser(user);
 			userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
 			IDelegatorOutput dOutput = userDelegator.delegate();
-			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.User) {
-				amtc.gue.ws.base.inout.User foundUser = (amtc.gue.ws.base.inout.User) dOutput.getOutputObject();
-				if (user.getUserId().equals(id) && foundUser.getRoles().contains(scope)) {
+			if (dOutput.getOutputObject() instanceof amtc.gue.ws.base.inout.Users) {
+				amtc.gue.ws.base.inout.User foundUser = 
+						((amtc.gue.ws.base.inout.Users) dOutput.getOutputObject()).getUsers().get(0);
+				if (user.getId().equals(id) && foundUser.getRoles().contains(scope)) {
 					return true;
 				}
 			}
@@ -80,5 +82,14 @@ public class Service {
 			}
 		}
 		return isAdmin;
+	}
+
+	protected IDelegatorOutput getCurrentUser(User user) {
+		log.info("Trying to retrieve User with Id '" + user.getEmail() + "'");
+		amtc.gue.ws.base.inout.User searchUser = UserServiceEntityMapper.mapAuthUserToUser(user);
+		userDelegator.buildAndInitializeDelegator(DelegatorTypeEnum.READ, searchUser);
+		IDelegatorOutput dOutput = userDelegator.delegate();
+
+		return dOutput;
 	}
 }

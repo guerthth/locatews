@@ -99,9 +99,9 @@ public class ShopServiceTest extends ShoppingTest {
 	private static void setUpDelegatorOutputs() {
 		delegatorOutput = new DelegatorOutput();
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(serviceUser);
+		userDelegatorOutput.setOutputObject(serviceUsers);
 		failureUserDelegatorOutput = new DelegatorOutput();
-		failureUserDelegatorOutput.setOutputObject(invalidServiceUser);
+		failureUserDelegatorOutput.setOutputObject(invalidServiceUsers);
 	}
 
 	private static void setUpDelegatorMocks() {

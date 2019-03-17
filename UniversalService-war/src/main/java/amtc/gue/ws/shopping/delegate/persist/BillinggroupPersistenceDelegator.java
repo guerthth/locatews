@@ -1,5 +1,6 @@
 package amtc.gue.ws.shopping.delegate.persist;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ import amtc.gue.ws.base.exception.EntityRetrievalException;
 import amtc.gue.ws.base.inout.User;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
+import amtc.gue.ws.base.util.FCMSender;
 import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 import amtc.gue.ws.shopping.inout.Bill;
 import amtc.gue.ws.shopping.inout.Billinggroup;
@@ -81,8 +83,10 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 				delegatorOutput.setStatusMessage(
 						BillinggroupPersistenceDelegatorUtils.buildPersistBillinggroupSuccessStatusMessage(
 								successfullyAddedBillinggroupEntities, unsuccessfullyAddedBillinggroupEntities));
-				delegatorOutput.setOutputObject(ShoppingServiceEntityMapper
+				delegatorOutput.setOutputObject(shoppingEntityMapper
 						.transformBillinggroupEntitiesToBillinggroups(successfullyAddedBillinggroupEntities));
+				// TODO send notification
+				// sendFcmMessage();
 			} else {
 				delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.ADD_BILLINGGROUP_FAILURE_CODE);
 				delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.ADD_BILLINGGROUP_FAILURE_MSG);
@@ -126,7 +130,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 			if (!successfullyRemovedBillinggroupEntities.isEmpty()) {
 				delegatorOutput.setStatusMessage(BillinggroupPersistenceDelegatorUtils
 						.buildRemoveBillinggroupsSuccessStatusMessage(successfullyRemovedBillinggroupEntities));
-				delegatorOutput.setOutputObject(ShoppingServiceEntityMapper
+				delegatorOutput.setOutputObject(shoppingEntityMapper
 						.transformBillinggroupEntitiesToBillinggroups(successfullyRemovedBillinggroupEntities));
 			} else {
 				delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.DELETE_BILLINGGROUP_FAILURE_CODE);
@@ -141,29 +145,12 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 
 	@Override
 	protected void retrieveEntities() {
-		try {
-			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_SUCCESS_CODE);
-			if (delegatorInput.getInputObject() instanceof String) {
-				String billinggroupKey = (String) delegatorInput.getInputObject();
-				GAEBillinggroupEntity foundBillinggroupEntity = retrieveBillinggroupsByBillinggroupKey(billinggroupKey);
-				String statusMessage = BillinggroupPersistenceDelegatorUtils
-						.buildGetBillinggroupsByIdSuccessStatusMessage(billinggroupKey, foundBillinggroupEntity);
-				log.info(statusMessage);
-				delegatorOutput.setStatusMessage(statusMessage);
-				delegatorOutput.setOutputObject(foundBillinggroupEntity);
-			} else {
-				List<GAEBillinggroupEntity> foundBillinggroupEntities = retrieveAllBillinggroups();
-				String statusMessage = BillinggroupPersistenceDelegatorUtils
-						.buildGetBillinggroupsSuccessStatusMessage(foundBillinggroupEntities);
-				log.info(statusMessage);
-				delegatorOutput.setStatusMessage(statusMessage);
-				delegatorOutput.setOutputObject(foundBillinggroupEntities);
-			}
-		} catch (EntityRetrievalException e) {
-			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_CODE);
-			delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_MSG);
-			delegatorOutput.setStatusReason(e.getMessage());
-			delegatorOutput.setOutputObject(null);
+		if (delegatorInput.getInputObject() instanceof User) {
+			retrieveBillinggroupForUser(((User) delegatorInput.getInputObject()).getId());
+		} else if (delegatorInput.getInputObject() instanceof Billinggroup) {
+			retrieveBillinggroupsByBillinggroupKey((String) delegatorInput.getInputObject());
+		} else {
+			retrieveAllBillinggroups();
 		}
 	}
 
@@ -174,21 +161,65 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	 * @param billinggroupKey
 	 *            the billinggroupKey that is searched for
 	 * @return the found BillinggroupEntity
-	 * @throws EntityRetrievalException
-	 *             when issue occurs while trying to retrieve BillinggroupEntity
 	 */
-	private GAEBillinggroupEntity retrieveBillinggroupsByBillinggroupKey(String billinggroupKey)
-			throws EntityRetrievalException {
+	private GAEBillinggroupEntity retrieveBillinggroupsByBillinggroupKey(String billinggroupKey) {
 		log.info("READ Billinggroup by Key action triggered");
+		delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_SUCCESS_CODE);
 		GAEBillinggroupEntity foundBillinggroupEntity = null;
+		List<GAEBillinggroupEntity> foundBillinggroupEntities = new ArrayList<>();
 		try {
 			foundBillinggroupEntity = billinggroupDAOImpl.findEntityById(billinggroupKey);
+			foundBillinggroupEntities.add(foundBillinggroupEntity);
+			String statusMessage = BillinggroupPersistenceDelegatorUtils
+					.buildGetBillinggroupsByIdSuccessStatusMessage(billinggroupKey, foundBillinggroupEntity);
+			log.info(statusMessage);
+			delegatorOutput.setStatusMessage(statusMessage);
+			delegatorOutput.setStatusReason(null);
+			delegatorOutput.setOutputObject(
+					shoppingEntityMapper.transformBillinggroupEntitiesToBillinggroups(foundBillinggroupEntities));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE,
 					"Error while trying to retrieve billinggroup with billinggroupKey: '" + billinggroupKey + "'", e);
-			throw e;
+			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_MSG);
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
 		}
+
 		return foundBillinggroupEntity;
+	}
+
+	/**
+	 * Method retrieving all BillinggroupEntities for an specific user
+	 * 
+	 * @param userKey
+	 *            the user whose BillinggroupEntities should be retrieved
+	 * @return the found BillinggroupEntities
+	 */
+	private List<GAEBillinggroupEntity> retrieveBillinggroupForUser(String userKey) {
+		log.info("READ Billinggroup for user '" + userKey + "' action triggered");
+		delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_SUCCESS_CODE);
+		List<GAEBillinggroupEntity> foundBillinggroups = null;
+
+		try {
+			foundBillinggroups = billinggroupDAOImpl.findAllBillinggroupsForUser(userKey);
+			String statusMessage = BillinggroupPersistenceDelegatorUtils
+					.buildGetBillinggroupsForUserSuccessStatusMessage(foundBillinggroups, userKey);
+			log.info(statusMessage);
+			delegatorOutput.setStatusMessage(statusMessage);
+			delegatorOutput.setStatusReason(null);
+			delegatorOutput.setOutputObject(
+					shoppingEntityMapper.transformBillinggroupEntitiesToBillinggroups(foundBillinggroups));
+		} catch (EntityRetrievalException e) {
+			log.log(Level.SEVERE, "Error while trying to retrieve billinggroups for user '" + userKey + "'", e);
+			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(
+					ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_MSG + " for user '" + userKey + "'");
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
+		}
+
+		return foundBillinggroups;
 	}
 
 	/**
@@ -198,14 +229,25 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	 * @throws EntityRetrievalException
 	 *             when issue occurs while trying to retrieve BillinggroupEntity
 	 */
-	private List<GAEBillinggroupEntity> retrieveAllBillinggroups() throws EntityRetrievalException {
+	private List<GAEBillinggroupEntity> retrieveAllBillinggroups() {
 		log.info("READ Billinggroups action triggered");
+		delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_SUCCESS_CODE);
 		List<GAEBillinggroupEntity> foundBillinggroups = null;
 		try {
 			foundBillinggroups = billinggroupDAOImpl.findAllEntities();
+			String statusMessage = BillinggroupPersistenceDelegatorUtils
+					.buildGetBillinggroupsSuccessStatusMessage(foundBillinggroups);
+			log.info(statusMessage);
+			delegatorOutput.setStatusMessage(statusMessage);
+			delegatorOutput.setStatusReason(null);
+			delegatorOutput.setOutputObject(
+					shoppingEntityMapper.transformBillinggroupEntitiesToBillinggroups(foundBillinggroups));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE, "Error while trying to retrieve billinggroups", e);
-			throw e;
+			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_CODE);
+			delegatorOutput.setStatusMessage(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_MSG);
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
 		}
 		return foundBillinggroups;
 	}
@@ -214,7 +256,6 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 	protected void updateEntities() {
 		if (delegatorInput.getInputObject() instanceof Billinggroups) {
 			Billinggroups billinggroupsToUpdate = (Billinggroups) delegatorInput.getInputObject();
-			delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_SUCCESS_CODE);
 			List<GAEBillinggroupEntity> successfullyUpdatedBillinggroupEntities = new ArrayList<>();
 			List<GAEBillinggroupEntity> unsuccessfullyUpdatedBillinggroupEntities = new ArrayList<>();
 			StringBuilder sb = new StringBuilder();
@@ -237,7 +278,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 						GAEBillinggroupEntity foundBillinggroup = retrieveBillinggroupsByBillinggroupKey(
 								billinggroupToUpdate.getBillinggroupId());
 						// check if user is not yet included in billinggroup
-						GAEUserEntity userEntityToAdd = userDAOImpl.findEntityById(userToAdd.getId());
+						GAEUserEntity userEntityToAdd = userDAOImpl.findSpecificEntity(userEntityMapper.mapUserToEntity(userToAdd, DelegatorTypeEnum.READ)).get(0);
 						if (!isUserRegisteredToBillinggroup(foundBillinggroup, userEntityToAdd)) {
 							// add user to billinggroup
 							foundBillinggroup.addToUsersOnly(userEntityToAdd);
@@ -277,8 +318,7 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 						// load billinggroup
 						GAEBillinggroupEntity foundBillinggroup = retrieveBillinggroupsByBillinggroupKey(
 								billinggroupToUpdate.getBillinggroupId());
-						// check if user adding the bill is included in the
-						// billinggroup
+						// check if user adding the bill is included in billinggroup
 						Bill billToCreate = billinggroupToUpdate.getBills().get(0);
 						User billCreationUser = billToCreate.getUser();
 						GAEUserEntity billCreationUserEntity = userEntityMapper.mapUserToEntity(billCreationUser,
@@ -298,14 +338,14 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 							// add bill to billinggroup
 							foundBillinggroup.addToBillsOnly(persistedBillEntity);
 							// update bill and billinggroup
-							GAEBillEntity newBillEntity = billDAOImpl.updateEntity(persistedBillEntity);
+							billDAOImpl.updateEntity(persistedBillEntity);
 							GAEBillinggroupEntity updatedBillinggroupEntity = billinggroupDAOImpl
 									.updateEntity(foundBillinggroup);
 							successfullyUpdatedBillinggroupEntities.add(updatedBillinggroupEntity);
 							log.info("Bill succesfully added to billinggroup '" + updatedBillinggroupEntity.getKey()
 									+ "'");
-							// trigger mail notification
-							sendAddedBillEmail(updatedBillinggroupEntity, newBillEntity);
+							// TODO trigger mail notification
+							//sendAddedBillEmail(updatedBillinggroupEntity, newBillEntity);
 						} else {
 							unsuccessfullyUpdatedBillinggroupEntities.add(billinggroupEntity);
 							String statusMessage = "User with key '" + billCreationUserEntity.getKey()
@@ -343,9 +383,11 @@ public class BillinggroupPersistenceDelegator extends AbstractPersistenceDelegat
 
 			// set delegatorOutput
 			if (!successfullyUpdatedBillinggroupEntities.isEmpty()) {
+				delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_SUCCESS_CODE);
 				delegatorOutput.setStatusMessage(BillinggroupPersistenceDelegatorUtils
 						.buildUpdateBillinggroupsSuccessStatusMessage(successfullyUpdatedBillinggroupEntities));
-				delegatorOutput.setOutputObject(ShoppingServiceEntityMapper
+				delegatorOutput.setStatusReason(null);
+				delegatorOutput.setOutputObject(shoppingEntityMapper
 						.transformBillinggroupEntitiesToBillinggroups(successfullyUpdatedBillinggroupEntities));
 			} else {
 				delegatorOutput.setStatusCode(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_FAILURE_CODE);

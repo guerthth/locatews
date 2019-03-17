@@ -18,6 +18,8 @@ public class Shop {
 	private String shopId;
 	@XmlElement(name = "shopName", required = false, nillable = true)
 	private String shopName;
+	@XmlElement(name="websafeKey", required = false, nillable = true)
+	private String websafeKey;
 
 	// Getters and Setters
 	public String getShopId() {
@@ -34,5 +36,13 @@ public class Shop {
 
 	public void setShopName(String shopName) {
 		this.shopName = shopName;
+	}
+
+	public String getWebsafeKey() {
+		return websafeKey;
+	}
+
+	public void setWebsafeKey(String websafeKey) {
+		this.websafeKey = websafeKey;
 	}
 }

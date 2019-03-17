@@ -23,6 +23,7 @@ import amtc.gue.ws.base.persistence.model.user.objectify.GAEObjectifyUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.ErrorConstants;
 import amtc.gue.ws.shopping.delegate.persist.BillinggroupPersistenceDelegator;
+import amtc.gue.ws.shopping.inout.Billinggroups;
 import amtc.gue.ws.shopping.persistence.dao.BillDAO;
 import amtc.gue.ws.shopping.persistence.dao.BillinggroupDAO;
 import amtc.gue.ws.shopping.persistence.dao.objectify.BillObjectifyDAOImpl;
@@ -50,6 +51,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 	private static DelegatorInput nullDeleteBillinggroupDelegatorInput;
 	private static DelegatorInput readBillinggroupDelegatorInput;
 	private static DelegatorInput nullReadBillinggroupDelegatorInput;
+	private static DelegatorInput readBillinggroupForUserDelegatorInput;
 	private static DelegatorInput updateBillinggroupDelegatorInput;
 	private static DelegatorInput updateBillinggroupBillDelegatorInput;
 	private static DelegatorInput updateBillinggroupUserDelegatorInput;
@@ -58,7 +60,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImpl;
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplUserIncluded;
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplNoFoundBillinggroups;
-	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplNullBillinggroups;
+	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplBillinggroupUpdateFail;
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplGeneralFail;
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplDeletionFail;
 	private static BillinggroupDAO<GAEBillinggroupEntity, GAEObjectifyBillinggroupEntity, String> billinggroupObjectifyDAOImplSpecificEntityFound;
@@ -83,7 +85,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 	public static void finalTearDown() {
 		EasyMock.verify(billinggroupObjectifyDAOImpl);
 		EasyMock.verify(billinggroupObjectifyDAOImplNoFoundBillinggroups);
-		EasyMock.verify(billinggroupObjectifyDAOImplNullBillinggroups);
+		EasyMock.verify(billinggroupObjectifyDAOImplBillinggroupUpdateFail);
 		EasyMock.verify(billinggroupObjectifyDAOImplGeneralFail);
 		EasyMock.verify(billinggroupObjectifyDAOImplDeletionFail);
 		EasyMock.verify(billinggroupObjectifyDAOImplSpecificEntityFound);
@@ -302,7 +304,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 	@Test
 	public void testDelegateObjectifyUpdateBillinggroupWithBillRetrievalFail() {
 		billinggroupPersistenceDelegator.initialize(updateBillinggroupBillDelegatorInput);
-		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImplGeneralFail);
+		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImplUpdateFail);
 		billinggroupPersistenceDelegator.setBillDAO(billObjectifyDAOImpl);
 		billinggroupPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		billinggroupPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
@@ -331,7 +333,7 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		billinggroupPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		billinggroupPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = billinggroupPersistenceDelegator.delegate();
-		assertEquals(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_FAILURE_CODE, delegatorOutput.getStatusCode());
+		assertEquals(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_SUCCESS_CODE, delegatorOutput.getStatusCode());
 	}
 
 	@Test
@@ -349,12 +351,30 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 	@Test
 	public void testDelegateObjectifyUpdateBillinggroupWithUserRetrievalFail() {
 		billinggroupPersistenceDelegator.initialize(updateBillinggroupUserDelegatorInput);
-		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImplGeneralFail);
+		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImplBillinggroupUpdateFail);
 		billinggroupPersistenceDelegator.setBillDAO(billObjectifyDAOImpl);
+		billinggroupPersistenceDelegator.setUserDAO(userObjectifyDAOImpl);
 		billinggroupPersistenceDelegator.setShoppingEntityMapper(objectifyShopEntityMapper);
 		billinggroupPersistenceDelegator.setUserEntityMapper(objectifyUserEntityMapper);
 		IDelegatorOutput delegatorOutput = billinggroupPersistenceDelegator.delegate();
 		assertEquals(ShoppingServiceErrorConstants.UPDATE_BILLINGGROUP_FAILURE_CODE, delegatorOutput.getStatusCode());
+	}
+	
+	@Test
+	public void testDelegateObjectifyRetrieveBillinggroupForUser(){
+		billinggroupPersistenceDelegator.initialize(readBillinggroupForUserDelegatorInput);
+		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImpl);
+		IDelegatorOutput delegatorOutput = billinggroupPersistenceDelegator.delegate();
+		assertTrue(delegatorOutput.getOutputObject() instanceof Billinggroups);
+		assertEquals(1,((Billinggroups)delegatorOutput.getOutputObject()).getBillinggroups().size());
+	}
+	
+	@Test
+	public void testDelegateObjectifyRetrieveBillinggroupForUserFail() {
+		billinggroupPersistenceDelegator.initialize(readBillinggroupForUserDelegatorInput);
+		billinggroupPersistenceDelegator.setBillinggroupDAO(billinggroupObjectifyDAOImplGeneralFail);
+		IDelegatorOutput delegatorOutput = billinggroupPersistenceDelegator.delegate();
+		assertEquals(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_FAILURE_CODE, delegatorOutput.getStatusCode());
 	}
 
 	/**
@@ -383,6 +403,10 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		nullReadBillinggroupDelegatorInput = new DelegatorInput();
 		nullReadBillinggroupDelegatorInput.setInputObject(null);
 		nullReadBillinggroupDelegatorInput.setType(DelegatorTypeEnum.READ);
+		
+		readBillinggroupForUserDelegatorInput = new DelegatorInput();
+		readBillinggroupForUserDelegatorInput.setInputObject(serviceUser);
+		readBillinggroupForUserDelegatorInput.setType(DelegatorTypeEnum.READ);	
 
 		// DelegatorInputs for billinggroupentity update
 		updateBillinggroupDelegatorInput = new DelegatorInput();
@@ -425,18 +449,20 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		billinggroupObjectifyDAOImpl = EasyMock.createNiceMock(BillinggroupObjectifyDAOImpl.class);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.findAllEntities()).andReturn(objectifyBillinggroupEntityList);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
-				.andReturn(objectifyBillinggroupEntity1);
+				.andReturn(objectifyBillinggroupEntity4);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyBillinggroupEntity1).times(3);
+				.andReturn(objectifyBillinggroupEntity4).times(3);
+		EasyMock.expect(billinggroupObjectifyDAOImpl.findAllBillinggroupsForUser(EasyMock.isA(String.class)))
+			.andReturn(objectifyBillinggroupEntityList);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.removeEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
-				.andReturn(objectifyBillinggroupEntity1);
+				.andReturn(objectifyBillinggroupEntity4);
 		EasyMock.expect(billinggroupObjectifyDAOImpl.updateEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
-				.andReturn(objectifyBillinggroupEntity1);
+				.andReturn(objectifyBillinggroupEntity4).times(2);
 		EasyMock.replay(billinggroupObjectifyDAOImpl);
 
 		billinggroupObjectifyDAOImplUpdateFail = EasyMock.createNiceMock(BillinggroupObjectifyDAOImpl.class);
 		EasyMock.expect(billinggroupObjectifyDAOImplUpdateFail.findEntityById(EasyMock.isA(String.class)))
-				.andReturn(objectifyBillinggroupEntity1);
+				.andReturn(objectifyBillinggroupEntity4).times(2);
 		EasyMock.expect(
 				billinggroupObjectifyDAOImplUpdateFail.updateEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
 				.andThrow(new EntityPersistenceException());
@@ -461,8 +487,9 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		EasyMock.expect(billinggroupObjectifyDAOImplGeneralFail
 				.updateEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class)))
 				.andThrow(new EntityPersistenceException());
-		EasyMock.expect(billinggroupObjectifyDAOImplGeneralFail.findEntityById(EasyMock.isA(String.class)))
-				.andThrow(new EntityRetrievalException()).times(2);
+		EasyMock.expect(billinggroupObjectifyDAOImplGeneralFail
+				.findAllBillinggroupsForUser(EasyMock.isA(String.class)))
+				.andThrow(new EntityRetrievalException());
 		EasyMock.replay(billinggroupObjectifyDAOImplGeneralFail);
 
 		// negative scenario no found billinggroup when trying to delete
@@ -470,8 +497,10 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 		EasyMock.replay(billinggroupObjectifyDAOImplNoFoundBillinggroups);
 
 		// Positive scenario (null returned after billinggroup retrieval)
-		billinggroupObjectifyDAOImplNullBillinggroups = EasyMock.createNiceMock(BillinggroupObjectifyDAOImpl.class);
-		EasyMock.replay(billinggroupObjectifyDAOImplNullBillinggroups);
+		billinggroupObjectifyDAOImplBillinggroupUpdateFail = EasyMock.createNiceMock(BillinggroupObjectifyDAOImpl.class);
+		EasyMock.expect(billinggroupObjectifyDAOImplBillinggroupUpdateFail.findEntityById(EasyMock.isA(String.class))).andReturn(objectifyBillinggroupEntity4);
+		EasyMock.expect(billinggroupObjectifyDAOImplBillinggroupUpdateFail.updateEntity(EasyMock.isA(GAEObjectifyBillinggroupEntity.class))).andThrow(new EntityPersistenceException());
+		EasyMock.replay(billinggroupObjectifyDAOImplBillinggroupUpdateFail);
 
 		// negative scenario mock for BillinggroupDAO (removeEntity() call
 		// fails)
@@ -491,8 +520,8 @@ public class BillinggroupPersistenceDelegatorTest extends ShoppingTest implement
 
 		// positive scenario for userDAOs
 		userObjectifyDAOImpl = EasyMock.createNiceMock(UserObjectifyDAOImpl.class);
-		EasyMock.expect(userObjectifyDAOImpl.findEntityById(EasyMock.isA(String.class))).andReturn(objectifyUserEntity1)
-				.times(2);
+		EasyMock.expect(userObjectifyDAOImpl.findSpecificEntity(EasyMock.isA(GAEUserEntity.class))).andReturn(objectifyUserEntityList)
+		.times(4);
 		EasyMock.expect(userObjectifyDAOImpl.updateEntity(EasyMock.isA(GAEObjectifyUserEntity.class)))
 				.andReturn(objectifyUserEntity1);
 		EasyMock.replay(userObjectifyDAOImpl);

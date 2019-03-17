@@ -94,8 +94,8 @@ public class BookServiceTest extends BookTest {
 	private static void setUpDelegatorOutputs() {
 		bookDelegatorOutput = new DelegatorOutput();
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(serviceUser);
-		userDelegatorOutput.setOutputObject(invalidServiceUser);
+		userDelegatorOutput.setOutputObject(serviceUsers);
+		userDelegatorOutput.setOutputObject(invalidServiceUsers);
 	}
 
 	private static void setUpDelegatorMocks() {

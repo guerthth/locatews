@@ -2,11 +2,11 @@ package amtc.gue.ws.books;
 
 import java.util.logging.Logger;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.Constants;
 import amtc.gue.ws.base.Service;

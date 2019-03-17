@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE project>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <application>theuniversalwebservice</application>
-    <version>1</version>
+    <runtime>java8</runtime>
     <threadsafe>true</threadsafe>
+    <url-stream-handler>urlfetch</url-stream-handler>
+    
+    <env-variables>
+    	<env-var name="ENDPOINTS_SERVICE_NAME" value="theuniversalwebservice.appspot.com"></env-var>
+    	<env-var name="ENDPOINTS_SERVICE_VERSION" value="2018-12-31r0" />
+    </env-variables>
     
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

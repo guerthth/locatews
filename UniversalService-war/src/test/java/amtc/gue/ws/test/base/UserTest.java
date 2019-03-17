@@ -91,6 +91,7 @@ public abstract class UserTest extends BaseTest {
 	protected static List<GAERoleEntity> JPARoleEntityEmptyList;
 	protected static List<GAERoleEntity> JPARoleEntityNullValueList;
 
+	protected static final String ID = "1";
 	protected static final String EMAIL = "test@test.com";
 	protected static final String EMAIL_B = "testB@test.com";
 	protected static final String USERNAME = "userName";
@@ -101,6 +102,8 @@ public abstract class UserTest extends BaseTest {
 	protected static final String ROLE_B = "otherTestRole";
 	protected static final String ROLE_C = "testRoleC";
 	protected static final String DESCRIPTION = "testDescription";
+	
+	protected static final String CURRENTUSER = "current";
 
 	protected static UserServiceEntityMapper JPAUserEntityMapper;
 	protected static UserServiceEntityMapper objectifyUserEntityMapper;

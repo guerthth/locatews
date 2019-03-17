@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.labs.repackaged.com.google.common.base.Joiner;
+import com.google.common.base.Joiner;
 import com.googlecode.objectify.ObjectifyService;
 
 import amtc.gue.ws.Constants;

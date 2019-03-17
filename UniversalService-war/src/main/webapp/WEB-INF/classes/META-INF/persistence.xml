@@ -15,26 +15,16 @@
 		<class>amtc.gue.ws.base.persistence.model.role.jpa.GAEJPARoleEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
-			<!-- <property name="datanucleus.NontransactionalRead" value="true" /> -->
+			<property name="datanucleus.NontransactionalRead" value="true" />
 			<property name="datanucleus.NontransactionalWrite" value="true" />
 			<property name="datanucleus.ConnectionURL" value="appengine" />
-			<!-- <property name="datanucleus.metadata.allowLoadAtRuntime" -->
-			<!-- value="true" /> -->
-			<!-- <property name="datanucleus.appengine.ignorableMetaDataBehavior" -->
-			<!-- value="NONE" /> -->
-			<!-- <property name="datanucleus.singletonEMFForName" value="true" /> -->
-			<!-- <property name="datanucleus.appengine.relationDefault" value="unowned" 
-				/> -->
+			<property name="datanucleus.singletonEMFForName" value="true" />
 			<property name="datanucleus.nontx.atomic" value="true" />
+			<property name="datanucleus.appengine.datastoreReadConsistency" value="EVENTUAL" />
+			<property name="javax.persistence.query.timeout" value="5000" />
+            <property name="datanucleus.datastoreWriteTimeout" value="10000" />
 			<property name="datanucleus.appengine.datastoreEnableXGTransactions"
 				value="true" />
-			<!-- <property name="datanucleus.cache.level2.type" value="None"></property> -->
-			<!-- <property name="datanucleus.jpa.persistenceContextType" -->
-			<!-- value="extended" /> -->
-			<!-- <property name="datanucleus.maxFetchDepth" value="2" /> -->
-			<!-- <property name="datanucleus.appengine.storageVersion" value="WRITE_OWNED_CHILD_KEYS_TO_PARENTS" 
-				/> -->
-<!-- 			<property name="datanucleus.appengine.ignorableMetaDataBehavior" value="ERROR"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

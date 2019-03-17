@@ -132,9 +132,9 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 
 	@Test
 	public void testMapShopEntityToShopUsingSimpleShopEntity() {
-		Shop shop = ShoppingServiceEntityMapper.mapShopEntityToShop(objectifyShopEntity1);
-		assertEquals(shop.getShopId(), objectifyShopEntity1.getKey());
-		assertEquals(shop.getShopName(), objectifyShopEntity1.getShopName());
+		Shop shop = ShoppingServiceEntityMapper.mapShopEntityToShop(objectifyShopEntity3);
+		assertEquals(shop.getShopId(), objectifyShopEntity3.getKey());
+		assertEquals(shop.getShopName(), objectifyShopEntity3.getShopName());
 	}
 
 	@Test
@@ -275,9 +275,9 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 	@Test
 	public void testMapBillinggroupEntityToBillinggroupUsingSimpleBillinggroupEntity() {
 		Billinggroup billinggroup = ShoppingServiceEntityMapper
-				.mapBillinggroupEntityToBillinggroup(objectifyBillinggroupEntity1);
-		assertEquals(billinggroup.getBillinggroupId(), objectifyBillinggroupEntity1.getKey());
-		assertEquals(billinggroup.getDescription(), objectifyBillinggroupEntity1.getDescription());
+				.mapBillinggroupEntityToBillinggroup(objectifyBillinggroupEntity4);
+		assertEquals(billinggroup.getBillinggroupId(), objectifyBillinggroupEntity4.getKey());
+		assertEquals(billinggroup.getDescription(), objectifyBillinggroupEntity4.getDescription());
 	}
 
 	@Test
@@ -289,7 +289,7 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 
 	@Test
 	public void testTransformBillinggroupEntitiesToBillinggroupsUsingSimpleBillinggroups() {
-		Billinggroups billinggroups = ShoppingServiceEntityMapper
+		Billinggroups billinggroups = objectifyShopEntityMapper
 				.transformBillinggroupEntitiesToBillinggroups(objectifyBillinggroupEntityList);
 		assertNotNull(billinggroups);
 		assertEquals(1, billinggroups.getBillinggroups().size());
@@ -297,7 +297,7 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 
 	@Test
 	public void testTransformBillinggroupEntitiesToBillinggroupsUsingNullBillinggroups() {
-		Billinggroups billinggroups = ShoppingServiceEntityMapper.transformBillinggroupEntitiesToBillinggroups(null);
+		Billinggroups billinggroups = objectifyShopEntityMapper.transformBillinggroupEntitiesToBillinggroups(null);
 		assertNotNull(billinggroups);
 		assertEquals(0, billinggroups.getBillinggroups().size());
 	}
@@ -415,9 +415,9 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 
 	@Test
 	public void testMapBillEntityToBillUsingSimpleBillEntity() {
-		Bill bill = ShoppingServiceEntityMapper.mapBillEntityToBill(objectifyBillEntity1);
-		assertEquals(bill.getBillId(), objectifyBillEntity1.getKey());
-		assertEquals(bill.getAmount(), objectifyBillEntity1.getAmount());
+		Bill bill = ShoppingServiceEntityMapper.mapBillEntityToBill(objectifyBillEntity3);
+		assertEquals(bill.getBillId(), objectifyBillEntity3.getKey());
+		assertEquals(bill.getAmount(), objectifyBillEntity3.getAmount());
 	}
 
 	@Test
@@ -429,7 +429,7 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 
 	@Test
 	public void testTransformBillEntitiesToBillsUsingSimpleBills() {
-		Bills bills = ShoppingServiceEntityMapper.transformBillEntitiesToBills(objectifyBillEntityList);
+		Bills bills = ShoppingServiceEntityMapper.transformBillEntitiesToBills(objectifyBillEntityList2);
 		assertNotNull(bills);
 		assertEquals(1, bills.getBills().size());
 	}
@@ -574,7 +574,7 @@ public class ShoppingServiceEntityMapperTest extends ShoppingTest {
 		unrecognizedShopDelegatorOutput.setOutputObject(null);
 
 		billinggroupDelegatorOutput = new DelegatorOutput();
-		billinggroupDelegatorOutput.setOutputObject(objectifyBillEntityList);
+		billinggroupDelegatorOutput.setOutputObject(billinggroups);
 		unrecognizedBillinggroupDelegatorOutput = new DelegatorOutput();
 		unrecognizedBillinggroupDelegatorOutput.setOutputObject(null);
 

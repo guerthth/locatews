@@ -10,13 +10,14 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.base.delegate.output.DelegatorOutput;
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.delegate.persist.AbstractPersistenceDelegator;
 import amtc.gue.ws.base.delegate.persist.UserPersistenceDelegator;
+import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.tournament.PlayerService;
 import amtc.gue.ws.tournament.delegate.persist.PlayerPersistenceDelegator;
 import amtc.gue.ws.tournament.response.PlayerServiceResponse;
@@ -32,6 +33,8 @@ public class PlayerServiceTest extends TournamentTest {
 	private static User user;
 	private static amtc.gue.ws.base.inout.User serviceUser;
 	private static amtc.gue.ws.base.inout.User invalidServiceUser;
+	private static Users serviceUsers;
+	private static Users invalidServiceUsers;
 	private static IDelegatorOutput delegatorOutput;
 	private static IDelegatorOutput userDelegatorOutput;
 	private static IDelegatorOutput failureUserDelegatorOutput;
@@ -101,14 +104,20 @@ public class PlayerServiceTest extends TournamentTest {
 		serviceUser.getRoles().add("tournament");
 		invalidServiceUser = new amtc.gue.ws.base.inout.User();
 		invalidServiceUser.getRoles().add("tournament");
+
+
+		serviceUsers = new Users();
+		serviceUsers.getUsers().add(serviceUser);
+		invalidServiceUsers = new Users();
+		invalidServiceUsers.getUsers().add(invalidServiceUser);	
 	}
 
 	private static void setUpDelegatorOutputs() {
 		delegatorOutput = new DelegatorOutput();
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(serviceUser);
+		userDelegatorOutput.setOutputObject(serviceUsers);
 		failureUserDelegatorOutput = new DelegatorOutput();
-		failureUserDelegatorOutput.setOutputObject(invalidServiceUser);
+		failureUserDelegatorOutput.setOutputObject(invalidServiceUsers);
 	}
 
 	private static void setUpDelegatorMocks() {

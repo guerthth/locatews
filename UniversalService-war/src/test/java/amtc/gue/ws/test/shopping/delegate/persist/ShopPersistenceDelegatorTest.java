@@ -321,9 +321,9 @@ public class ShopPersistenceDelegatorTest extends ShoppingTest implements IObjec
 		shopObjectifyDAOImpl = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);
 		EasyMock.expect(shopObjectifyDAOImpl.findAllEntities()).andReturn(objectifyShopEntityList);
 		EasyMock.expect(shopObjectifyDAOImpl.persistEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
-				.andReturn(objectifyShopEntity1);
+				.andReturn(objectifyShopEntity3);
 		EasyMock.expect(shopObjectifyDAOImpl.removeEntity(EasyMock.isA(GAEObjectifyShopEntity.class)))
-				.andReturn(objectifyShopEntity1);
+				.andReturn(objectifyShopEntity3);
 		EasyMock.replay(shopObjectifyDAOImpl);
 
 		shopObjectifyDAOImplSpecificEntityFound = EasyMock.createNiceMock(ShopObjectifyDAOImpl.class);

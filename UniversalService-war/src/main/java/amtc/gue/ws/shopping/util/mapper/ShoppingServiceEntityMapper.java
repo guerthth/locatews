@@ -1,12 +1,14 @@
 package amtc.gue.ws.shopping.util.mapper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import amtc.gue.ws.base.delegate.output.IDelegatorOutput;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
 import amtc.gue.ws.base.util.DelegatorTypeEnum;
 import amtc.gue.ws.base.util.StatusMapper;
+import amtc.gue.ws.base.util.mapper.UserServiceEntityMapper;
 import amtc.gue.ws.shopping.inout.Bill;
 import amtc.gue.ws.shopping.inout.Billinggroup;
 import amtc.gue.ws.shopping.inout.Billinggroups;
@@ -71,6 +73,7 @@ public abstract class ShoppingServiceEntityMapper {
 		if (shopEntity != null) {
 			shop.setShopId(shopEntity.getKey());
 			shop.setShopName(shopEntity.getShopName());
+			shop.setWebsafeKey(shopEntity.getWebsafeKey());
 		}
 		return shop;
 	}
@@ -206,6 +209,11 @@ public abstract class ShoppingServiceEntityMapper {
 		if (billinggroupEntity != null) {
 			billinggroup.setBillinggroupId(billinggroupEntity.getKey());
 			billinggroup.setDescription(billinggroupEntity.getDescription());
+			billinggroup.setWebsafeKey(billinggroupEntity.getWebsafeKey());
+			billinggroup.setUsers(
+					UserServiceEntityMapper.transformUserEntitiesToUsers(billinggroupEntity.getUsers()).getUsers());
+			billinggroup.setBills(
+					transformBillEntitiesToBills(billinggroupEntity.getBills()).getBills());
 		}
 		return billinggroup;
 	}
@@ -218,7 +226,7 @@ public abstract class ShoppingServiceEntityMapper {
 	 *            a list of GAEBillinggroupEntities
 	 * @return a Billinggroups object
 	 */
-	public static Billinggroups transformBillinggroupEntitiesToBillinggroups(
+	public Billinggroups transformBillinggroupEntitiesToBillinggroups(
 			List<GAEBillinggroupEntity> billinggroupEntityList) {
 		Billinggroups billinggroups = new Billinggroups();
 		List<Billinggroup> billinggroupList = new ArrayList<>();
@@ -313,15 +321,14 @@ public abstract class ShoppingServiceEntityMapper {
 	 *            delegatoroutput that should be included in the response
 	 * @return mapped BillinggroupServiceResponse
 	 */
-	@SuppressWarnings("unchecked")
 	public static BillinggroupServiceResponse mapBdOutputToBillinggroupServiceResponse(IDelegatorOutput bdOutput) {
 		BillinggroupServiceResponse billinggroupServiceResponse = null;
 
 		if (bdOutput != null) {
 			billinggroupServiceResponse = new BillinggroupServiceResponse();
 			billinggroupServiceResponse.setStatus(StatusMapper.buildStatusForDelegatorOutput(bdOutput));
-			if (bdOutput.getOutputObject() instanceof List<?>) {
-				List<GAEBillinggroupEntity> billinggroups = (List<GAEBillinggroupEntity>) bdOutput.getOutputObject();
+			if (bdOutput.getOutputObject() instanceof Billinggroups) {
+				List<Billinggroup> billinggroups = ((Billinggroups) bdOutput.getOutputObject()).getBillinggroups();
 				billinggroupServiceResponse.setBillinggroups(billinggroups);
 			} else {
 				billinggroupServiceResponse.setBillinggroups(null);
@@ -373,7 +380,9 @@ public abstract class ShoppingServiceEntityMapper {
 			bill.setBillId(billEntity.getKey());
 			bill.setDate(billEntity.getDate());
 			bill.setAmount(billEntity.getAmount());
+			bill.setWebsafeKey(billEntity.getWebsafeKey());
 			bill.setShop(mapShopEntityToShop(billEntity.getShop()));
+			// TODO possibly remove here
 			bill.setBillinggroup(mapBillinggroupEntityToBillinggroup(billEntity.getBillinggroup()));
 		}
 		return bill;
@@ -386,7 +395,7 @@ public abstract class ShoppingServiceEntityMapper {
 	 *            a list of GAEBillEntities
 	 * @return a Bills object
 	 */
-	public static Bills transformBillEntitiesToBills(List<GAEBillEntity> billEntityList) {
+	public static Bills transformBillEntitiesToBills(Collection<GAEBillEntity> billEntityList) {
 		Bills bills = new Bills();
 		List<Bill> billList = new ArrayList<>();
 		if (billEntityList != null) {

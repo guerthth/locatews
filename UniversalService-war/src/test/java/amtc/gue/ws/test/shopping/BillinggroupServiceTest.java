@@ -33,7 +33,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 
 	private static AbstractPersistenceDelegator billinggroupDelegator;
 	private static AbstractPersistenceDelegator userDelegator;
-
+	
 	@BeforeClass
 	public static void initialSetup() {
 		setUpBasicShoppingEnvironment();
@@ -51,6 +51,7 @@ public class BillinggroupServiceTest extends ShoppingTest {
 	public void testAddBillinggroupsUsingUnauthorizedUser() throws UnauthorizedException {
 		new BillinggroupService().addBillinggroups(null, billinggroups);
 	}
+
 
 	@Test
 	public void testAddBillinggroups() throws UnauthorizedException {
@@ -71,6 +72,19 @@ public class BillinggroupServiceTest extends ShoppingTest {
 				.getBillinggroups(user);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+	
+	@Test
+	public void testGetBillinggroupsForUser() throws UnauthorizedException{
+		BillinggroupServiceResponse resp = new BillinggroupService(userDelegator, billinggroupDelegator)
+				.getBillinggroupsForUser(user, EMAIL);
+		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
+		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
+	}
+	
+	@Test(expected = UnauthorizedException.class)
+	public void testGetBillinggroupsForUserUsingUnauthorizedUser() throws UnauthorizedException{
+		new BillinggroupService().getBillinggroupsForUser(null, EMAIL);
 	}
 
 	@Test(expected = UnauthorizedException.class)
@@ -113,25 +127,24 @@ public class BillinggroupServiceTest extends ShoppingTest {
 				.addBillToBillinggroup(user, billinggroup1.getBillinggroupId(), bill1);
 		assertEquals(delegatorOutput.getStatusCode(), resp.getStatus().getStatusCode());
 		assertEquals(delegatorOutput.getStatusMessage(), resp.getStatus().getStatusMessage());
-
 	}
 
 	// Helper Methods
 	private static void setUpDelegatorOutputs() {
 		delegatorOutput = new DelegatorOutput();
 		userDelegatorOutput = new DelegatorOutput();
-		userDelegatorOutput.setOutputObject(serviceUser);
+		userDelegatorOutput.setOutputObject(serviceUsers);
 		failureUserDelegatorOutput = new DelegatorOutput();
-		failureUserDelegatorOutput.setOutputObject(invalidServiceUser);
+		failureUserDelegatorOutput.setOutputObject(invalidServiceUsers);
 	}
 
 	private static void setUpDelegatorMocks() {
 		billinggroupDelegator = EasyMock.createNiceMock(BillinggroupPersistenceDelegator.class);
-		EasyMock.expect(billinggroupDelegator.delegate()).andReturn(delegatorOutput).times(5);
+		EasyMock.expect(billinggroupDelegator.delegate()).andReturn(delegatorOutput).times(6);
 		EasyMock.replay(billinggroupDelegator);
 
 		userDelegator = EasyMock.createNiceMock(UserPersistenceDelegator.class);
-		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(5);
+		EasyMock.expect(userDelegator.delegate()).andReturn(userDelegatorOutput).times(6);
 		EasyMock.replay(userDelegator);
 	}
 }

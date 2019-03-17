@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiMethod.HttpMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
 
 import amtc.gue.ws.Constants;
 import amtc.gue.ws.base.Service;

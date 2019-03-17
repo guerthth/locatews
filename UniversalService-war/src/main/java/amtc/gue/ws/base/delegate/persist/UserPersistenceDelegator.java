@@ -183,20 +183,20 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private void retrieveUsersByRoles(Roles roles) {
 		log.info("READ User by Roles action triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-		List<GAEUserEntity> foundUsers = new ArrayList<>();
 		try {
-			foundUsers = userDAOImpl.getUserEntitiesByRoles(roles);
+			List<GAEUserEntity> foundUserEntities = userDAOImpl.getUserEntitiesByRoles(roles);
 			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByRoleSuccessStatusMessage(roles,
-					foundUsers);
+					foundUserEntities);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(foundUsers);
+			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUserEntities));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE,
 					"Error while trying to retrieve users with role: '" + roles.getRoles().toString() + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUsers));
+			delegatorOutput.setStatusMessage(e.getMessage());
+			delegatorOutput.setOutputObject(null);
 		}
 	}
 
@@ -210,15 +210,13 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private void retrieveUserByUserMail(User user) {
 		log.info("READ User by User email triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-		User foundUser = null;
 		try {
 			GAEUserEntity searchUser = userEntityMapper.mapUserToEntity(user, DelegatorTypeEnum.READ);
 			List<GAEUserEntity> foundUserEntities = userDAOImpl.findSpecificEntity(searchUser);
-			if (foundUserEntities != null && foundUserEntities.size() == 1) {
-				foundUser = userEntityMapper.mapUserEntityToUser(foundUserEntities.get(0));
+			if (foundUserEntities != null && foundUserEntities.size() == 1) {			
 				delegatorOutput.setStatusMessage(
-						ErrorConstants.RETRIEVE_USER_BY_EMAIL_SUCCESS_MSG + " '" + foundUser.getUserName() + "'");
-				delegatorOutput.setOutputObject(foundUser);
+						ErrorConstants.RETRIEVE_USER_BY_EMAIL_SUCCESS_MSG + " '" + foundUserEntities.get(0).getUserName() + "'");
+				delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUserEntities));
 			} else {
 				throw new EntityRetrievalException();
 			}
@@ -226,7 +224,8 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 			log.log(Level.SEVERE, "Error while trying to retrieve users with userMail: '" + user.getId() + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(foundUser);
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
 		}
 	}
 
@@ -239,19 +238,22 @@ public class UserPersistenceDelegator extends AbstractPersistenceDelegator {
 	private void retrieveUserByUserKey(String userKey) {
 		log.info("READ User by userName action triggered");
 		delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_SUCCESS_CODE);
-		GAEUserEntity foundUser = null;
+		GAEUserEntity foundUserEntity = null;
+		List<GAEUserEntity> foundUserEntities = new ArrayList<>();
 		try {
-			foundUser = userDAOImpl.findEntityById(userKey);
+			foundUserEntity = userDAOImpl.findEntityById(userKey);
+			foundUserEntities.add(foundUserEntity);
 			String statusMessage = UserPersistenceDelegatorUtils.buildGetUsersByIdSuccessStatusMessage(userKey,
-					foundUser);
+					foundUserEntity);
 			log.info(statusMessage);
 			delegatorOutput.setStatusMessage(statusMessage);
-			delegatorOutput.setOutputObject(foundUser);
+			delegatorOutput.setOutputObject(userEntityMapper.transformUserEntitiesToUsers(foundUserEntities));
 		} catch (EntityRetrievalException e) {
 			log.log(Level.SEVERE, "Error while trying to retrieve users with userKey: '" + userKey + "'", e);
 			delegatorOutput.setStatusCode(ErrorConstants.RETRIEVE_USER_FAILURE_CODE);
 			delegatorOutput.setStatusMessage(ErrorConstants.RETRIEVE_USER_FAILURE_MSG);
-			delegatorOutput.setOutputObject(foundUser);
+			delegatorOutput.setStatusReason(e.getMessage());
+			delegatorOutput.setOutputObject(null);
 		}
 	}
 

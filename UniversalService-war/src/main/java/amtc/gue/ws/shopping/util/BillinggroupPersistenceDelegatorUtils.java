@@ -122,4 +122,15 @@ public class BillinggroupPersistenceDelegatorUtils {
 		sb.append("'.");
 		return sb.toString();
 	}
+
+	public static String buildGetBillinggroupsForUserSuccessStatusMessage(
+			List<GAEBillinggroupEntity> foundBillinggroups, String userKey) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ShoppingServiceErrorConstants.RETRIEVE_BILLINGGROUP_SUCCESS_MSG);
+		sb.append(" for user '" + userKey + "'");
+		sb.append(": '");
+		sb.append(ShoppingServiceEntityMapper.mapBillinggroupEntityListToConsolidatedJSONString(foundBillinggroups));
+		sb.append("'.");
+		return sb.toString();
+	}
 }

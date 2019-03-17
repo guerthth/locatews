@@ -44,7 +44,7 @@ public abstract class UserServiceEntityMapper {
 	 *            the database action type
 	 * @return the mapped User
 	 */
-	public static User mapAuthUserToUser(com.google.appengine.api.users.User authUser) {
+	public static User mapAuthUserToUser(com.google.api.server.spi.auth.common.User authUser) {
 		User user = new User();
 		user.setId(authUser.getEmail());
 		return user;
@@ -76,12 +76,13 @@ public abstract class UserServiceEntityMapper {
 	 *            the GAEUserEntity that should be mapped
 	 * @return the mapped User object
 	 */
-	public User mapUserEntityToUser(GAEUserEntity userEntity) {
+	public static User mapUserEntityToUser(GAEUserEntity userEntity) {
 		User user = new User();
 		if (userEntity != null) {
 			user.setId(userEntity.getKey());
 			user.setUserName(userEntity.getUserName());
 			user.setPassword(userEntity.getPassword());
+			user.setWebsafeKey(userEntity.getWebsafeKey());
 			user.setRoles(mapRoleEntityListToRoles(userEntity.getRoles()));
 		}
 		return user;
@@ -94,7 +95,7 @@ public abstract class UserServiceEntityMapper {
 	 *            a list of GAEUserEntities
 	 * @return a Users object
 	 */
-	public Users transformUserEntitiesToUsers(List<GAEUserEntity> userEntityList) {
+	public static Users transformUserEntitiesToUsers(Collection<GAEUserEntity> userEntityList) {
 		Users users = new Users();
 		List<User> userList = new ArrayList<>();
 		if (userEntityList != null) {
@@ -205,14 +206,13 @@ public abstract class UserServiceEntityMapper {
 	 *            delegatoroOutput that should be included in the response
 	 * @return mapped UserServiceReponse
 	 */
-	@SuppressWarnings("unchecked")
 	public static UserServiceResponse mapBdOutputToUserServiceResponse(IDelegatorOutput dOutput) {
 		UserServiceResponse userServiceResponse = null;
 		if (dOutput != null) {
 			userServiceResponse = new UserServiceResponse();
 			userServiceResponse.setStatus(StatusMapper.buildStatusForDelegatorOutput(dOutput));
-			if (dOutput.getOutputObject() instanceof List<?>) {
-				List<GAEUserEntity> users = (List<GAEUserEntity>) dOutput.getOutputObject();
+			if (dOutput.getOutputObject() instanceof Users) {
+				List<User> users = ((Users) dOutput.getOutputObject()).getUsers();
 				userServiceResponse.setUsers(users);
 			} else {
 				userServiceResponse.setUsers(null);

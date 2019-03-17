@@ -6,10 +6,11 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 
+import amtc.gue.ws.base.inout.Users;
 import amtc.gue.ws.base.persistence.dao.user.UserDAO;
 import amtc.gue.ws.base.persistence.dao.user.objectify.UserObjectifyDAOImpl;
 import amtc.gue.ws.base.persistence.model.user.GAEUserEntity;
@@ -55,6 +56,8 @@ public class ShoppingTest extends BaseTest {
 	protected static User user;
 	protected static amtc.gue.ws.base.inout.User serviceUser;
 	protected static amtc.gue.ws.base.inout.User invalidServiceUser;
+	protected static Users serviceUsers;
+	protected static Users invalidServiceUsers;
 
 	protected static Shop shop1;
 	protected static Shop shop2;
@@ -78,6 +81,7 @@ public class ShoppingTest extends BaseTest {
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity1;
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity2;
 	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity3;
+	protected static GAEObjectifyBillinggroupEntity objectifyBillinggroupEntity4;
 	protected static GAEObjectifyUserEntity objectifyUserEntity1;
 	protected static GAEObjectifyUserEntity objectifyUserEntity2;
 	protected static GAEObjectifyShopEntity objectifyShopEntity1;
@@ -85,13 +89,16 @@ public class ShoppingTest extends BaseTest {
 	protected static GAEObjectifyShopEntity objectifyShopEntity3;
 	protected static GAEObjectifyBillEntity objectifyBillEntity1;
 	protected static GAEObjectifyBillEntity objectifyBillEntity2;
+	protected static GAEObjectifyBillEntity objectifyBillEntity3;
 
 	protected static List<GAEShopEntity> objectifyShopEntityList;
 	protected static List<GAEShopEntity> objectifyShopEntityEmptyList;
 	protected static List<GAEBillinggroupEntity> objectifyBillinggroupEntityList;
 	protected static List<GAEBillinggroupEntity> objectifyBillinggroupEntityEmptyList;
 	protected static List<GAEBillEntity> objectifyBillEntityList;
+	protected static List<GAEBillEntity> objectifyBillEntityList2;
 	protected static List<GAEBillEntity> objectifyBillEntityEmptyList;
+	protected static List<GAEUserEntity> objectifyUserEntityList;
 
 	protected static final String EMAIL = "test@test.com";
 	protected static final String EMAIL_B = "testB@test.com";
@@ -161,6 +168,11 @@ public class ShoppingTest extends BaseTest {
 		serviceUser.setId(EMAIL);
 		serviceUser.getRoles().add("shopping");
 		invalidServiceUser = new amtc.gue.ws.base.inout.User();
+		
+		serviceUsers = new Users();
+		serviceUsers.getUsers().add(serviceUser);
+		invalidServiceUsers = new Users();
+		invalidServiceUsers.getUsers().add(invalidServiceUser);
 	}
 
 	/**
@@ -221,6 +233,11 @@ public class ShoppingTest extends BaseTest {
 		objectifyUserEntity1.setKey(EMAIL);
 		objectifyUserEntity2 = new GAEObjectifyUserEntity();
 		objectifyUserEntity2.setKey(EMAIL_B);
+		objectifyUserEntity2.setUserName(EMAIL_B);
+		
+		objectifyUserEntityList = new ArrayList<>();
+		objectifyUserEntityList.add(objectifyUserEntity1);
+		objectifyUserEntityList.add(objectifyUserEntity2);
 	}
 
 	/**
@@ -234,9 +251,13 @@ public class ShoppingTest extends BaseTest {
 		objectifyBillinggroupEntity3 = new GAEObjectifyBillinggroupEntity();
 		objectifyBillinggroupEntity3.setDescription(DESCRIPTION);
 		objectifyBillinggroupEntity3.getUsers().add(objectifyUserEntity1);
+		objectifyBillinggroupEntity4 = new GAEObjectifyBillinggroupEntity();
+		objectifyBillinggroupEntity4.setKey(BILLINGGROUPID);
+		objectifyBillinggroupEntity4.setDescription(DESCRIPTION);
+		
 
 		objectifyBillinggroupEntityList = new ArrayList<>();
-		objectifyBillinggroupEntityList.add(objectifyBillinggroupEntity1);
+		objectifyBillinggroupEntityList.add(objectifyBillinggroupEntity4);
 
 		objectifyBillinggroupEntityEmptyList = new ArrayList<>();
 	}
@@ -248,9 +269,14 @@ public class ShoppingTest extends BaseTest {
 		// Objectify Bill Entities
 		objectifyBillEntity1 = new GAEObjectifyBillEntity();
 		objectifyBillEntity2 = new GAEObjectifyBillEntity();
+		objectifyBillEntity3 = new GAEObjectifyBillEntity();
+		objectifyBillEntity3.setKey(BILLID);
 
 		objectifyBillEntityList = new ArrayList<>();
 		objectifyBillEntityList.add(objectifyBillEntity1);
+		
+		objectifyBillEntityList2 = new ArrayList<>();
+		objectifyBillEntityList2.add(objectifyBillEntity3);
 
 		objectifyBillEntityEmptyList = new ArrayList<>();
 	}
