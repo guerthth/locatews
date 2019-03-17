@@ -1,0 +1,329 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"description": "This API declarations should help when using functionality of the Universalwebservice.",
+		"version": "1.0.0",
+		"title": "Swagger UniversalWebservice",
+		"license": {
+			"name": "Apache 2.0",
+			"url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+		}
+	},
+	"host": "localhost:8181",
+	"basePath": "/_ah/api",
+	"schemes": [
+		"http"
+	],
+	"consumes": [
+		"application/json"
+	],
+	"produces": [
+		"application/json"
+	],
+	"tags": {
+		"$ref": "tags.json"
+	},
+	"paths": {
+		"$ref": "servicepaths.json"
+	},
+	"securityDefinitions": {
+		"firebase-3f2f489b": {
+			"type": "oauth2",
+			"authorizationUrl": "",
+			"flow": "implicit",
+			"x-google-issuer": "https://securetoken.google.com/theuniversalwebservice",
+			"x-google-jwks_uri": "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com",
+			"x-google-audiences": "1017704499337-8s3a0grnio4emiura8673l33qrst7nu2.apps.googleusercontent.com,1017704499337-eqts400689c87qvdcf71um5mncah57h0.apps.googleusercontent.com"
+		},
+		"firebase-58780318": {
+			"type": "oauth2",
+			"authorizationUrl": "",
+			"flow": "implicit",
+			"x-google-issuer": "https://securetoken.google.com/universalservice-dcafd",
+			"x-google-jwks_uri": "https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com",
+			"x-google-audiences": "1017704499337-8s3a0grnio4emiura8673l33qrst7nu2.apps.googleusercontent.com,1017704499337-eqts400689c87qvdcf71um5mncah57h0.apps.googleusercontent.com,universalservice-dcafd"
+		},
+		"bearer": {
+			"type": "apiKey",
+			"description": "Authorization Token",
+			"name": "Authorization",
+			"in": "header"
+		}
+	},
+	"definitions": {
+		"Status": {
+			"properties": {
+				"statusCode": {
+					"type": "integer",
+					"format": "int32"
+				},
+				"statusMessage": {
+					"type": "string"
+				},
+				"statusReason": {
+					"type": "string"
+				}
+			}
+		},
+		"Billinggroups": {
+			"properties": {
+				"billinggroups": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Billinggroup"
+					}
+				}
+			}
+		},
+		"Player": {
+			"properties": {
+				"description": {
+					"type": "string"
+				},
+				"id": {
+					"type": "string"
+				}
+			}
+		},
+		"User": {
+			"properties": {
+				"billinggroups": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Billinggroup"
+					}
+				},
+				"id": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				},
+				"roles": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"userName": {
+					"type": "string"
+				},
+				"websafeKey": {
+					"type": "string"
+				}
+			}
+		},
+		"Announcement": {
+			"properties": {
+				"message": {
+					"type": "string"
+				}
+			}
+		},
+		"Billinggroup": {
+			"properties": {
+				"billinggroupId": {
+					"type": "string"
+				},
+				"bills": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Bill"
+					}
+				},
+				"description": {
+					"type": "string"
+				},
+				"users": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/User"
+					}
+				},
+				"websafeKey": {
+					"type": "string"
+				}
+			}
+		},
+		"PlayerServiceResponse": {
+			"properties": {
+				"players": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Player"
+					}
+				},
+				"status": {
+					"$ref": "#/definitions/Status"
+				}
+			}
+		},
+		"Users": {
+			"properties": {
+				"users": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/User"
+					}
+				}
+			}
+		},
+		"TagServiceResponse": {
+			"properties": {
+				"status": {
+					"$ref": "#/definitions/Status"
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		},
+		"Shop": {
+			"properties": {
+				"shopId": {
+					"type": "string"
+				},
+				"shopName": {
+					"type": "string"
+				}
+			}
+		},
+		"BillinggroupServiceResponse": {
+			"properties": {
+				"billinggroups": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Billinggroup"
+					}
+				},
+				"status": {
+					"$ref": "#/definitions/Status"
+				}
+			}
+		},
+		"UserServiceResponse": {
+			"properties": {
+				"status": {
+					"$ref": "#/definitions/Status"
+				},
+				"users": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/User"
+					}
+				}
+			}
+		},
+		"Book": {
+			"properties": {
+				"author": {
+					"type": "string"
+				},
+				"description": {
+					"type": "string"
+				},
+				"id": {
+					"type": "string"
+				},
+				"isbn": {
+					"type": "string"
+				},
+				"price": {
+					"type": "string"
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"title": {
+					"type": "string"
+				}
+			}
+		},
+		"Bill": {
+			"properties": {
+				"amount": {
+					"type": "number",
+					"format": "double"
+				},
+				"billId": {
+					"type": "string"
+				},
+				"billinggroup": {
+					"$ref": "#/definitions/Billinggroup"
+				},
+				"date": {
+					"type": "string",
+					"format": "date-time"
+				},
+				"shop": {
+					"$ref": "#/definitions/Shop"
+				},
+				"user": {
+					"$ref": "#/definitions/User"
+				}
+			}
+		},
+		"Books": {
+			"properties": {
+				"books": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Book"
+					}
+				}
+			}
+		},
+		"BookServiceResponse": {
+			"properties": {
+				"books": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Book"
+					}
+				},
+				"status": {
+					"$ref": "#/definitions/Status"
+				}
+			}
+		},
+		"ShopServiceResponse": {
+			"properties": {
+				"shops": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Shop"
+					}
+				},
+				"status": {
+					"$ref": "#/definitions/Status"
+				}
+			}
+		},
+		"Players": {
+			"properties": {
+				"players": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Player"
+					}
+				}
+			}
+		},
+		"Shops": {
+			"properties": {
+				"shops": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/Shop"
+					}
+				}
+			}
+		}
+	}
+}

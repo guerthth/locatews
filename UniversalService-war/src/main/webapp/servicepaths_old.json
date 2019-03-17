@@ -1,0 +1,585 @@
+{
+	"/books/v1/book": {
+		"get": {
+			"tags": [
+				"book"
+			],
+			"summary": "Find your books",
+			"description": "",
+			"operationId": "BooksGetBooks",
+			"parameters": [
+				{
+					"name": "searchTag",
+					"in": "query",
+					"description": "Searchtag that can be used to search for specific books",
+					"required": false,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BookServiceResponse"
+					}
+				}
+			}
+		},
+		"post": {
+			"tags": [
+				"book"
+			],
+			"summary": "Add new books",
+			"description": "",
+			"operationId": "BooksAddBooks",
+			"parameters": [
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Books"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BookServiceResponse"
+					}
+				}
+			}
+		}
+	},
+	"/books/v1/book/{id}": {
+		"delete": {
+			"tags": [
+				"book"
+			],
+			"summary": "Remove books",
+			"description": "",
+			"operationId": "BooksRemoveBook",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BookServiceResponse"
+					}
+				}
+			}
+		}
+	},
+	"/tags/v1/tag": {
+		"get": {
+			"tags": [
+				"book"
+			],
+			"summary": "Get your book tags",
+			"description": "",
+			"operationId": "TagsGetTags",
+			"parameters": [
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/TagServiceResponse"
+					}
+				}
+			}
+		}
+	},
+	"/shopping/v1/announcement": {
+		"get": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Announce new shop events",
+			"description": "",
+			"operationId": "ShoppingGetAnnouncement",
+			"parameters": [
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/Announcement"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				}
+			]
+		}
+	},
+	"/shopping/v1/billinggroup": {
+		"get": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Find your billinggroups",
+			"description": "",
+			"operationId": "ShoppingGetBillinggroups",
+			"parameters": [
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		},
+		"post": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Add new billinggroups",
+			"description": "",
+			"operationId": "ShoppingAddBillinggroups",
+			"parameters": [
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Billinggroups"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		},
+		"put": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Update billinggroups",
+			"description": "",
+			"operationId": "ShoppingUpdateBillinggroups",
+			"parameters": [
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Billinggroups"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/shopping/v1/billinggroup/{billinggroupId}": {
+		"delete": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Remove billinggroups",
+			"description": "",
+			"operationId": "ShoppingRemoveBillinggroup",
+			"parameters": [
+				{
+					"name": "billinggroupId",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/shopping/v1/billinggroup/{groupId}/bill": {
+		"post": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Add bill to billinggroup",
+			"description": "",
+			"operationId": "ShoppingAddBillToBillinggroup",
+			"parameters": [
+				{
+					"name": "groupId",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Bill"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/shopping/v1/billinggroup/{groupId}/user": {
+		"post": {
+			"tags": [
+				"billing"
+			],
+			"summary": "Add user to billinggroup",
+			"description": "",
+			"operationId": "ShoppingAddUserToBillinggroup",
+			"parameters": [
+				{
+					"name": "groupId",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				},
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/User"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/shopping/v1/billinggroup/{userId}": {
+		"get": {
+			"tags": [
+					"billing"
+				],
+			"summary": "Get all billinggroups for an specific user",
+			"description": "",
+			"operationId": "ShoppingGetBillinggroupsForUser",
+			"parameters": [
+				{
+					"name": "userId",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/BillinggroupServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+				
+		}
+	},
+	"/tournament/v1/player": {
+		"get": {
+			"operationId": "TournamentGetPlayers",
+			"parameters": [
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/PlayerServiceResponse"
+					}
+				}
+			}
+		},
+		"post": {
+			"operationId": "TournamentAddPlayers",
+			"parameters": [
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Players"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/PlayerServiceResponse"
+					}
+				}
+			}
+		}
+	},
+	"/tournament/v1/player/{id}": {
+		"delete": {
+			"operationId": "TournamentRemovePlayer",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/PlayerServiceResponse"
+					}
+				}
+			}
+		}
+	},
+	"/users/v2/user": {
+		"get": {
+			"tags": [
+				"user"
+			],
+			"summary": "get users",
+			"description": "",
+			"operationId": "UsersGetUsers",
+			"parameters": [
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/UserServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		},
+		"post": {
+			"tags": [
+				"user"
+			],
+			"summary": "add users",
+			"description": "",
+			"operationId": "UsersAddUsers",
+			"parameters": [
+				{
+					"in": "body",
+					"name": "body",
+					"required": false,
+					"schema": {
+						"$ref": "#/definitions/Users"
+					}
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/UserServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/users/v2/user/{id}": {
+		"delete": {
+			"tags": [
+				"user"
+			],
+			"summary": "delete users",
+			"description": "",
+			"operationId": "UsersRemoveUser",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/UserServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	},
+	"/users/v2/user/{id}/password": {
+		"get": {
+			"tags": [
+				"user"
+			],
+			"summary": "send user password email",
+			"description": "",
+			"operationId": "UsersSendUserMail",
+			"parameters": [
+				{
+					"name": "id",
+					"in": "path",
+					"required": true,
+					"type": "string"
+				}
+			],
+			"responses": {
+				"200": {
+					"description": "A successful response",
+					"schema": {
+						"$ref": "#/definitions/UserServiceResponse"
+					}
+				}
+			},
+			"security": [
+				{
+					"firebase-58780318": [
+					]
+				},
+				{
+					"bearer": [
+					]
+				}
+			]
+		}
+	}
+}

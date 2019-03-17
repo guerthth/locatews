@@ -13,3 +13,4 @@ out
 .project
 .sonar/
 sonarqube_check.bat
+service-account.json
